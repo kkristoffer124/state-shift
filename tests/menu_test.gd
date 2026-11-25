@@ -50,6 +50,14 @@ func _press_cancel() -> void:
 	await get_tree().process_frame
 
 
+## Skips the running cutscene (tests/cutscene_test.gd covers playback).
+func _skip_cutscene() -> void:
+	var cs := get_tree().current_scene as Cutscene
+	_check(cs != null, "cutscene is running")
+	if cs:
+		cs.skip()
+
+
 func _wipe() -> void:
 	if FileAccess.file_exists(TEST_SAVE):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(TEST_SAVE))
@@ -89,8 +97,10 @@ func _run() -> void:
 	_check(menu.new_btn.has_focus(), "New game has focus on a fresh save")
 	_check(not Save.is_unlocked(1), "chapter 2 locked on a fresh save")
 
-	# --- New game -> chapter 1 ---
+	# --- New game -> intro cutscene -> chapter 1 ---
 	menu.new_btn.pressed.emit()
+	_check(await _wait_scene(Game.INTRO_SCENE), "New game plays the intro cutscene")
+	await _skip_cutscene()
 	_check(await _wait_scene(Game.LEVELS[0]), "New game loads chapter 1")
 	_check(Game.level_index == 0 and Game.in_level and Hud.visible, "in chapter 1 with HUD")
 	_check(Hud.level_label.text == "Chapter 1 — Drip", "HUD shows chapter name (%s)" % Hud.level_label.text)
@@ -193,6 +203,8 @@ func _run() -> void:
 	menu.new_btn.pressed.emit()
 	await get_tree().process_frame
 	menu.confirm_yes.pressed.emit()
+	_check(await _wait_scene(Game.INTRO_SCENE), "confirmed New game plays the intro")
+	await _skip_cutscene()
 	_check(await _wait_scene(Game.LEVELS[0]), "confirmed New game starts chapter 1")
 	_check(Save.unlocked_count() == 1 and Save.best_time(0) < 0.0, "progress wiped")
 	_check(Settings.camera_zoom == 3.0, "settings kept after New game")
@@ -200,6 +212,8 @@ func _run() -> void:
 	# --- End screen after the last chapter ---
 	Game.level_index = Game.LEVELS.size() - 1
 	Game._next_level()
+	_check(await _wait_scene(Game.ENDING_SCENE), "finishing chapter 12 plays the ending cutscene")
+	await _skip_cutscene()
 	_check(await _wait_scene(Game.END_SCENE), "finishing chapter 12 shows the end screen")
 	get_tree().current_scene.chapters_btn.pressed.emit()
 	await _wait_scene(Game.MENU_SCENE)

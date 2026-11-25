@@ -1,0 +1,1660 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/cutscenes/cutscene.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/cutscenes/cutscene_panel.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/sky_tall.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/glow_moon.png" id="4"]
+[ext_resource type="Script" path="res://scripts/cutscenes/cutscene_sprite.gd" id="5"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/cloud_1.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/cloud_3.png" id="7"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/cloud_4.png" id="8"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/cloud_2.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/rooftop.png" id="10"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/blob_small.png" id="11"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/eyes_small.png" id="12"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/spark.png" id="13"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/emotes.png" id="14"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/cloud_big.png" id="15"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/eyes_big.png" id="16"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/poof.png" id="17"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/steam_puff.png" id="18"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/landscape.png" id="19"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/raindrop.png" id="20"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/lab_day.png" id="21"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/lamp.png" id="22"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/regulator.png" id="23"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/bench.png" id="24"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/flask_small.png" id="25"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/scientist.png" id="26"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/glow_ice.png" id="27"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/trail.png" id="28"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/drops.png" id="29"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/note_close.png" id="30"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/mug.png" id="31"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/flask_back.png" id="32"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/flask_liquid.png" id="33"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/flask_front.png" id="34"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/doodle.png" id="35"]
+[ext_resource type="Theme" path="res://scenes/ui/theme.tres" id="36"]
+[ext_resource type="PackedScene" path="res://scenes/cutscenes/cutscene_ui.tscn" id="37"]
+
+[sub_resource type="CanvasItemMaterial" id="add_mat"]
+blend_mode = 1
+
+[sub_resource type="Animation" id="anim_E1_Roof"]
+resource_name = "main"
+length = 7.6
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0, 2.6, 3.6, 7.6),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(250.0, 250.0), Vector2(250.0, 240.0), Vector2(360.0, 280.0), Vector2(420.0, 250.0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera:zoom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0, 2.6, 3.6, 7.6),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.8, 1.8), Vector2(1.8, 1.8), Vector2(1.35, 1.35), Vector2(1.25, 1.25)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Art/Cloud1:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 7.6),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 0,
+"values": [Vector2(20.0, 20.0), Vector2(34.0, 20.0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Art/Cloud3:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0, 7.6),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 0,
+"values": [Vector2(250.0, 72.0), Vector2(262.0, 72.0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Art/Blob:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0, 2.5),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [false, true]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Art/Blob:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.0, 2.5, 2.95, 3.55),
+"transitions": PackedFloat32Array(1.0, 0.5, 2.0, 1.0),
+"update": 0,
+"values": [Vector2(124.0, 112.0), Vector2(124.0, 112.0), Vector2(150.0, 52.0), Vector2(196.0, 204.0)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Art/Blob:frame")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.0, 3.55, 3.7),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [2, 1, 0]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Art/Blob:scale")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.0, 3.55, 3.8),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(1.0, 1.0), Vector2(1.25, 0.8), Vector2(1.0, 1.0)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Art/Blob/Eyes:frame")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.0, 3.7, 3.85, 4.3, 4.8, 5.4, 6.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [7, 2, 0, 3, 4, 8, 5]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Fx/Splash:emitting")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.0, 2.5),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [false, true]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Fx/Emote2:visible")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0.0, 4.0, 4.8),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Fx/Emote2:scale")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0.0, 4.0, 4.15),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("Fx/Emote:visible")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0.0, 6.6, 7.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("Fx/Emote:scale")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0.0, 6.6, 6.75),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
+}
+tracks/14/type = "method"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath(".")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0.3, 1.4, 1.6, 2.5, 3.55, 4.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"values": [{
+"args": ["Up the flue. Past the last fan. One final push..."],
+"method": &"narrate"
+}, {
+"args": ["bubble"],
+"method": &"sfx"
+}, {
+"args": [2.0, 0.8],
+"method": &"shake"
+}, {
+"args": ["pop"],
+"method": &"sfx"
+}, {
+"args": ["land"],
+"method": &"sfx"
+}, {
+"args": ["...and then, for the very first time: no ceiling."],
+"method": &"narrate"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_E1_Roof"]
+_data = {
+&"main": SubResource("anim_E1_Roof")
+}
+
+[sub_resource type="Gradient" id="Gradient_4"]
+offsets = PackedFloat32Array(0.0, 1.0)
+colors = PackedColorArray(1.0, 1.0, 1.0, 0.7, 1.0, 1.0, 1.0, 0.0)
+
+[sub_resource type="Animation" id="anim_E2_Rise"]
+resource_name = "main"
+length = 8.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0, 1.4, 5.6, 8.0),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(400.0, 330.0), Vector2(400.0, 330.0), Vector2(470.0, -380.0), Vector2(470.0, -390.0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera:zoom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0, 1.4, 5.6, 8.0),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.45, 1.45), Vector2(1.45, 1.45), Vector2(1.35, 1.35), Vector2(1.4, 1.4)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Art/Blob:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 1.35),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [0, 4]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Art/Blob/Eyes:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0, 0.9, 1.35),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [8, 5, 8]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Art/Blob/Eyes:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0, 1.35),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 0,
+"values": [Vector2(-6.0, -14.0), Vector2(-6.0, -12.0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Art/Blob:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.0, 1.6, 2.8, 4.0, 5.2, 6.1),
+"transitions": PackedFloat32Array(1.0, -2.0, -2.0, -2.0, -2.0, 1.0),
+"update": 0,
+"values": [Vector2(196.0, 204.0), Vector2(196.0, 204.0), Vector2(214.0, 120.0), Vector2(196.0, 20.0), Vector2(236.0, -110.0), Vector2(240.0, -196.0)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Art/Blob:visible")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.0, 6.1),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [true, false]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Art/Trail:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.0, 1.6, 2.8, 4.0, 5.2, 6.1),
+"transitions": PackedFloat32Array(1.0, -2.0, -2.0, -2.0, -2.0, 1.0),
+"update": 0,
+"values": [Vector2(196.0, 200.0), Vector2(196.0, 200.0), Vector2(214.0, 116.0), Vector2(196.0, 16.0), Vector2(236.0, -114.0), Vector2(240.0, -200.0)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Art/Trail:emitting")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.0, 1.6, 6.1),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Fx/Poof:visible")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.0, 1.3, 1.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Fx/Poof:frame")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0.0, 1.3, 1.37, 1.44, 1.51),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [0, 0, 1, 2, 3]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Art/CloudBig/Eyes:visible")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0.0, 6.4),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [false, true]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("Art/CloudBig/Eyes:frame")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0.0, 6.4, 6.7, 7.2),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [2, 2, 0, 5]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("Art/CloudBig:scale")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0.0, 6.1, 6.25, 6.5),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0, 1.0),
+"update": 0,
+"values": [Vector2(1.0, 1.0), Vector2(1.0, 1.0), Vector2(1.06, 0.94), Vector2(1.0, 1.0)]
+}
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("Fx/Emote:visible")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0.0, 7.2, 8.0),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/15/type = "value"
+tracks/15/imported = false
+tracks/15/enabled = true
+tracks/15/path = NodePath("Fx/Emote:scale")
+tracks/15/interp = 1
+tracks/15/loop_wrap = true
+tracks/15/keys = {
+"times": PackedFloat32Array(0.0, 7.2, 7.35),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
+}
+tracks/16/type = "method"
+tracks/16/imported = false
+tracks/16/enabled = true
+tracks/16/path = NodePath(".")
+tracks/16/interp = 1
+tracks/16/loop_wrap = true
+tracks/16/keys = {
+"times": PackedFloat32Array(0.3, 1.3, 3.4, 6.1, 7.2),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0),
+"values": [{
+"args": ["There were clouds up there. Big, slow, free ones."],
+"method": &"narrate"
+}, {
+"args": ["heat"],
+"method": &"sfx"
+}, {
+"args": ["So it went up to say hello."],
+"method": &"narrate"
+}, {
+"args": ["pop"],
+"method": &"sfx"
+}, {
+"args": ["select"],
+"method": &"sfx"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_E2_Rise"]
+_data = {
+&"main": SubResource("anim_E2_Rise")
+}
+
+[sub_resource type="Gradient" id="Gradient_7"]
+offsets = PackedFloat32Array(0.0, 0.8, 1.0)
+colors = PackedColorArray(1.0, 1.0, 1.0, 0.9, 1.0, 1.0, 1.0, 0.9, 1.0, 1.0, 1.0, 0.0)
+
+[sub_resource type="Gradient" id="Gradient_8"]
+offsets = PackedFloat32Array(0.0, 0.8, 1.0)
+colors = PackedColorArray(1.0, 1.0, 1.0, 0.7, 1.0, 1.0, 1.0, 0.7, 1.0, 1.0, 1.0, 0.0)
+
+[sub_resource type="Animation" id="anim_E3_Rain"]
+resource_name = "main"
+length = 7.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0, 7.2),
+"transitions": PackedFloat32Array(-2.0, -2.0),
+"update": 0,
+"values": [Vector2(460.0, 190.0), Vector2(480.0, 270.0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera:zoom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0, 7.2),
+"transitions": PackedFloat32Array(-2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.35, 1.35), Vector2(1.0, 1.0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Art/CloudBig:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 7.2),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 0,
+"values": [Vector2(150.0, 26.0), Vector2(176.0, 26.0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Art/Cloud1:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0, 7.2),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 0,
+"values": [Vector2(300.0, 14.0), Vector2(312.0, 14.0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Art/CloudBig/Eyes:frame")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0, 3.0, 3.12),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [5, 2, 5]
+}
+tracks/5/type = "method"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath(".")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.1, 0.4, 1.9, 3.7, 3.71, 5.5),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"values": [{
+"args": ["rain"],
+"method": &"sfx"
+}, {
+"args": ["Then, gently, it came back down. Everywhere at once."],
+"method": &"narrate"
+}, {
+"args": ["rain"],
+"method": &"sfx"
+}, {
+"args": ["rain"],
+"method": &"sfx"
+}, {
+"args": ["On the hills, on the lake... and on one very quiet lab."],
+"method": &"narrate"
+}, {
+"args": ["rain"],
+"method": &"sfx"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_E3_Rain"]
+_data = {
+&"main": SubResource("anim_E3_Rain")
+}
+
+[sub_resource type="Animation" id="anim_E4_Morning"]
+resource_name = "main"
+length = 9.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Art/Flask:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0),
+"transitions": PackedFloat32Array(1.0),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0, 2.4, 3.2, 5.4, 6.2, 9.4),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0, -2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(240.0, 370.0), Vector2(250.0, 370.0), Vector2(440.0, 450.0), Vector2(440.0, 450.0), Vector2(250.0, 360.0), Vector2(250.0, 356.0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Camera:zoom")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 2.4, 3.2, 5.4, 6.2, 9.4),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0, -2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.7, 1.7), Vector2(1.65, 1.65), Vector2(1.7, 1.7), Vector2(1.7, 1.7), Vector2(1.75, 1.75), Vector2(1.8, 1.8)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Art/Scientist:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0, 6.6),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [3, 4]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Art/Trail:modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0, 2.6, 3.4),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [Color(1.0, 1.0, 1.0, 0.0), Color(1.0, 1.0, 1.0, 0.0), Color(1.0, 1.0, 1.0, 1.0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Art/Drip:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.0, 3.6, 3.9),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Art/Drip:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.0, 3.6, 3.9),
+"transitions": PackedFloat32Array(1.0, 2.0, 1.0),
+"update": 0,
+"values": [Vector2(206.0, 188.0), Vector2(206.0, 188.0), Vector2(208.0, 226.0)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Fx/Emote:visible")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.0, 1.6, 2.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Fx/Emote:scale")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.0, 1.6, 1.75),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Fx/Emote2:visible")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.0, 7.8, 9.2),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Fx/Emote2:scale")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0.0, 7.8, 7.95),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
+}
+tracks/11/type = "method"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath(".")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0.3, 3.4, 3.9, 6.3),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0),
+"values": [{
+"args": ["DR. KETTLE", "Morning, forty-seven! Coffee first, then... wait. Empty?"],
+"method": &"say"
+}, {
+"args": ["DR. KETTLE", "A little wet trail. Straight down the drain."],
+"method": &"say"
+}, {
+"args": ["bubble"],
+"method": &"sfx"
+}, {
+"args": ["DR. KETTLE", "...and it rained all night. Huh."],
+"method": &"say"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_E4_Morning"]
+_data = {
+&"main": SubResource("anim_E4_Morning")
+}
+
+[sub_resource type="Animation" id="anim_E5_Log"]
+resource_name = "main"
+length = 11.9706
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Head:visible_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0, 0.4, 1.1353),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [0.0, 0.0, 1.0]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.4, 0.52, 0.64, 0.76, 0.88, 1.0, 2.04, 2.16, 2.28, 2.4, 2.52, 2.64, 3.05, 3.17, 3.29, 3.41, 3.53, 3.65, 3.77, 3.89, 4.33, 4.45, 4.57, 4.69, 4.81, 4.93, 5.34, 5.46, 5.58, 5.7, 5.82, 5.94, 6.06, 7.19, 7.31, 7.43, 7.55, 8.59, 8.71, 8.83, 8.95, 9.07, 9.19, 9.6706),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"values": [{
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["blip"],
+"method": &"sfx"
+}, {
+"args": ["chime"],
+"method": &"sfx"
+}]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("L1:visible_ratio")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 2.0353, 2.8),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [0.0, 0.0, 1.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("L2:visible_ratio")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0, 3.05, 4.0794),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [0.0, 0.0, 1.0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("L3:visible_ratio")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0, 4.3294, 5.0941),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [0.0, 0.0, 1.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("L4:visible_ratio")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.0, 5.3441, 6.2853),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [0.0, 0.0, 1.0]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("L5:visible_ratio")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.0, 7.1853, 7.6853),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [0.0, 0.0, 1.0]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("L6:visible_ratio")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.0, 8.5853, 9.3206),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [0.0, 0.0, 1.0]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Art/Doodle:visible")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.0, 9.6706),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [false, true]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Art/Doodle:scale")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.0, 9.6706, 9.8706),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.5, 0.5), Vector2(0.5, 0.5), Vector2(2.0, 2.0)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Camera:position")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0.0, 11.9706),
+"transitions": PackedFloat32Array(-2.0, -2.0),
+"update": 0,
+"values": [Vector2(430.0, 260.0), Vector2(420.0, 300.0)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Camera:zoom")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0.0, 11.9706),
+"transitions": PackedFloat32Array(-2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.15, 1.15), Vector2(1.05, 1.05)]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_E5_Log"]
+_data = {
+&"main": SubResource("anim_E5_Log")
+}
+
+[node name="Ending" type="Node"]
+script = ExtResource("1")
+next = 1
+
+[node name="Panels" type="Node" parent="."]
+
+[node name="E1_Roof" type="Node2D" parent="Panels"]
+visible = true
+script = ExtResource("2")
+caption_top = true
+
+[node name="Art" type="Node2D" parent="Panels/E1_Roof"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/E1_Roof"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Sky" type="Sprite2D" parent="Panels/E1_Roof/Art"]
+texture = ExtResource("3")
+position = Vector2(0.0, -270.0)
+centered = false
+
+[node name="MoonGlow" type="Sprite2D" parent="Panels/E1_Roof/Fx"]
+texture = ExtResource("4")
+position = Vector2(372.0, 60.0)
+material = SubResource("add_mat")
+scale = Vector2(1.6, 1.6)
+script = ExtResource("5")
+
+[node name="Cloud1" type="Sprite2D" parent="Panels/E1_Roof/Art"]
+texture = ExtResource("6")
+position = Vector2(20.0, 20.0)
+centered = false
+bob_px = 1.0
+bob_hz = 0.2
+script = ExtResource("5")
+
+[node name="Cloud3" type="Sprite2D" parent="Panels/E1_Roof/Art"]
+texture = ExtResource("7")
+position = Vector2(250.0, 72.0)
+centered = false
+bob_px = 1.0
+bob_hz = 0.25
+script = ExtResource("5")
+
+[node name="Cloud4" type="Sprite2D" parent="Panels/E1_Roof/Art"]
+texture = ExtResource("8")
+position = Vector2(330.0, -150.0)
+centered = false
+script = ExtResource("5")
+
+[node name="Cloud2" type="Sprite2D" parent="Panels/E1_Roof/Art"]
+texture = ExtResource("9")
+position = Vector2(30.0, -200.0)
+centered = false
+script = ExtResource("5")
+
+[node name="Roof" type="Sprite2D" parent="Panels/E1_Roof/Art"]
+texture = ExtResource("10")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="Blob" type="Sprite2D" parent="Panels/E1_Roof/Art"]
+texture = ExtResource("11")
+position = Vector2(124.0, 112.0)
+centered = false
+offset = Vector2(-12.0, -20.0)
+hframes = 5
+frame = 2
+visible = false
+script = ExtResource("5")
+
+[node name="Eyes" type="Sprite2D" parent="Panels/E1_Roof/Art/Blob"]
+texture = ExtResource("12")
+position = Vector2(-6.0, -14.0)
+centered = false
+hframes = 9
+script = ExtResource("5")
+
+[node name="FlueCap" type="Sprite2D" parent="Panels/E1_Roof/Art"]
+texture = ExtResource("10")
+position = Vector2(104.0, 100.0)
+centered = false
+region_enabled = true
+region_rect = Rect2(104.0, 100.0, 40.0, 100.0)
+
+[node name="Splash" type="CPUParticles2D" parent="Panels/E1_Roof/Fx"]
+position = Vector2(124.0, 104.0)
+emitting = false
+local_coords = true
+amount = 14
+lifetime = 0.7
+one_shot = true
+explosiveness = 0.9
+texture = ExtResource("13")
+direction = Vector2(0.0, -1.0)
+spread = 40.0
+gravity = Vector2(0.0, 160.0)
+initial_velocity_min = 40.0
+initial_velocity_max = 80.0
+scale_amount_min = 0.6
+scale_amount_max = 1.0
+color = Color(0.55, 0.77, 1.0, 1.0)
+
+[node name="Emote" type="Sprite2D" parent="Panels/E1_Roof/Fx"]
+texture = ExtResource("14")
+position = Vector2(196.0, 180.0)
+centered = false
+offset = Vector2(-9.0, -18.0)
+hframes = 5
+frame = 4
+visible = false
+scale = Vector2(1.0, 1.0)
+script = ExtResource("5")
+
+[node name="Emote2" type="Sprite2D" parent="Panels/E1_Roof/Fx"]
+texture = ExtResource("14")
+position = Vector2(196.0, 180.0)
+centered = false
+offset = Vector2(-9.0, -18.0)
+hframes = 5
+visible = false
+scale = Vector2(1.0, 1.0)
+script = ExtResource("5")
+
+[node name="Camera" type="Camera2D" parent="Panels/E1_Roof"]
+position = Vector2(260.0, 260.0)
+zoom = Vector2(1.7, 1.7)
+limit_left = 0
+limit_top = -540
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/E1_Roof"]
+libraries = {
+&"": SubResource("lib_E1_Roof")
+}
+
+[node name="E2_Rise" type="Node2D" parent="Panels"]
+visible = false
+script = ExtResource("2")
+caption_top = true
+
+[node name="Art" type="Node2D" parent="Panels/E2_Rise"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/E2_Rise"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Sky" type="Sprite2D" parent="Panels/E2_Rise/Art"]
+texture = ExtResource("3")
+position = Vector2(0.0, -270.0)
+centered = false
+
+[node name="MoonGlow" type="Sprite2D" parent="Panels/E2_Rise/Fx"]
+texture = ExtResource("4")
+position = Vector2(372.0, 60.0)
+material = SubResource("add_mat")
+scale = Vector2(1.6, 1.6)
+script = ExtResource("5")
+
+[node name="Cloud1" type="Sprite2D" parent="Panels/E2_Rise/Art"]
+texture = ExtResource("6")
+position = Vector2(20.0, 20.0)
+centered = false
+bob_px = 1.0
+bob_hz = 0.2
+script = ExtResource("5")
+
+[node name="Cloud3" type="Sprite2D" parent="Panels/E2_Rise/Art"]
+texture = ExtResource("7")
+position = Vector2(250.0, 72.0)
+centered = false
+bob_px = 1.0
+bob_hz = 0.25
+script = ExtResource("5")
+
+[node name="Cloud4" type="Sprite2D" parent="Panels/E2_Rise/Art"]
+texture = ExtResource("8")
+position = Vector2(330.0, -150.0)
+centered = false
+script = ExtResource("5")
+
+[node name="Cloud2" type="Sprite2D" parent="Panels/E2_Rise/Art"]
+texture = ExtResource("9")
+position = Vector2(30.0, -200.0)
+centered = false
+script = ExtResource("5")
+
+[node name="Roof" type="Sprite2D" parent="Panels/E2_Rise/Art"]
+texture = ExtResource("10")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="CloudBig" type="Sprite2D" parent="Panels/E2_Rise/Art"]
+texture = ExtResource("15")
+position = Vector2(164.0, -246.0)
+centered = false
+bob_px = 1.0
+bob_hz = 0.3
+z_index = 1
+script = ExtResource("5")
+
+[node name="Eyes" type="Sprite2D" parent="Panels/E2_Rise/Art/CloudBig"]
+texture = ExtResource("16")
+position = Vector2(64.0, 24.0)
+centered = false
+hframes = 9
+frame = 2
+visible = false
+script = ExtResource("5")
+
+[node name="Blob" type="Sprite2D" parent="Panels/E2_Rise/Art"]
+texture = ExtResource("11")
+position = Vector2(196.0, 204.0)
+centered = false
+offset = Vector2(-12.0, -20.0)
+hframes = 5
+visible = true
+script = ExtResource("5")
+
+[node name="Eyes" type="Sprite2D" parent="Panels/E2_Rise/Art/Blob"]
+texture = ExtResource("12")
+position = Vector2(-6.0, -14.0)
+centered = false
+hframes = 9
+frame = 8
+script = ExtResource("5")
+
+[node name="Poof" type="Sprite2D" parent="Panels/E2_Rise/Fx"]
+texture = ExtResource("17")
+position = Vector2(196.0, 194.0)
+hframes = 4
+visible = false
+script = ExtResource("5")
+
+[node name="Emote" type="Sprite2D" parent="Panels/E2_Rise/Fx"]
+texture = ExtResource("14")
+position = Vector2(262.0, -250.0)
+centered = false
+offset = Vector2(-9.0, -18.0)
+hframes = 5
+frame = 2
+visible = false
+scale = Vector2(1.0, 1.0)
+script = ExtResource("5")
+
+[node name="Trail" type="CPUParticles2D" parent="Panels/E2_Rise/Art"]
+position = Vector2(196.0, 200.0)
+emitting = false
+local_coords = false
+amount = 10
+lifetime = 1.2
+texture = ExtResource("18")
+direction = Vector2(0.0, 1.0)
+spread = 30.0
+gravity = Vector2(0.0, 0.0)
+initial_velocity_min = 2.0
+initial_velocity_max = 6.0
+scale_amount_min = 1.0
+scale_amount_max = 2.0
+color_ramp = SubResource("Gradient_4")
+
+[node name="Camera" type="Camera2D" parent="Panels/E2_Rise"]
+position = Vector2(400.0, 300.0)
+zoom = Vector2(1.4, 1.4)
+limit_left = 0
+limit_top = -540
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/E2_Rise"]
+libraries = {
+&"": SubResource("lib_E2_Rise")
+}
+
+[node name="E3_Rain" type="Node2D" parent="Panels"]
+visible = false
+script = ExtResource("2")
+
+[node name="Art" type="Node2D" parent="Panels/E3_Rain"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/E3_Rain"]
+scale = Vector2(2.0, 2.0)
+
+[node name="BG" type="Sprite2D" parent="Panels/E3_Rain/Art"]
+texture = ExtResource("19")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="MoonGlow" type="Sprite2D" parent="Panels/E3_Rain/Fx"]
+texture = ExtResource("4")
+position = Vector2(404.0, 46.0)
+material = SubResource("add_mat")
+scale = Vector2(1.3, 1.3)
+script = ExtResource("5")
+
+[node name="Cloud1" type="Sprite2D" parent="Panels/E3_Rain/Art"]
+texture = ExtResource("6")
+position = Vector2(300.0, 14.0)
+centered = false
+script = ExtResource("5")
+
+[node name="CloudBig" type="Sprite2D" parent="Panels/E3_Rain/Art"]
+texture = ExtResource("15")
+position = Vector2(150.0, 26.0)
+centered = false
+bob_px = 1.0
+bob_hz = 0.3
+script = ExtResource("5")
+
+[node name="Eyes" type="Sprite2D" parent="Panels/E3_Rain/Art/CloudBig"]
+texture = ExtResource("16")
+position = Vector2(64.0, 24.0)
+centered = false
+hframes = 9
+frame = 5
+script = ExtResource("5")
+
+[node name="Rain" type="CPUParticles2D" parent="Panels/E3_Rain/Art/CloudBig"]
+position = Vector2(75.0, 60.0)
+emitting = true
+local_coords = false
+amount = 70
+lifetime = 0.75
+texture = ExtResource("20")
+emission_shape = 3
+emission_rect_extents = Vector2(124.0, 4.0)
+direction = Vector2(0.08, 1.0)
+spread = 2.0
+gravity = Vector2(0.0, 120.0)
+initial_velocity_min = 250.0
+initial_velocity_max = 290.0
+scale_amount_min = 2.0
+scale_amount_max = 2.0
+preprocess = 1.0
+color_ramp = SubResource("Gradient_7")
+
+[node name="Rain2" type="CPUParticles2D" parent="Panels/E3_Rain/Art/Cloud1"]
+position = Vector2(48.0, 30.0)
+emitting = true
+local_coords = false
+amount = 28
+lifetime = 0.7
+texture = ExtResource("20")
+emission_shape = 3
+emission_rect_extents = Vector2(72.0, 4.0)
+direction = Vector2(0.08, 1.0)
+spread = 2.0
+gravity = Vector2(0.0, 120.0)
+initial_velocity_min = 250.0
+initial_velocity_max = 290.0
+scale_amount_min = 2.0
+scale_amount_max = 2.0
+preprocess = 1.0
+color_ramp = SubResource("Gradient_8")
+
+[node name="Camera" type="Camera2D" parent="Panels/E3_Rain"]
+position = Vector2(470.0, 200.0)
+zoom = Vector2(1.3, 1.3)
+limit_left = 0
+limit_top = 0
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/E3_Rain"]
+libraries = {
+&"": SubResource("lib_E3_Rain")
+}
+
+[node name="E4_Morning" type="Node2D" parent="Panels"]
+visible = false
+script = ExtResource("2")
+caption_top = true
+
+[node name="Art" type="Node2D" parent="Panels/E4_Morning"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/E4_Morning"]
+scale = Vector2(2.0, 2.0)
+
+[node name="BG" type="Sprite2D" parent="Panels/E4_Morning/Art"]
+texture = ExtResource("21")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="Lamp" type="Sprite2D" parent="Panels/E4_Morning/Art"]
+texture = ExtResource("22")
+position = Vector2(203.0, 0.0)
+centered = false
+
+[node name="Regulator" type="Sprite2D" parent="Panels/E4_Morning/Art"]
+texture = ExtResource("23")
+position = Vector2(270.0, 134.0)
+centered = false
+hframes = 2
+script = ExtResource("5")
+
+[node name="Bench" type="Sprite2D" parent="Panels/E4_Morning/Art"]
+texture = ExtResource("24")
+position = Vector2(150.0, 190.0)
+centered = false
+
+[node name="Flask" type="Sprite2D" parent="Panels/E4_Morning/Art"]
+texture = ExtResource("25")
+position = Vector2(200.0, 170.0)
+centered = false
+hframes = 3
+frame = 2
+script = ExtResource("5")
+
+[node name="Scientist" type="Sprite2D" parent="Panels/E4_Morning/Art"]
+texture = ExtResource("26")
+position = Vector2(92.0, 158.0)
+centered = false
+hframes = 5
+frame = 3
+visible = true
+script = ExtResource("5")
+
+[node name="FlaskGlow" type="Sprite2D" parent="Panels/E4_Morning/Fx"]
+texture = ExtResource("27")
+position = Vector2(206.0, 180.0)
+material = SubResource("add_mat")
+modulate = Color(1.0, 1.0, 1.0, 0.0)
+script = ExtResource("5")
+
+[node name="Trail" type="Sprite2D" parent="Panels/E4_Morning/Art"]
+texture = ExtResource("28")
+position = Vector2(0.0, 0.0)
+centered = false
+modulate = Color(1.0, 1.0, 1.0, 0.0)
+
+[node name="Drip" type="Sprite2D" parent="Panels/E4_Morning/Art"]
+texture = ExtResource("29")
+position = Vector2(206.0, 188.0)
+centered = false
+hframes = 2
+visible = false
+script = ExtResource("5")
+
+[node name="Emote" type="Sprite2D" parent="Panels/E4_Morning/Fx"]
+texture = ExtResource("14")
+position = Vector2(116.0, 156.0)
+centered = false
+offset = Vector2(-9.0, -18.0)
+hframes = 5
+frame = 3
+visible = false
+scale = Vector2(1.0, 1.0)
+script = ExtResource("5")
+
+[node name="Emote2" type="Sprite2D" parent="Panels/E4_Morning/Fx"]
+texture = ExtResource("14")
+position = Vector2(116.0, 156.0)
+centered = false
+offset = Vector2(-9.0, -18.0)
+hframes = 5
+frame = 4
+visible = false
+scale = Vector2(1.0, 1.0)
+script = ExtResource("5")
+
+[node name="Camera" type="Camera2D" parent="Panels/E4_Morning"]
+position = Vector2(260.0, 360.0)
+zoom = Vector2(1.6, 1.6)
+limit_left = 0
+limit_top = 0
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/E4_Morning"]
+libraries = {
+&"": SubResource("lib_E4_Morning")
+}
+
+[node name="E5_Log" type="Node2D" parent="Panels"]
+visible = false
+script = ExtResource("2")
+
+[node name="Art" type="Node2D" parent="Panels/E5_Log"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/E5_Log"]
+scale = Vector2(2.0, 2.0)
+
+[node name="BG" type="Sprite2D" parent="Panels/E5_Log/Art"]
+texture = ExtResource("30")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="Mug" type="Sprite2D" parent="Panels/E5_Log/Art"]
+texture = ExtResource("31")
+position = Vector2(330.0, 34.0)
+centered = false
+
+[node name="FlaskBack" type="Sprite2D" parent="Panels/E5_Log/Art"]
+texture = ExtResource("32")
+position = Vector2(370.0, 120.0)
+centered = false
+
+[node name="Liquid" type="Sprite2D" parent="Panels/E5_Log/Art"]
+texture = ExtResource("33")
+position = Vector2(370.0, 120.0)
+centered = false
+hframes = 7
+frame = 6
+script = ExtResource("5")
+
+[node name="FlaskFront" type="Sprite2D" parent="Panels/E5_Log/Art"]
+texture = ExtResource("34")
+position = Vector2(370.0, 120.0)
+centered = false
+
+[node name="Doodle" type="Sprite2D" parent="Panels/E5_Log/Art"]
+texture = ExtResource("35")
+position = Vector2(236.0, 222.0)
+visible = false
+script = ExtResource("5")
+
+[node name="Head" type="Label" parent="Panels/E5_Log"]
+offset_left = 196.0
+offset_top = 86.0
+offset_right = 576.0
+offset_bottom = 116.0
+theme = ExtResource("36")
+text = "LAB LOG  —  EXPERIMENT 47"
+theme_override_colors/font_color = Color(0.137, 0.192, 0.353, 1.0)
+theme_override_colors/font_outline_color = Color(0.0, 0.0, 0.0, 0.0)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 22
+visible_ratio = 0.0
+
+[node name="L1" type="Label" parent="Panels/E5_Log"]
+offset_left = 196.0
+offset_top = 144.0
+offset_right = 576.0
+offset_bottom = 174.0
+theme = ExtResource("36")
+text = "Subject: one flask of H2O."
+theme_override_colors/font_color = Color(0.137, 0.192, 0.353, 1.0)
+theme_override_colors/font_outline_color = Color(0.0, 0.0, 0.0, 0.0)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 19
+visible_ratio = 0.0
+
+[node name="L2" type="Label" parent="Panels/E5_Log"]
+offset_left = 196.0
+offset_top = 172.0
+offset_right = 576.0
+offset_bottom = 202.0
+theme = ExtResource("36")
+text = "Status: escaped. Drains, cryo wing,"
+theme_override_colors/font_color = Color(0.137, 0.192, 0.353, 1.0)
+theme_override_colors/font_outline_color = Color(0.0, 0.0, 0.0, 0.0)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 19
+visible_ratio = 0.0
+
+[node name="L3" type="Label" parent="Panels/E5_Log"]
+offset_left = 196.0
+offset_top = 200.0
+offset_right = 576.0
+offset_bottom = 230.0
+theme = ExtResource("36")
+text = "sewers, boiler room, roof."
+theme_override_colors/font_color = Color(0.137, 0.192, 0.353, 1.0)
+theme_override_colors/font_outline_color = Color(0.0, 0.0, 0.0, 0.0)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 19
+visible_ratio = 0.0
+
+[node name="L4" type="Label" parent="Panels/E5_Log"]
+offset_left = 196.0
+offset_top = 228.0
+offset_right = 576.0
+offset_bottom = 258.0
+theme = ExtResource("36")
+text = "Result: rain. Quite a lot of it."
+theme_override_colors/font_color = Color(0.137, 0.192, 0.353, 1.0)
+theme_override_colors/font_outline_color = Color(0.0, 0.0, 0.0, 0.0)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 19
+visible_ratio = 0.0
+
+[node name="L5" type="Label" parent="Panels/E5_Log"]
+offset_left = 196.0
+offset_top = 284.0
+offset_right = 576.0
+offset_bottom = 314.0
+theme = ExtResource("36")
+text = "Conclusion:"
+theme_override_colors/font_color = Color(0.137, 0.192, 0.353, 1.0)
+theme_override_colors/font_outline_color = Color(0.0, 0.0, 0.0, 0.0)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 19
+visible_ratio = 0.0
+
+[node name="L6" type="Label" parent="Panels/E5_Log"]
+offset_left = 196.0
+offset_top = 312.0
+offset_right = 576.0
+offset_bottom = 342.0
+theme = ExtResource("36")
+text = "Good for you, little one."
+theme_override_colors/font_color = Color(0.15, 0.45, 1.0, 1.0)
+theme_override_colors/font_outline_color = Color(0.0, 0.0, 0.0, 0.0)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 24
+visible_ratio = 0.0
+
+[node name="Camera" type="Camera2D" parent="Panels/E5_Log"]
+position = Vector2(440.0, 290.0)
+zoom = Vector2(1.0, 1.0)
+limit_left = 0
+limit_top = 0
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/E5_Log"]
+libraries = {
+&"": SubResource("lib_E5_Log")
+}
+
+[node name="UI" parent="." instance=ExtResource("37")]

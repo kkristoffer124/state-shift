@@ -1,0 +1,2181 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/cutscenes/cutscene.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/cutscenes/cutscene_panel.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/lab_night.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/lamp.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/regulator.png" id="5"]
+[ext_resource type="Script" path="res://scripts/cutscenes/cutscene_sprite.gd" id="6"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/bench.png" id="7"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/flask_small.png" id="8"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/scientist.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/lamp_cone.png" id="10"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/glow_ice.png" id="11"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/steam_puff.png" id="12"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/bench_close.png" id="13"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/coil_machine.png" id="14"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/mug.png" id="15"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/flask_back.png" id="16"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/flask_liquid.png" id="17"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/flask_front.png" id="18"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/drops.png" id="19"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/hand_vial.png" id="20"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/bubble.png" id="21"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/bolt_wide.png" id="22"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/spark.png" id="23"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/scientist_fainted.png" id="24"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/dizzy.png" id="25"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/eyes_big.png" id="26"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/emotes.png" id="27"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/blob_big.png" id="28"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/poof.png" id="29"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/door_panel.png" id="30"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/alarm_lamp.png" id="31"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/blob_small.png" id="32"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/eyes_small.png" id="33"]
+[ext_resource type="Texture2D" path="res://assets/cutscenes/alarm_beam.png" id="34"]
+[ext_resource type="Texture2D" path="res://assets/ui/u1_logo.png" id="35"]
+[ext_resource type="Theme" path="res://scenes/ui/theme.tres" id="36"]
+[ext_resource type="PackedScene" path="res://scenes/cutscenes/cutscene_ui.tscn" id="37"]
+
+[sub_resource type="CanvasItemMaterial" id="add_mat"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_2"]
+offsets = PackedFloat32Array(0.0, 0.3, 1.0)
+colors = PackedColorArray(1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.55, 1.0, 1.0, 1.0, 0.0)
+
+[sub_resource type="Animation" id="anim_P1_Night"]
+resource_name = "main"
+length = 6.6
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0, 2.2, 6.6),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(330.0, 190.0), Vector2(330.0, 230.0), Vector2(450.0, 320.0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera:zoom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0, 2.2, 6.6),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.7, 1.7), Vector2(1.6, 1.6), Vector2(1.18, 1.18)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Art/Scientist:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 2.4, 3.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [0, 1, 0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Art/MugSteam:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0, 2.4, 3.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [Vector2(108.0, 190.0), Vector2(117.0, 172.0), Vector2(108.0, 190.0)]
+}
+tracks/4/type = "method"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.35, 2.4, 3.0),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"values": [{
+"args": ["Lab 3. 2:47 AM. One lamp still on."],
+"method": &"narrate"
+}, {
+"args": ["bubble"],
+"method": &"sfx"
+}, {
+"args": ["DR. KETTLE", "Experiment 47: thermo-responsive water. Tonight's the night."],
+"method": &"say"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_P1_Night"]
+_data = {
+&"main": SubResource("anim_P1_Night")
+}
+
+[sub_resource type="Gradient" id="Gradient_5"]
+offsets = PackedFloat32Array(0.0, 1.0)
+colors = PackedColorArray(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0)
+
+[sub_resource type="Animation" id="anim_P2_Mix"]
+resource_name = "main"
+length = 7.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0, 7.4),
+"transitions": PackedFloat32Array(-2.0, -2.0),
+"update": 0,
+"values": [Vector2(480.0, 290.0), Vector2(470.0, 300.0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera:zoom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0, 7.4),
+"transitions": PackedFloat32Array(-2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.0, 1.0), Vector2(1.12, 1.12)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Art/Hand:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 0.3, 0.9, 2.1, 2.6, 2.8, 3.3, 4.5, 5.0),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0, 2.0, 1.0, 0.5, 1.0, 2.0, 1.0),
+"update": 0,
+"values": [Vector2(100.0, -80.0), Vector2(100.0, -80.0), Vector2(160.0, 46.0), Vector2(160.0, 46.0), Vector2(100.0, -80.0), Vector2(100.0, -80.0), Vector2(160.0, 46.0), Vector2(160.0, 46.0), Vector2(100.0, -80.0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Art/Hand:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0, 2.7),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [0, 1]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Art/Drop:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0, 1.2, 1.55, 3.6, 3.95),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false, true, false]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Art/Drop:frame")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.0, 3.0),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [0, 1]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Art/Drop:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.0, 1.2, 1.55, 3.6, 3.95),
+"transitions": PackedFloat32Array(1.0, 2.0, 1.0, 2.0, 1.0),
+"update": 0,
+"values": [Vector2(237.0, 98.0), Vector2(237.0, 98.0), Vector2(237.0, 148.0), Vector2(237.0, 98.0), Vector2(237.0, 148.0)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Art/Liquid:frame")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.0, 1.55, 3.95, 4.17, 4.39, 4.61, 4.83, 5.05, 5.27, 5.49, 5.71, 5.93, 6.15, 6.37, 6.59, 6.81, 7.03, 7.25),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [0, 1, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Fx/Bubbles:emitting")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.0, 3.95),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [false, true]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Fx/FlaskGlow:modulate")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.0, 3.95, 4.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [Color(1.0, 1.0, 1.0, 0.0), Color(1.0, 1.0, 1.0, 0.0), Color(0.6, 1.0, 0.9, 0.5)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Art/Coil:frame")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0.0, 6.2, 6.4, 6.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [0, 1, 0, 1]
+}
+tracks/11/type = "method"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath(".")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0.3, 1.55, 2.8, 3.95, 4.3, 5.1, 6.2),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"values": [{
+"args": ["DR. KETTLE", "A pinch of cryo-salt..."],
+"method": &"say"
+}, {
+"args": ["bubble"],
+"method": &"sfx"
+}, {
+"args": ["DR. KETTLE", "...a splash of thermal catalyst..."],
+"method": &"say"
+}, {
+"args": ["bubble"],
+"method": &"sfx"
+}, {
+"args": ["bubble"],
+"method": &"sfx"
+}, {
+"args": ["DR. KETTLE", "...and one teeny little zap to wake it up."],
+"method": &"say"
+}, {
+"args": ["hum"],
+"method": &"sfx"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_P2_Mix"]
+_data = {
+&"main": SubResource("anim_P2_Mix")
+}
+
+[sub_resource type="Gradient" id="Gradient_8"]
+offsets = PackedFloat32Array(0.0, 0.5, 1.0)
+colors = PackedColorArray(1.0, 1.0, 1.0, 1.0, 1.0, 0.7, 0.3, 1.0, 1.0, 0.35, 0.1, 0.0)
+
+[sub_resource type="Animation" id="anim_P3_Surge"]
+resource_name = "main"
+length = 6.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0, 2.4, 2.5, 6.4),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(440.0, 320.0), Vector2(470.0, 330.0), Vector2(470.0, 300.0), Vector2(470.0, 300.0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera:zoom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0, 2.4, 2.5, 6.4),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.3, 1.3), Vector2(1.4, 1.4), Vector2(1.15, 1.15), Vector2(1.1, 1.1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Art/Regulator:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 1.0, 1.12, 1.24, 1.36, 1.48, 1.6, 1.72, 1.84, 1.96, 2.08, 2.2, 2.32, 2.44, 2.56, 2.68, 2.8, 2.92, 3.04, 3.16, 3.28, 3.4, 3.52, 3.64, 3.76, 3.88, 4.0, 4.12, 4.24, 4.36, 4.48, 4.6, 4.72, 4.84, 4.96, 5.08, 5.2, 5.32, 5.44, 5.56, 5.68, 5.8, 5.92, 6.04, 6.16, 6.28),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Fx/Sparks:emitting")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0, 1.4, 4.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Fx/Bolt:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0, 2.45, 4.4),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Fx/Bolt:frame")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(2.45, 2.51, 2.57, 2.63, 2.69, 2.75, 2.81, 2.87, 2.93, 2.99, 3.05, 3.11, 3.17, 3.23, 3.29, 3.35, 3.41, 3.47, 3.53, 3.59, 3.65, 3.71, 3.77, 3.83, 3.89, 3.95, 4.01, 4.07, 4.13, 4.19, 4.25, 4.31, 4.37),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Art/Scientist:frame")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.0, 2.5),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [0, 2]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Art/Scientist:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.0, 2.5, 2.65, 2.85),
+"transitions": PackedFloat32Array(1.0, 0.5, 2.0, 1.0),
+"update": 0,
+"values": [Vector2(92.0, 158.0), Vector2(92.0, 158.0), Vector2(88.0, 150.0), Vector2(86.0, 158.0)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Art/Flask:frame")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.0, 2.5),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [0, 1]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Fx/FlaskGlow:modulate")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.0, 2.5, 6.4),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [Color(1.0, 1.0, 1.0, 0.0), Color(1.0, 1.0, 1.0, 1.0), Color(1.0, 1.0, 1.0, 0.8)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Fx/FlaskGlow:scale")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0.0, 2.5, 3.5),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(1.0, 1.0), Vector2(2.4, 2.4), Vector2(1.5, 1.5)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Fx/LampCone:visible")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0.0, 2.5, 2.59, 2.68, 2.77, 2.86, 2.95, 3.04, 3.13, 3.22, 3.31, 3.4, 3.49, 3.58, 3.67, 3.76, 3.85, 3.94, 4.03, 4.12, 4.21, 4.3, 4.39, 4.48, 4.57, 4.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [true, false, true, false, false, true, false, true, false, false, true, false, true, false, false, true, false, true, false, false, true, false, true, false, false, false]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("Art:modulate")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0.0, 2.5, 2.6, 2.8, 3.0, 4.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 0,
+"values": [Color(1.0, 1.0, 1.0, 1.0), Color(1.0, 1.0, 1.0, 1.0), Color(0.55, 0.6, 0.8, 1.0), Color(1.0, 1.0, 1.0, 1.0), Color(0.5, 0.55, 0.75, 1.0), Color(0.45, 0.5, 0.72, 1.0)]
+}
+tracks/13/type = "method"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath(".")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0.1, 0.3, 1.4, 2.45, 2.46, 2.47, 2.9, 3.5, 3.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"values": [{
+"args": ["hum"],
+"method": &"sfx"
+}, {
+"args": ["DR. KETTLE", "Hm. Is it supposed to hum like that?"],
+"method": &"say"
+}, {
+"args": ["hum"],
+"method": &"sfx"
+}, {
+"args": [0.35],
+"method": &"flash"
+}, {
+"args": [9.0, 1.4],
+"method": &"shake"
+}, {
+"args": ["zap"],
+"method": &"sfx"
+}, {
+"args": ["zap"],
+"method": &"sfx"
+}, {
+"args": ["chime"],
+"method": &"sfx"
+}, {
+"args": ["PA", "WARNING: POWER SURGE IN LAB 3."],
+"method": &"say"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_P3_Surge"]
+_data = {
+&"main": SubResource("anim_P3_Surge")
+}
+
+[sub_resource type="Gradient" id="Gradient_11"]
+offsets = PackedFloat32Array(0.0, 0.2, 1.0)
+colors = PackedColorArray(0.6, 0.65, 0.75, 0.0, 0.6, 0.65, 0.75, 0.6, 0.6, 0.65, 0.75, 0.0)
+
+[sub_resource type="Animation" id="anim_P4_Dark"]
+resource_name = "main"
+length = 4.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Art:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0),
+"transitions": PackedFloat32Array(1.0),
+"update": 0,
+"values": [Color(0.42, 0.47, 0.7, 1.0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Art/Flask:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0),
+"transitions": PackedFloat32Array(1.0),
+"update": 1,
+"values": [1]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Fx/FlaskGlow:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 1.4, 2.8, 4.2, 5.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 0,
+"values": [Color(1.0, 1.0, 1.0, 0.9), Color(1.0, 1.0, 1.0, 0.45), Color(1.0, 1.0, 1.0, 0.95), Color(1.0, 1.0, 1.0, 0.45), Color(1.0, 1.0, 1.0, 0.9)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Fx/FlaskGlow:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0),
+"transitions": PackedFloat32Array(1.0),
+"update": 0,
+"values": [Vector2(1.6, 1.6)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Camera:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0, 5.6),
+"transitions": PackedFloat32Array(-2.0, -2.0),
+"update": 0,
+"values": [Vector2(300.0, 400.0), Vector2(360.0, 370.0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Camera:zoom")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.0, 5.6),
+"transitions": PackedFloat32Array(-2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.6, 1.6), Vector2(1.45, 1.45)]
+}
+tracks/6/type = "method"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath(".")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.05, 0.06, 0.6, 2.2),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0),
+"values": [{
+"args": ["thud"],
+"method": &"sfx"
+}, {
+"args": [4.0, 0.4],
+"method": &"shake"
+}, {
+"args": ["DR. KETTLE", "...five more minutes..."],
+"method": &"say"
+}, {
+"args": ["The lab went very, very quiet."],
+"method": &"narrate"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_P4_Dark"]
+_data = {
+&"main": SubResource("anim_P4_Dark")
+}
+
+[sub_resource type="Animation" id="anim_P5_Awake"]
+resource_name = "main"
+length = 7.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0, 5.0, 7.0),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(480.0, 290.0), Vector2(480.0, 320.0), Vector2(480.0, 322.0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera:zoom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0, 5.0, 7.0),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.0, 1.0), Vector2(1.7, 1.7), Vector2(1.75, 1.75)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Art/Liquid:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 1.6),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [4, 5]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Fx/FlaskGlow:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0, 1.6, 2.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [Color(1.0, 1.0, 1.0, 1.0), Color(1.0, 1.0, 1.0, 0.9), Color(1.0, 1.0, 1.0, 0.15)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Art/Eyes:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0, 2.3),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [false, true]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Art/Eyes:frame")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.0, 2.3, 2.8, 3.0, 3.6, 4.1, 4.6, 4.8, 4.9, 6.3, 6.4),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [2, 2, 1, 0, 3, 4, 0, 2, 0, 2, 0]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Fx/Emote:visible")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.0, 5.2, 6.8),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Fx/Emote:scale")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.0, 5.2, 5.35),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
+}
+tracks/8/type = "method"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath(".")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.4, 2.8, 5.0, 5.2),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0),
+"values": [{
+"args": ["In the dark, the water in flask 47 had its very first thought."],
+"method": &"narrate"
+}, {
+"args": ["pop"],
+"method": &"sfx"
+}, {
+"args": ["It was: \"...huh?\""],
+"method": &"narrate"
+}, {
+"args": ["select"],
+"method": &"sfx"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_P5_Awake"]
+_data = {
+&"main": SubResource("anim_P5_Awake")
+}
+
+[sub_resource type="Animation" id="anim_P6_Shift"]
+resource_name = "main"
+length = 8.6
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0, 1.4, 8.6),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(500.0, 320.0), Vector2(580.0, 330.0), Vector2(590.0, 340.0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera:zoom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0, 1.4, 8.6),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.45, 1.45), Vector2(1.35, 1.35), Vector2(1.42, 1.42)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Art/FlaskEyes:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 0.55),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [true, false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Art/FlaskEyes:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0),
+"transitions": PackedFloat32Array(1.0),
+"update": 1,
+"values": [6]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Art/Liquid:frame")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0, 0.55),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [5, 6]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Art/Blob:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.0, 0.55),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [false, true]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Art/Blob:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.0, 0.55, 0.95, 1.35, 5.0, 5.6, 6.8, 7.05),
+"transitions": PackedFloat32Array(1.0, 0.5, 2.0, 1.0, 0.5, 1.0, 2.0, 1.0),
+"update": 0,
+"values": [Vector2(240.0, 112.0), Vector2(240.0, 112.0), Vector2(290.0, 64.0), Vector2(330.0, 206.0), Vector2(330.0, 206.0), Vector2(330.0, 182.0), Vector2(330.0, 182.0), Vector2(330.0, 206.0)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Art/Blob:frame")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.0, 1.35, 1.5, 3.25, 5.05, 6.85, 7.05, 7.2),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [2, 1, 0, 3, 4, 2, 1, 0]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Art/Blob/Eyes:position")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.0, 3.25, 5.05, 6.85),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0),
+"update": 0,
+"values": [Vector2(-11.0, -28.0), Vector2(-11.0, -27.0), Vector2(-12.0, -25.0), Vector2(-11.0, -28.0)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Art/Blob/Eyes:frame")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.0, 1.5, 1.65, 2.0, 2.4, 2.8, 3.25, 3.9, 5.05, 5.6, 7.05, 7.25, 7.8),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [7, 2, 0, 3, 4, 5, 7, 0, 8, 5, 2, 6, 5]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Art/Blob:scale")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0.0, 1.35, 1.6),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(1.0, 1.0), Vector2(1.15, 0.85), Vector2(1.0, 1.0)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Art/Blob:offset")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0.0),
+"transitions": PackedFloat32Array(1.0),
+"update": 0,
+"values": [Vector2(-24.0, -40.0)]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("Fx/Poof:visible")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0.0, 3.2, 3.5, 5.0, 5.3, 6.8, 7.1),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false, true, false, true, false]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("Fx/Poof:frame")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0.0, 3.2, 3.27, 3.34, 3.41, 5.0, 5.07, 5.14, 5.21, 6.8, 6.87, 6.94, 7.01),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [0, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]
+}
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("Fx/Poof:position")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0.0, 5.0, 6.8),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [Vector2(330.0, 186.0), Vector2(330.0, 186.0), Vector2(330.0, 164.0)]
+}
+tracks/15/type = "value"
+tracks/15/imported = false
+tracks/15/enabled = true
+tracks/15/path = NodePath("Fx/Emote:visible")
+tracks/15/interp = 1
+tracks/15/loop_wrap = true
+tracks/15/keys = {
+"times": PackedFloat32Array(0.0, 2.85, 3.85),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/16/type = "value"
+tracks/16/imported = false
+tracks/16/enabled = true
+tracks/16/path = NodePath("Fx/Emote:scale")
+tracks/16/interp = 1
+tracks/16/loop_wrap = true
+tracks/16/keys = {
+"times": PackedFloat32Array(0.0, 2.85, 3.0),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
+}
+tracks/17/type = "value"
+tracks/17/imported = false
+tracks/17/enabled = true
+tracks/17/path = NodePath("Fx/Emote2:visible")
+tracks/17/interp = 1
+tracks/17/loop_wrap = true
+tracks/17/keys = {
+"times": PackedFloat32Array(0.0, 3.5, 4.4),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/18/type = "value"
+tracks/18/imported = false
+tracks/18/enabled = true
+tracks/18/path = NodePath("Fx/Emote2:scale")
+tracks/18/interp = 1
+tracks/18/loop_wrap = true
+tracks/18/keys = {
+"times": PackedFloat32Array(0.0, 3.5, 3.65),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
+}
+tracks/19/type = "value"
+tracks/19/imported = false
+tracks/19/enabled = true
+tracks/19/path = NodePath("Fx/Emote3:visible")
+tracks/19/interp = 1
+tracks/19/loop_wrap = true
+tracks/19/keys = {
+"times": PackedFloat32Array(0.0, 7.85, 8.6),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/20/type = "value"
+tracks/20/imported = false
+tracks/20/enabled = true
+tracks/20/path = NodePath("Fx/Emote3:scale")
+tracks/20/interp = 1
+tracks/20/loop_wrap = true
+tracks/20/keys = {
+"times": PackedFloat32Array(0.0, 7.85, 8.0),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
+}
+tracks/21/type = "method"
+tracks/21/imported = false
+tracks/21/enabled = true
+tracks/21/path = NodePath(".")
+tracks/21/interp = 1
+tracks/21/loop_wrap = true
+tracks/21/keys = {
+"times": PackedFloat32Array(0.55, 1.35, 1.6, 3.2, 3.3, 3.31, 5.0, 5.1, 6.8, 7.0, 7.05),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"values": [{
+"args": ["pop"],
+"method": &"sfx"
+}, {
+"args": ["land"],
+"method": &"sfx"
+}, {
+"args": ["It could wobble."],
+"method": &"narrate"
+}, {
+"args": ["cool"],
+"method": &"sfx"
+}, {
+"args": ["land_ice"],
+"method": &"sfx"
+}, {
+"args": ["It could freeze..."],
+"method": &"narrate"
+}, {
+"args": ["heat"],
+"method": &"sfx"
+}, {
+"args": ["...it could float..."],
+"method": &"narrate"
+}, {
+"args": ["poof"],
+"method": &"sfx"
+}, {
+"args": ["...it could SPLASH!"],
+"method": &"narrate"
+}, {
+"args": ["land"],
+"method": &"sfx"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_P6_Shift"]
+_data = {
+&"main": SubResource("anim_P6_Shift")
+}
+
+[sub_resource type="Animation" id="anim_P7_Alarm"]
+resource_name = "main"
+length = 8.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0, 4.0, 8.2),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(660.0, 400.0), Vector2(630.0, 400.0), Vector2(560.0, 410.0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera:zoom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0, 4.0, 8.2),
+"transitions": PackedFloat32Array(-2.0, -2.0, -2.0),
+"update": 0,
+"values": [Vector2(1.6, 1.6), Vector2(1.6, 1.6), Vector2(1.8, 1.8)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Art:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0),
+"transitions": PackedFloat32Array(1.0),
+"update": 0,
+"values": [Color(0.5, 0.55, 0.78, 1.0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Art/Flask:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0),
+"transitions": PackedFloat32Array(1.0),
+"update": 1,
+"values": [2]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Art/Alarm:frame")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.2, 4.5, 4.8, 5.1, 5.4, 5.7, 6.0, 6.3, 6.6, 6.9, 7.2, 7.5, 7.8, 8.1),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Fx/RedWash:color")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.2, 4.5, 4.8, 5.1, 5.4, 5.7, 6.0, 6.3, 6.6, 6.9, 7.2, 7.5, 7.8, 8.1),
+"transitions": PackedFloat32Array(0.5, 2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0),
+"update": 0,
+"values": [Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02), Color(1.0, 0.12, 0.05, 0.22), Color(1.0, 0.12, 0.05, 0.02)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Fx/Beam:rotation")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.0, 8.4),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 0,
+"values": [0.0, 37.698]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Art/Door:region_rect")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.0, 1.4, 3.8),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [Rect2(0.0, 112.0, 54.0, 0.0), Rect2(0.0, 112.0, 54.0, 0.0), Rect2(0.0, 0.0, 54.0, 112.0)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Art/Blob/Eyes:frame")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.0, 1.0, 2.6, 4.0, 4.15, 5.4, 6.2),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [7, 4, 7, 2, 3, 6, 6]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Fx/Emote:visible")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.0, 4.3, 5.3),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Fx/Emote:scale")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0.0, 4.3, 4.45),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Art/Blob:position")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0.0, 6.0, 6.25, 6.5, 6.75, 7.0),
+"transitions": PackedFloat32Array(1.0, 0.5, 2.0, 0.5, 2.0, 1.0),
+"update": 0,
+"values": [Vector2(318.0, 238.0), Vector2(318.0, 238.0), Vector2(298.0, 230.0), Vector2(280.0, 240.0), Vector2(262.0, 232.0), Vector2(244.0, 242.0)]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("Art/Blob:frame")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0.0, 6.0, 6.05, 6.5, 6.55, 7.0, 7.2),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"update": 1,
+"values": [0, 1, 2, 1, 2, 1, 0]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("Art/Blob:scale")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0.0, 7.0, 7.2, 7.7),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0),
+"update": 0,
+"values": [Vector2(1.0, 1.0), Vector2(1.0, 1.0), Vector2(1.3, 0.7), Vector2(1.5, 0.05)]
+}
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("Art/Blob:modulate")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0.0, 7.4, 7.75),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [Color(1.0, 1.0, 1.0, 1.0), Color(1.0, 1.0, 1.0, 1.0), Color(1.0, 1.0, 1.0, 0.0)]
+}
+tracks/15/type = "value"
+tracks/15/imported = false
+tracks/15/enabled = true
+tracks/15/path = NodePath("Fx/Splash:emitting")
+tracks/15/interp = 1
+tracks/15/loop_wrap = true
+tracks/15/keys = {
+"times": PackedFloat32Array(0.0, 7.0),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"update": 1,
+"values": [false, true]
+}
+tracks/16/type = "method"
+tracks/16/imported = false
+tracks/16/enabled = true
+tracks/16/path = NodePath(".")
+tracks/16/interp = 1
+tracks/16/loop_wrap = true
+tracks/16/keys = {
+"times": PackedFloat32Array(0.0, 0.3, 1.2, 1.4, 2.4, 3.6, 3.8, 3.81, 4.4, 4.8, 6.0, 6.05, 6.55, 7.0, 7.2, 7.4),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+"values": [{
+"args": ["alarm"],
+"method": &"sfx"
+}, {
+"args": ["PA", "CONTAINMENT BREACH. SEALING LAB 3."],
+"method": &"say"
+}, {
+"args": ["alarm"],
+"method": &"sfx"
+}, {
+"args": ["door"],
+"method": &"sfx"
+}, {
+"args": ["alarm"],
+"method": &"sfx"
+}, {
+"args": ["alarm"],
+"method": &"sfx"
+}, {
+"args": ["thud"],
+"method": &"sfx"
+}, {
+"args": [3.0, 0.3],
+"method": &"shake"
+}, {
+"args": ["Every door was locking. But water doesn't need doors."],
+"method": &"narrate"
+}, {
+"args": ["alarm"],
+"method": &"sfx"
+}, {
+"args": ["alarm"],
+"method": &"sfx"
+}, {
+"args": ["jump"],
+"method": &"sfx"
+}, {
+"args": ["jump"],
+"method": &"sfx"
+}, {
+"args": ["land"],
+"method": &"sfx"
+}, {
+"args": ["alarm"],
+"method": &"sfx"
+}, {
+"args": ["bubble"],
+"method": &"sfx"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_P7_Alarm"]
+_data = {
+&"main": SubResource("anim_P7_Alarm")
+}
+
+[sub_resource type="Animation" id="anim_P8_Title"]
+resource_name = "main"
+length = 3.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Logo:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0, 0.3, 1.2),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [Color(1.0, 1.0, 1.0, 0.0), Color(1.0, 1.0, 1.0, 0.0), Color(1.0, 1.0, 1.0, 1.0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Logo:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0, 0.3, 1.2),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(480.0, 250.0), Vector2(480.0, 250.0), Vector2(480.0, 236.0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sub:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0, 1.4, 2.1),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 0,
+"values": [Color(1.0, 1.0, 1.0, 0.0), Color(1.0, 1.0, 1.0, 0.0), Color(1.0, 1.0, 1.0, 1.0)]
+}
+tracks/3/type = "method"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0, 0.4),
+"transitions": PackedFloat32Array(1.0, 1.0),
+"values": [{
+"args": [],
+"method": &"clear"
+}, {
+"args": ["chime"],
+"method": &"sfx"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="lib_P8_Title"]
+_data = {
+&"main": SubResource("anim_P8_Title")
+}
+
+[node name="Intro" type="Node"]
+script = ExtResource("1")
+next = 0
+
+[node name="Panels" type="Node" parent="."]
+
+[node name="P1_Night" type="Node2D" parent="Panels"]
+visible = true
+script = ExtResource("2")
+
+[node name="Art" type="Node2D" parent="Panels/P1_Night"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/P1_Night"]
+scale = Vector2(2.0, 2.0)
+
+[node name="BG" type="Sprite2D" parent="Panels/P1_Night/Art"]
+texture = ExtResource("3")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="Lamp" type="Sprite2D" parent="Panels/P1_Night/Art"]
+texture = ExtResource("4")
+position = Vector2(203.0, 0.0)
+centered = false
+
+[node name="Regulator" type="Sprite2D" parent="Panels/P1_Night/Art"]
+texture = ExtResource("5")
+position = Vector2(270.0, 134.0)
+centered = false
+hframes = 2
+script = ExtResource("6")
+
+[node name="Bench" type="Sprite2D" parent="Panels/P1_Night/Art"]
+texture = ExtResource("7")
+position = Vector2(150.0, 190.0)
+centered = false
+
+[node name="Flask" type="Sprite2D" parent="Panels/P1_Night/Art"]
+texture = ExtResource("8")
+position = Vector2(200.0, 170.0)
+centered = false
+hframes = 3
+script = ExtResource("6")
+
+[node name="Scientist" type="Sprite2D" parent="Panels/P1_Night/Art"]
+texture = ExtResource("9")
+position = Vector2(92.0, 158.0)
+centered = false
+hframes = 5
+visible = true
+script = ExtResource("6")
+
+[node name="LampCone" type="Sprite2D" parent="Panels/P1_Night/Fx"]
+texture = ExtResource("10")
+position = Vector2(140.0, 38.0)
+centered = false
+material = SubResource("add_mat")
+flicker = 0.08
+script = ExtResource("6")
+
+[node name="FlaskGlow" type="Sprite2D" parent="Panels/P1_Night/Fx"]
+texture = ExtResource("11")
+position = Vector2(206.0, 180.0)
+material = SubResource("add_mat")
+modulate = Color(1.0, 1.0, 1.0, 0.0)
+script = ExtResource("6")
+
+[node name="MugSteam" type="CPUParticles2D" parent="Panels/P1_Night/Art"]
+position = Vector2(108.0, 190.0)
+emitting = true
+local_coords = true
+amount = 5
+lifetime = 1.6
+texture = ExtResource("12")
+emission_shape = 3
+emission_rect_extents = Vector2(2.0, 1.0)
+direction = Vector2(0.0, -1.0)
+spread = 12.0
+gravity = Vector2(0.0, -6.0)
+initial_velocity_min = 4.0
+initial_velocity_max = 8.0
+scale_amount_min = 0.4
+scale_amount_max = 0.8
+color_ramp = SubResource("Gradient_2")
+
+[node name="Camera" type="Camera2D" parent="Panels/P1_Night"]
+position = Vector2(330.0, 190.0)
+zoom = Vector2(1.7, 1.7)
+limit_left = 0
+limit_top = 0
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/P1_Night"]
+libraries = {
+&"": SubResource("lib_P1_Night")
+}
+
+[node name="P2_Mix" type="Node2D" parent="Panels"]
+visible = false
+script = ExtResource("2")
+
+[node name="Art" type="Node2D" parent="Panels/P2_Mix"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/P2_Mix"]
+scale = Vector2(2.0, 2.0)
+
+[node name="BG" type="Sprite2D" parent="Panels/P2_Mix/Art"]
+texture = ExtResource("13")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="Coil" type="Sprite2D" parent="Panels/P2_Mix/Art"]
+texture = ExtResource("14")
+position = Vector2(408.0, 76.0)
+centered = false
+hframes = 2
+script = ExtResource("6")
+
+[node name="Mug" type="Sprite2D" parent="Panels/P2_Mix/Art"]
+texture = ExtResource("15")
+position = Vector2(40.0, 176.0)
+centered = false
+
+[node name="FlaskBack" type="Sprite2D" parent="Panels/P2_Mix/Art"]
+texture = ExtResource("16")
+position = Vector2(200.0, 102.0)
+centered = false
+
+[node name="Liquid" type="Sprite2D" parent="Panels/P2_Mix/Art"]
+texture = ExtResource("17")
+position = Vector2(200.0, 102.0)
+centered = false
+hframes = 7
+script = ExtResource("6")
+
+[node name="FlaskFront" type="Sprite2D" parent="Panels/P2_Mix/Art"]
+texture = ExtResource("18")
+position = Vector2(200.0, 102.0)
+centered = false
+
+[node name="Drop" type="Sprite2D" parent="Panels/P2_Mix/Art"]
+texture = ExtResource("19")
+position = Vector2(237.0, 98.0)
+centered = false
+hframes = 2
+visible = false
+script = ExtResource("6")
+
+[node name="Hand" type="Sprite2D" parent="Panels/P2_Mix/Art"]
+texture = ExtResource("20")
+position = Vector2(100.0, -80.0)
+centered = false
+hframes = 2
+script = ExtResource("6")
+
+[node name="Bubbles" type="CPUParticles2D" parent="Panels/P2_Mix/Fx"]
+position = Vector2(240.0, 168.0)
+emitting = false
+local_coords = true
+amount = 10
+lifetime = 0.9
+texture = ExtResource("21")
+emission_shape = 3
+emission_rect_extents = Vector2(26.0, 12.0)
+direction = Vector2(0.0, -1.0)
+spread = 10.0
+gravity = Vector2(0.0, -30.0)
+initial_velocity_min = 6.0
+initial_velocity_max = 14.0
+color_ramp = SubResource("Gradient_5")
+
+[node name="FlaskGlow" type="Sprite2D" parent="Panels/P2_Mix/Fx"]
+texture = ExtResource("11")
+position = Vector2(240.0, 160.0)
+material = SubResource("add_mat")
+modulate = Color(1.0, 1.0, 1.0, 0.0)
+scale = Vector2(2.0, 2.0)
+script = ExtResource("6")
+
+[node name="Camera" type="Camera2D" parent="Panels/P2_Mix"]
+position = Vector2(480.0, 300.0)
+zoom = Vector2(1.0, 1.0)
+limit_left = 0
+limit_top = 0
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/P2_Mix"]
+libraries = {
+&"": SubResource("lib_P2_Mix")
+}
+
+[node name="P3_Surge" type="Node2D" parent="Panels"]
+visible = false
+script = ExtResource("2")
+caption_top = true
+
+[node name="Art" type="Node2D" parent="Panels/P3_Surge"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/P3_Surge"]
+scale = Vector2(2.0, 2.0)
+
+[node name="BG" type="Sprite2D" parent="Panels/P3_Surge/Art"]
+texture = ExtResource("3")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="Lamp" type="Sprite2D" parent="Panels/P3_Surge/Art"]
+texture = ExtResource("4")
+position = Vector2(203.0, 0.0)
+centered = false
+
+[node name="Regulator" type="Sprite2D" parent="Panels/P3_Surge/Art"]
+texture = ExtResource("5")
+position = Vector2(270.0, 134.0)
+centered = false
+hframes = 2
+script = ExtResource("6")
+
+[node name="Bench" type="Sprite2D" parent="Panels/P3_Surge/Art"]
+texture = ExtResource("7")
+position = Vector2(150.0, 190.0)
+centered = false
+
+[node name="Flask" type="Sprite2D" parent="Panels/P3_Surge/Art"]
+texture = ExtResource("8")
+position = Vector2(200.0, 170.0)
+centered = false
+hframes = 3
+script = ExtResource("6")
+
+[node name="Scientist" type="Sprite2D" parent="Panels/P3_Surge/Art"]
+texture = ExtResource("9")
+position = Vector2(92.0, 158.0)
+centered = false
+hframes = 5
+visible = true
+script = ExtResource("6")
+
+[node name="LampCone" type="Sprite2D" parent="Panels/P3_Surge/Fx"]
+texture = ExtResource("10")
+position = Vector2(140.0, 38.0)
+centered = false
+material = SubResource("add_mat")
+flicker = 0.08
+script = ExtResource("6")
+
+[node name="FlaskGlow" type="Sprite2D" parent="Panels/P3_Surge/Fx"]
+texture = ExtResource("11")
+position = Vector2(206.0, 180.0)
+material = SubResource("add_mat")
+modulate = Color(1.0, 1.0, 1.0, 0.0)
+script = ExtResource("6")
+
+[node name="Bolt" type="Sprite2D" parent="Panels/P3_Surge/Fx"]
+texture = ExtResource("22")
+position = Vector2(198.0, 128.0)
+centered = false
+hframes = 3
+visible = false
+script = ExtResource("6")
+
+[node name="Sparks" type="CPUParticles2D" parent="Panels/P3_Surge/Fx"]
+position = Vector2(292.0, 140.0)
+emitting = false
+local_coords = true
+amount = 24
+lifetime = 0.5
+texture = ExtResource("23")
+direction = Vector2(0.0, -1.0)
+spread = 80.0
+gravity = Vector2(0.0, 220.0)
+initial_velocity_min = 50.0
+initial_velocity_max = 110.0
+color_ramp = SubResource("Gradient_8")
+
+[node name="Camera" type="Camera2D" parent="Panels/P3_Surge"]
+position = Vector2(470.0, 330.0)
+zoom = Vector2(1.25, 1.25)
+limit_left = 0
+limit_top = 0
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/P3_Surge"]
+libraries = {
+&"": SubResource("lib_P3_Surge")
+}
+
+[node name="P4_Dark" type="Node2D" parent="Panels"]
+visible = false
+script = ExtResource("2")
+caption_top = true
+
+[node name="Art" type="Node2D" parent="Panels/P4_Dark"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/P4_Dark"]
+scale = Vector2(2.0, 2.0)
+
+[node name="BG" type="Sprite2D" parent="Panels/P4_Dark/Art"]
+texture = ExtResource("3")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="Lamp" type="Sprite2D" parent="Panels/P4_Dark/Art"]
+texture = ExtResource("4")
+position = Vector2(203.0, 0.0)
+centered = false
+
+[node name="Regulator" type="Sprite2D" parent="Panels/P4_Dark/Art"]
+texture = ExtResource("5")
+position = Vector2(270.0, 134.0)
+centered = false
+hframes = 2
+script = ExtResource("6")
+
+[node name="Bench" type="Sprite2D" parent="Panels/P4_Dark/Art"]
+texture = ExtResource("7")
+position = Vector2(150.0, 190.0)
+centered = false
+
+[node name="Flask" type="Sprite2D" parent="Panels/P4_Dark/Art"]
+texture = ExtResource("8")
+position = Vector2(200.0, 170.0)
+centered = false
+hframes = 3
+script = ExtResource("6")
+
+[node name="Scientist" type="Sprite2D" parent="Panels/P4_Dark/Art"]
+texture = ExtResource("9")
+position = Vector2(92.0, 158.0)
+centered = false
+hframes = 5
+visible = false
+script = ExtResource("6")
+
+[node name="FlaskGlow" type="Sprite2D" parent="Panels/P4_Dark/Fx"]
+texture = ExtResource("11")
+position = Vector2(206.0, 180.0)
+material = SubResource("add_mat")
+modulate = Color(1.0, 1.0, 1.0, 0.0)
+script = ExtResource("6")
+
+[node name="Fainted" type="Sprite2D" parent="Panels/P4_Dark/Art"]
+texture = ExtResource("24")
+position = Vector2(64.0, 196.0)
+centered = false
+script = ExtResource("6")
+
+[node name="Dizzy" type="Sprite2D" parent="Panels/P4_Dark/Art"]
+texture = ExtResource("25")
+position = Vector2(58.0, 190.0)
+centered = false
+hframes = 3
+fps = 6.0
+script = ExtResource("6")
+
+[node name="Smoke" type="CPUParticles2D" parent="Panels/P4_Dark/Art"]
+position = Vector2(292.0, 136.0)
+emitting = true
+local_coords = true
+amount = 8
+lifetime = 2.2
+texture = ExtResource("12")
+direction = Vector2(0.0, -1.0)
+spread = 25.0
+gravity = Vector2(4.0, -8.0)
+initial_velocity_min = 6.0
+initial_velocity_max = 12.0
+scale_amount_min = 0.8
+scale_amount_max = 1.6
+color_ramp = SubResource("Gradient_11")
+
+[node name="Camera" type="Camera2D" parent="Panels/P4_Dark"]
+position = Vector2(330.0, 380.0)
+zoom = Vector2(1.5, 1.5)
+limit_left = 0
+limit_top = 0
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/P4_Dark"]
+libraries = {
+&"": SubResource("lib_P4_Dark")
+}
+
+[node name="P5_Awake" type="Node2D" parent="Panels"]
+visible = false
+script = ExtResource("2")
+
+[node name="Art" type="Node2D" parent="Panels/P5_Awake"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/P5_Awake"]
+scale = Vector2(2.0, 2.0)
+
+[node name="BG" type="Sprite2D" parent="Panels/P5_Awake/Art"]
+texture = ExtResource("13")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="Coil" type="Sprite2D" parent="Panels/P5_Awake/Art"]
+texture = ExtResource("14")
+position = Vector2(408.0, 76.0)
+centered = false
+hframes = 2
+script = ExtResource("6")
+
+[node name="Mug" type="Sprite2D" parent="Panels/P5_Awake/Art"]
+texture = ExtResource("15")
+position = Vector2(40.0, 176.0)
+centered = false
+
+[node name="Dark" type="ColorRect" parent="Panels/P5_Awake/Art"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+color = Color(0.03, 0.05, 0.12, 0.55)
+
+[node name="FlaskBack" type="Sprite2D" parent="Panels/P5_Awake/Art"]
+texture = ExtResource("16")
+position = Vector2(200.0, 102.0)
+centered = false
+
+[node name="Liquid" type="Sprite2D" parent="Panels/P5_Awake/Art"]
+texture = ExtResource("17")
+position = Vector2(200.0, 102.0)
+centered = false
+hframes = 7
+frame = 4
+script = ExtResource("6")
+
+[node name="Eyes" type="Sprite2D" parent="Panels/P5_Awake/Art"]
+texture = ExtResource("26")
+position = Vector2(229.0, 160.0)
+centered = false
+hframes = 9
+frame = 2
+visible = false
+script = ExtResource("6")
+
+[node name="FlaskFront" type="Sprite2D" parent="Panels/P5_Awake/Art"]
+texture = ExtResource("18")
+position = Vector2(200.0, 102.0)
+centered = false
+
+[node name="FlaskGlow" type="Sprite2D" parent="Panels/P5_Awake/Fx"]
+texture = ExtResource("11")
+position = Vector2(240.0, 165.0)
+material = SubResource("add_mat")
+scale = Vector2(2.5, 2.5)
+script = ExtResource("6")
+
+[node name="Emote" type="Sprite2D" parent="Panels/P5_Awake/Fx"]
+texture = ExtResource("27")
+position = Vector2(252.0, 96.0)
+centered = false
+offset = Vector2(-9.0, -18.0)
+hframes = 5
+frame = 1
+visible = false
+scale = Vector2(1.0, 1.0)
+script = ExtResource("6")
+
+[node name="Camera" type="Camera2D" parent="Panels/P5_Awake"]
+position = Vector2(480.0, 300.0)
+zoom = Vector2(1.0, 1.0)
+limit_left = 0
+limit_top = 0
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/P5_Awake"]
+libraries = {
+&"": SubResource("lib_P5_Awake")
+}
+
+[node name="P6_Shift" type="Node2D" parent="Panels"]
+visible = false
+script = ExtResource("2")
+
+[node name="Art" type="Node2D" parent="Panels/P6_Shift"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/P6_Shift"]
+scale = Vector2(2.0, 2.0)
+
+[node name="BG" type="Sprite2D" parent="Panels/P6_Shift/Art"]
+texture = ExtResource("13")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="Coil" type="Sprite2D" parent="Panels/P6_Shift/Art"]
+texture = ExtResource("14")
+position = Vector2(408.0, 76.0)
+centered = false
+hframes = 2
+script = ExtResource("6")
+
+[node name="Mug" type="Sprite2D" parent="Panels/P6_Shift/Art"]
+texture = ExtResource("15")
+position = Vector2(40.0, 176.0)
+centered = false
+
+[node name="Dark" type="ColorRect" parent="Panels/P6_Shift/Art"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+color = Color(0.03, 0.05, 0.12, 0.35)
+
+[node name="FlaskBack" type="Sprite2D" parent="Panels/P6_Shift/Art"]
+texture = ExtResource("16")
+position = Vector2(200.0, 102.0)
+centered = false
+
+[node name="Liquid" type="Sprite2D" parent="Panels/P6_Shift/Art"]
+texture = ExtResource("17")
+position = Vector2(200.0, 102.0)
+centered = false
+hframes = 7
+frame = 5
+script = ExtResource("6")
+
+[node name="FlaskEyes" type="Sprite2D" parent="Panels/P6_Shift/Art"]
+texture = ExtResource("26")
+position = Vector2(229.0, 160.0)
+centered = false
+hframes = 9
+script = ExtResource("6")
+
+[node name="FlaskFront" type="Sprite2D" parent="Panels/P6_Shift/Art"]
+texture = ExtResource("18")
+position = Vector2(200.0, 102.0)
+centered = false
+
+[node name="Blob" type="Sprite2D" parent="Panels/P6_Shift/Art"]
+texture = ExtResource("28")
+position = Vector2(240.0, 110.0)
+centered = false
+offset = Vector2(-24.0, -40.0)
+hframes = 5
+frame = 2
+visible = false
+z_index = 1
+script = ExtResource("6")
+
+[node name="Eyes" type="Sprite2D" parent="Panels/P6_Shift/Art/Blob"]
+texture = ExtResource("26")
+position = Vector2(-11.0, -28.0)
+centered = false
+hframes = 9
+script = ExtResource("6")
+
+[node name="Poof" type="Sprite2D" parent="Panels/P6_Shift/Fx"]
+texture = ExtResource("29")
+position = Vector2(330.0, 186.0)
+hframes = 4
+visible = false
+script = ExtResource("6")
+
+[node name="Emote" type="Sprite2D" parent="Panels/P6_Shift/Fx"]
+texture = ExtResource("27")
+position = Vector2(342.0, 150.0)
+centered = false
+offset = Vector2(-9.0, -18.0)
+hframes = 5
+frame = 2
+visible = false
+scale = Vector2(1.0, 1.0)
+script = ExtResource("6")
+
+[node name="Emote2" type="Sprite2D" parent="Panels/P6_Shift/Fx"]
+texture = ExtResource("27")
+position = Vector2(342.0, 150.0)
+centered = false
+offset = Vector2(-9.0, -18.0)
+hframes = 5
+visible = false
+scale = Vector2(1.0, 1.0)
+script = ExtResource("6")
+
+[node name="Emote3" type="Sprite2D" parent="Panels/P6_Shift/Fx"]
+texture = ExtResource("27")
+position = Vector2(342.0, 150.0)
+centered = false
+offset = Vector2(-9.0, -18.0)
+hframes = 5
+frame = 4
+visible = false
+scale = Vector2(1.0, 1.0)
+script = ExtResource("6")
+
+[node name="Camera" type="Camera2D" parent="Panels/P6_Shift"]
+position = Vector2(560.0, 330.0)
+zoom = Vector2(1.3, 1.3)
+limit_left = 0
+limit_top = 0
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/P6_Shift"]
+libraries = {
+&"": SubResource("lib_P6_Shift")
+}
+
+[node name="P7_Alarm" type="Node2D" parent="Panels"]
+visible = false
+script = ExtResource("2")
+caption_top = true
+
+[node name="Art" type="Node2D" parent="Panels/P7_Alarm"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/P7_Alarm"]
+scale = Vector2(2.0, 2.0)
+
+[node name="BG" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
+texture = ExtResource("3")
+position = Vector2(0.0, 0.0)
+centered = false
+
+[node name="Lamp" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
+texture = ExtResource("4")
+position = Vector2(203.0, 0.0)
+centered = false
+
+[node name="Regulator" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
+texture = ExtResource("5")
+position = Vector2(270.0, 134.0)
+centered = false
+hframes = 2
+script = ExtResource("6")
+
+[node name="Bench" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
+texture = ExtResource("7")
+position = Vector2(150.0, 190.0)
+centered = false
+
+[node name="Flask" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
+texture = ExtResource("8")
+position = Vector2(200.0, 170.0)
+centered = false
+hframes = 3
+script = ExtResource("6")
+
+[node name="Scientist" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
+texture = ExtResource("9")
+position = Vector2(92.0, 158.0)
+centered = false
+hframes = 5
+visible = false
+script = ExtResource("6")
+
+[node name="FlaskGlow" type="Sprite2D" parent="Panels/P7_Alarm/Fx"]
+texture = ExtResource("11")
+position = Vector2(206.0, 180.0)
+material = SubResource("add_mat")
+modulate = Color(1.0, 1.0, 1.0, 0.0)
+script = ExtResource("6")
+
+[node name="Fainted" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
+texture = ExtResource("24")
+position = Vector2(64.0, 196.0)
+centered = false
+script = ExtResource("6")
+
+[node name="Door" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
+texture = ExtResource("30")
+position = Vector2(396.0, 118.0)
+centered = false
+region_enabled = true
+region_rect = Rect2(0.0, 112.0, 54.0, 0.0)
+script = ExtResource("6")
+
+[node name="Alarm" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
+texture = ExtResource("31")
+position = Vector2(420.0, 82.0)
+centered = false
+hframes = 2
+script = ExtResource("6")
+
+[node name="Blob" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
+texture = ExtResource("32")
+position = Vector2(318.0, 238.0)
+centered = false
+offset = Vector2(-12.0, -20.0)
+hframes = 5
+visible = true
+script = ExtResource("6")
+
+[node name="Eyes" type="Sprite2D" parent="Panels/P7_Alarm/Art/Blob"]
+texture = ExtResource("33")
+position = Vector2(-6.0, -14.0)
+centered = false
+hframes = 9
+frame = 7
+script = ExtResource("6")
+
+[node name="RedWash" type="ColorRect" parent="Panels/P7_Alarm/Fx"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+color = Color(1.0, 0.12, 0.05, 0.0)
+
+[node name="Beam" type="Sprite2D" parent="Panels/P7_Alarm/Fx"]
+texture = ExtResource("34")
+position = Vector2(427.0, 88.0)
+centered = false
+material = SubResource("add_mat")
+offset = Vector2(0.0, -30.0)
+visible = true
+script = ExtResource("6")
+
+[node name="Emote" type="Sprite2D" parent="Panels/P7_Alarm/Fx"]
+texture = ExtResource("27")
+position = Vector2(322.0, 212.0)
+centered = false
+offset = Vector2(-9.0, -18.0)
+hframes = 5
+visible = false
+scale = Vector2(1.0, 1.0)
+script = ExtResource("6")
+
+[node name="Splash" type="CPUParticles2D" parent="Panels/P7_Alarm/Fx"]
+position = Vector2(241.0, 242.0)
+emitting = false
+local_coords = true
+amount = 10
+lifetime = 0.6
+one_shot = true
+explosiveness = 0.9
+texture = ExtResource("23")
+direction = Vector2(0.0, -1.0)
+spread = 50.0
+gravity = Vector2(0.0, 160.0)
+initial_velocity_min = 30.0
+initial_velocity_max = 60.0
+scale_amount_min = 0.6
+scale_amount_max = 1.0
+color = Color(0.55, 0.77, 1.0, 1.0)
+
+[node name="Camera" type="Camera2D" parent="Panels/P7_Alarm"]
+position = Vector2(640.0, 400.0)
+zoom = Vector2(1.5, 1.5)
+limit_left = 0
+limit_top = 0
+limit_right = 960
+limit_bottom = 540
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/P7_Alarm"]
+libraries = {
+&"": SubResource("lib_P7_Alarm")
+}
+
+[node name="P8_Title" type="Node2D" parent="Panels"]
+visible = false
+script = ExtResource("2")
+
+[node name="Art" type="Node2D" parent="Panels/P8_Title"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Fx" type="Node2D" parent="Panels/P8_Title"]
+scale = Vector2(2.0, 2.0)
+
+[node name="Black" type="ColorRect" parent="Panels/P8_Title/Art"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 490.0
+offset_bottom = 280.0
+mouse_filter = 2
+color = Color(0.0275, 0.0431, 0.0941, 1.0)
+
+[node name="Logo" type="Sprite2D" parent="Panels/P8_Title"]
+position = Vector2(480.0, 236.0)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("35")
+modulate = Color(1.0, 1.0, 1.0, 0.0)
+
+[node name="Sub" type="Label" parent="Panels/P8_Title"]
+offset_left = 180.0
+offset_top = 330.0
+offset_right = 780.0
+offset_bottom = 360.0
+theme = ExtResource("36")
+text = "Chapter 1  —  Drip"
+horizontal_alignment = 1
+theme_type_variation = "DimLabel"
+modulate = Color(1.0, 1.0, 1.0, 0.0)
+theme_override_font_sizes/font_size = 20
+
+[node name="Camera" type="Camera2D" parent="Panels/P8_Title"]
+position = Vector2(480.0, 270.0)
+
+[node name="Anim" type="AnimationPlayer" parent="Panels/P8_Title"]
+libraries = {
+&"": SubResource("lib_P8_Title")
+}
+
+[node name="UI" parent="." instance=ExtResource("37")]

@@ -27,6 +27,19 @@ func _ready() -> void:
 	_streams["blocked"] = _sweep([[140.0, 130.0, 0.09], [140.0, 130.0, 0.09]], "square", 0.14)
 	_streams["win"] = _sweep([[523.0, 523.0, 0.09], [659.0, 659.0, 0.09], [784.0, 784.0, 0.09], [1047.0, 1047.0, 0.22]], "square", 0.14)
 	_streams["select"] = _sweep([[600.0, 900.0, 0.07]], "sine", 0.3)
+	# Cutscene sounds (typewriter blips, lab machinery, alarm, rain).
+	_streams["blip"] = _sweep([[980.0, 940.0, 0.025]], "square", 0.06)
+	_streams["blip_low"] = _sweep([[420.0, 400.0, 0.03]], "square", 0.07)
+	_streams["pop"] = _sweep([[320.0, 980.0, 0.06]], "sine", 0.35)
+	_streams["bubble"] = _sweep([[380.0, 760.0, 0.05], [460.0, 900.0, 0.05]], "sine", 0.22)
+	_streams["hum"] = _sweep([[110.0, 118.0, 0.7]], "square", 0.06, 0.15)
+	_streams["zap"] = _sweep([[2400.0, 300.0, 0.18], [1800.0, 120.0, 0.3]], "noise", 0.4)
+	_streams["thud"] = _sweep([[120.0, 40.0, 0.22]], "sine", 0.5, 0.35)
+	_streams["alarm"] = _sweep([[660.0, 660.0, 0.22], [520.0, 520.0, 0.22]], "square", 0.09)
+	_streams["door"] = _sweep([[90.0, 70.0, 1.2]], "square", 0.07, 0.5)
+	_streams["chime"] = _sweep([[784.0, 784.0, 0.12], [988.0, 988.0, 0.12], [1175.0, 1175.0, 0.3]], "sine", 0.22)
+	_streams["rain"] = _sweep([[3000.0, 2000.0, 1.8]], "noise", 0.06)
+	_streams["poof"] = _sweep([[1600.0, 500.0, 0.16]], "noise", 0.18)
 
 
 func play(sound: String, pitch_variation := 0.08) -> void:

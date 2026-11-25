@@ -25,8 +25,26 @@ const CHAPTER_NAMES: Array[String] = [
 	"Drip", "Freeze", "Rise", "Shatter", "Pressure", "Crosswind",
 	"Sieve", "Chain Reaction", "Thermals", "Momentum", "Flue", "Meltdown",
 ]
+## One line of story per chapter, shown under the title card (lab logs, PA, notes).
+const CHAPTER_LINES: Array[String] = [
+	"PA: Containment breach in Lab 3. Please remain calm. And dry.",
+	"Lab log, 3:12 AM: Sample 47 froze itself. On purpose?",
+	"Sticky note: \"Do NOT open the steam valves.\"",
+	"PA: Now entering the Cryo Wing. Mind the icicles.",
+	"Cryo log: something keeps waving at the security cameras.",
+	"Maintenance memo: the big fans are \"mostly\" safe.",
+	"Filtration log: forty-seven drops in. Zero drops out.",
+	"PA: Boiler room access restricted. Seriously. It's hot.",
+	"Boiler log: pressure normal. Mood: bubbly.",
+	"Dr. Kettle's notes: \"It learns fast. Faster than me.\"",
+	"PA: Sample 47 last seen heading up. Way up.",
+	"The night air is close. You can almost smell the rain.",
+]
 const END_SCENE := "res://scenes/end.tscn"
 const MENU_SCENE := "res://scenes/menu.tscn"
+## Story cutscenes: the intro plays on New game, the ending after chapter 12.
+const INTRO_SCENE := "res://scenes/cutscenes/intro.tscn"
+const ENDING_SCENE := "res://scenes/cutscenes/ending.tscn"
 
 var level_index := 0
 ## Totals for the current play session (shown on the end screen).
@@ -64,6 +82,10 @@ func chapter_name(index: int) -> String:
 	return CHAPTER_NAMES[index] if index >= 0 and index < CHAPTER_NAMES.size() else "Chapter %d" % (index + 1)
 
 
+func chapter_line(index: int) -> String:
+	return CHAPTER_LINES[index] if index >= 0 and index < CHAPTER_LINES.size() else ""
+
+
 ## "Chapter 6 — Crosswind"
 func chapter_title(index: int) -> String:
 	return "Chapter %d — %s" % [index + 1, chapter_name(index)]
@@ -77,13 +99,33 @@ static func title_from_level_name(level_name: String) -> String:
 
 # --- Starting -------------------------------------------------------------------
 
-## New game: wipes progress (settings stay) and starts chapter 1.
-func new_game() -> void:
+## New game: wipes progress (settings stay), plays the intro cutscene, which then
+## starts chapter 1 (pass `with_intro = false` to go straight to chapter 1).
+func new_game(with_intro := true) -> void:
 	Save.reset_progress()
 	Save.mark_started()
 	deaths = 0
 	run_time = 0.0
-	start_chapter(0)
+	if with_intro and ResourceLoader.exists(INTRO_SCENE):
+		play_cutscene(INTRO_SCENE)
+	else:
+		start_chapter(0)
+
+
+## Plays a cutscene scene (it hands off by itself when done or skipped).
+func play_cutscene(path: String) -> void:
+	in_level = false
+	_show_card = false
+	Hud.visible = false
+	Overlay.close_pause()
+	_change_scene(path, true)
+
+
+## The end screen with this run's totals (called by the ending cutscene).
+func show_end_screen() -> void:
+	in_level = false
+	Hud.visible = false
+	_change_scene(END_SCENE, true)
 
 
 ## Kept for older callers.
@@ -191,9 +233,10 @@ func level_complete() -> void:
 
 func _next_level() -> void:
 	if level_index + 1 >= LEVELS.size():
-		in_level = false
-		Hud.visible = false
-		_change_scene(END_SCENE, true)
+		if ResourceLoader.exists(ENDING_SCENE):
+			play_cutscene(ENDING_SCENE)
+		else:
+			show_end_screen()
 	else:
 		start_chapter(level_index + 1)
 

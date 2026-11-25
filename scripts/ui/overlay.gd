@@ -12,6 +12,7 @@ const COMPLETE_HOLD := 2.6
 @onready var chapter_card: Control = $ChapterCard
 @onready var card_num: Label = $ChapterCard/Box/Num
 @onready var card_title: Label = $ChapterCard/Box/Title
+@onready var card_line: Label = $ChapterCard/Box/Line
 @onready var complete_card: Control = $CompleteCard
 @onready var done_title: Label = $CompleteCard/Box/Title
 @onready var done_stats: Label = $CompleteCard/Box/Stats
@@ -74,6 +75,10 @@ func _on_scene_changed() -> void:
 func show_chapter_card(index: int, title: String, delay := 0.35) -> void:
 	card_num.text = "CHAPTER %d" % (index + 1)
 	card_title.text = title
+	# One line of story under the title (Game.CHAPTER_LINES); stays a little longer.
+	card_line.text = Game.chapter_line(index)
+	card_line.visible = not card_line.text.is_empty()
+	var hold := CARD_HOLD + (1.2 if card_line.visible else 0.0)
 	if _card_tween:
 		_card_tween.kill()
 	chapter_card.show()
@@ -84,7 +89,7 @@ func show_chapter_card(index: int, title: String, delay := 0.35) -> void:
 	_card_tween = create_tween().set_parallel()
 	_card_tween.tween_property(chapter_card, "modulate:a", 1.0, CARD_IN).set_delay(delay)
 	_card_tween.tween_property(box, "position:y", base_y, CARD_IN).set_delay(delay).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	_card_tween.chain().tween_interval(CARD_HOLD)
+	_card_tween.chain().tween_interval(hold)
 	_card_tween.chain().tween_property(chapter_card, "modulate:a", 0.0, CARD_OUT)
 	_card_tween.chain().tween_callback(chapter_card.hide)
 
