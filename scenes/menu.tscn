@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/menu.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/background.tscn" id="bg"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="player"]
+[ext_resource type="Texture2D" path="res://assets/ui/u1_logo.png" id="logo"]
 
 [node name="Menu" type="Control"]
 layout_mode = 3
@@ -23,22 +24,20 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -300.0
-offset_top = -200.0
+offset_top = -250.0
 offset_right = 300.0
-offset_bottom = 200.0
+offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
-alignment = 1
 theme_override_constants/separation = 14
 
-[node name="Title" type="Label" parent="Center"]
+[node name="Title" type="TextureRect" parent="Center"]
+texture_filter = 1
+custom_minimum_size = Vector2(600, 150)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.93, 1, 1)
-theme_override_colors/font_outline_color = Color(0.1, 0.3, 0.6, 1)
-theme_override_constants/outline_size = 12
-theme_override_font_sizes/font_size = 72
-text = "STATE SHIFT"
-horizontal_alignment = 1
+texture = ExtResource("logo")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Subtitle" type="Label" parent="Center"]
 layout_mode = 2
@@ -48,7 +47,7 @@ text = "Freeze. Melt. Evaporate. Escape."
 horizontal_alignment = 1
 
 [node name="Spacer" type="Control" parent="Center"]
-custom_minimum_size = Vector2(0, 90)
+custom_minimum_size = Vector2(0, 136)
 layout_mode = 2
 
 [node name="Start" type="Label" parent="Center"]

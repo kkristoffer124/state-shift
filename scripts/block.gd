@@ -10,6 +10,35 @@ enum Kind { WALL, GRATE, BREAKABLE }
 
 const LAYERS := { Kind.WALL: 1, Kind.GRATE: 2, Kind.BREAKABLE: 4 }
 
+const TEX_WALL := preload("res://assets/env/e1a_wall_9s32.png")
+const TEX_GRATE := preload("res://assets/env/e2a_grate_9s3.png")
+const TEX_CRACKED := preload("res://assets/env/e3a_cracked_block_9s8.png")
+const TEX_CRACKS: Array[Texture2D] = [
+	preload("res://assets/env/e3b_crack_1.png"),
+	preload("res://assets/env/e3b_crack_2.png"),
+	preload("res://assets/env/e3b_crack_3.png"),
+]
+const TEX_DECALS: Array[Texture2D] = [
+	preload("res://assets/env/e1c_decal_cable_bundle.png"),
+	preload("res://assets/env/e1c_decal_number_plate.png"),
+	preload("res://assets/env/e1c_decal_pipe_elbow.png"),
+	preload("res://assets/env/e1c_decal_vent_slit.png"),
+	preload("res://assets/env/e1c_decal_warning_stripe.png"),
+]  # e1c_decal_frost_patch is left out: it reads as static noise on plain walls.
+const TEX_SHARDS: Array[Texture2D] = [
+	preload("res://assets/env/e3c_shard_1.png"),
+	preload("res://assets/env/e3c_shard_2.png"),
+	preload("res://assets/env/e3c_shard_3.png"),
+	preload("res://assets/env/e3c_shard_4.png"),
+	preload("res://assets/env/e3c_shard_5.png"),
+	preload("res://assets/env/e3c_shard_6.png"),
+]
+const TEX_DUST := preload("res://assets/vfx/v4_dust_5f.png")          # 5 frames of 96x64
+const TEX_FLASH := preload("res://assets/vfx/v4_impact_flash_2f.png") # 2 frames of 64x32
+
+## Wall area (px^2) per decal; lower = more decals, 0 disables them.
+const DECAL_AREA := 45000.0
+
 @export var kind: Kind = Kind.WALL:
 	set(v):
 		kind = v
@@ -18,10 +47,13 @@ const LAYERS := { Kind.WALL: 1, Kind.GRATE: 2, Kind.BREAKABLE: 4 }
 	set(v):
 		size = v
 		_refresh()
-@export var color := Color("2a3a4c"):
+## Tint multiplied over the art (white = untinted).
+@export var color := Color.WHITE:
 	set(v):
 		color = v
 		queue_redraw()
+
+var _box: StyleBoxTexture
 
 
 func _ready() -> void:
@@ -39,66 +71,142 @@ func _refresh() -> void:
 	if cs and cs.shape is RectangleShape2D:
 		(cs.shape as RectangleShape2D).size = size
 		cs.position = size / 2.0
+	_box = _make_box()
 	queue_redraw()
+
+
+func _make_box() -> StyleBoxTexture:
+	var box := StyleBoxTexture.new()
+	var m := 0.0
+	match kind:
+		Kind.WALL:
+			box.texture = TEX_WALL
+			m = 32.0
+		Kind.GRATE:
+			box.texture = TEX_GRATE
+			m = 3.0
+		Kind.BREAKABLE:
+			box.texture = TEX_CRACKED
+			m = 8.0
+	# Never let the borders overlap on thin pieces.
+	var mx := minf(m, floorf(size.x / 2.0))
+	var my := minf(m, floorf(size.y / 2.0))
+	box.texture_margin_left = mx
+	box.texture_margin_right = mx
+	box.texture_margin_top = my
+	box.texture_margin_bottom = my
+	# TILE (not stretch / tile-fit) keeps every texel 1:1 so pixel art stays crisp.
+	box.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_TILE
+	box.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_TILE
+	return box
 
 
 func shatter(impact_velocity: Vector2) -> void:
 	collision_layer = 0
 	Sfx.play("shatter")
-	var fx := CPUParticles2D.new()
-	fx.position = size / 2.0
-	fx.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-	fx.emission_rect_extents = size / 2.0
-	fx.amount = int(clampf(size.x * size.y / 120.0, 16, 80))
-	fx.one_shot = true
-	fx.explosiveness = 1.0
-	fx.lifetime = 0.9
-	fx.direction = impact_velocity.normalized()
-	fx.spread = 70.0
-	fx.initial_velocity_min = 120.0
-	fx.initial_velocity_max = 380.0
-	fx.gravity = Vector2(0, 900)
-	fx.angular_velocity_min = -400.0
-	fx.angular_velocity_max = 400.0
-	fx.scale_amount_min = 3.0
-	fx.scale_amount_max = 7.0
-	fx.color = Color("8d7a62")
-	get_parent().add_child(fx)
-	fx.global_position = global_position + size / 2.0
-	fx.emitting = true
-	fx.finished.connect(fx.queue_free)
+	var host := get_parent()
+	var origin := global_position
+	var dir := impact_velocity.normalized() if impact_velocity.length() > 1.0 else Vector2.DOWN
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+
+	# Shards: sprites thrown along the impact with simple ballistic motion.
+	var count := int(clampf(size.x * size.y / 300.0, 10, 48))
+	for i in count:
+		var s := Sprite2D.new()
+		s.texture = TEX_SHARDS[rng.randi() % TEX_SHARDS.size()]
+		s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		s.flip_h = rng.randf() < 0.5
+		host.add_child(s)
+		var p0 := origin + Vector2(rng.randf() * size.x, rng.randf() * size.y)
+		s.global_position = p0
+		var v := dir.rotated(rng.randf_range(-1.1, 1.1)) * rng.randf_range(120.0, 360.0)
+		v.y -= rng.randf_range(60.0, 220.0)
+		var life := rng.randf_range(0.6, 1.0)
+		var r0 := rng.randf() * TAU
+		var spin := rng.randf_range(-12.0, 12.0)
+		var tw := s.create_tween().set_parallel()
+		tw.tween_method(func(t: float) -> void:
+			s.global_position = (p0 + v * t + Vector2(0, 900.0) * t * t * 0.5).round()
+			s.rotation = r0 + spin * t, 0.0, life, life)
+		tw.tween_property(s, "modulate:a", 0.0, life * 0.35).set_delay(life * 0.65)
+		tw.chain().tween_callback(s.queue_free)
+
+	# Dust puffs along the slab.
+	var puffs := maxi(1, int(round(size.x / 96.0)))
+	for i in puffs:
+		var x := (i + 0.5) * size.x / puffs
+		_spawn_flipbook(host, TEX_DUST, 5, origin + Vector2(x, size.y / 2.0 - 8.0), 0.45)
+
+	# Impact flash at the centre.
+	_spawn_flipbook(host, TEX_FLASH, 2, origin + size / 2.0, 0.14)
 	queue_free()
 
 
+## Plays a horizontal flipbook strip once at `at`, then frees it.
+func _spawn_flipbook(host: Node, tex: Texture2D, frames: int, at: Vector2, duration: float) -> void:
+	var s := Sprite2D.new()
+	s.texture = tex
+	s.hframes = frames
+	s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	host.add_child(s)
+	s.global_position = at.round()
+	var tw := s.create_tween()
+	tw.tween_property(s, "frame", frames - 1, duration).from(0)
+	tw.tween_interval(duration / frames)
+	tw.tween_callback(s.queue_free)
+
+
 func _draw() -> void:
-	var r := Rect2(Vector2.ZERO, size)
+	if _box == null:
+		_box = _make_box()
+	_box.modulate_color = color
+	draw_style_box(_box, Rect2(Vector2.ZERO, size))
 	match kind:
 		Kind.WALL:
-			draw_rect(r, color)
-			draw_rect(Rect2(0, 0, size.x, 4), color.lightened(0.35))
-			var dots := color.darkened(0.25)
-			for x in range(16, int(size.x), 32):
-				for y in range(16, int(size.y), 32):
-					draw_circle(Vector2(x, y), 1.5, dots)
-			draw_rect(r, color.darkened(0.4), false, 2.0)
-		Kind.GRATE:
-			draw_rect(r, Color(0.55, 0.7, 0.85, 0.12))
-			var bar := Color(0.62, 0.74, 0.86, 0.8)
-			for x in range(4, int(size.x), 10):
-				draw_line(Vector2(x, 0), Vector2(x, size.y), bar, 2.0)
-			draw_rect(r, Color(0.7, 0.8, 0.9, 0.9), false, 3.0)
+			_draw_decals()
 		Kind.BREAKABLE:
-			var base := Color("6e5c48")
-			draw_rect(r, base)
-			draw_rect(Rect2(0, 0, size.x, 4), base.lightened(0.3))
-			var rng := RandomNumberGenerator.new()
-			rng.seed = int(size.x * 13 + size.y * 7)
-			var crack := base.darkened(0.5)
-			for i in maxi(2, int(size.x / 48)):
-				var p := Vector2(rng.randf_range(8, size.x - 8), 0)
-				var pts := PackedVector2Array([p])
-				while p.y < size.y:
-					p += Vector2(rng.randf_range(-10, 10), rng.randf_range(6, 12))
-					pts.append(Vector2(clampf(p.x, 0, size.x), minf(p.y, size.y)))
-				draw_polyline(pts, crack, 2.0)
-			draw_rect(r, base.darkened(0.45), false, 2.0)
+			_draw_cracks()
+
+
+func _seed() -> int:
+	return (int(position.x) * 73856093) ^ (int(position.y) * 19349663) ^ (int(size.x) * 83492791) ^ int(size.y)
+
+
+func _draw_cracks() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = _seed()
+	var cw := 64.0
+	var ch := 32.0
+	var cols := maxi(1, int(size.x / cw))
+	var rows := maxi(1, int(size.y / ch))
+	# Centre the crack grid inside the slab so leftover space is split evenly.
+	var off := ((size - Vector2(cols * cw, rows * ch)) / 2.0).floor()
+	for row in rows:
+		for col in cols:
+			if rng.randf() < 0.25:
+				continue
+			var tex := TEX_CRACKS[rng.randi() % TEX_CRACKS.size()]
+			var p := off + Vector2(col * cw, row * ch)
+			if rng.randf() < 0.5:
+				# Mirrored copy for variety.
+				draw_set_transform(p + Vector2(cw, 0), 0.0, Vector2(-1, 1))
+				draw_texture(tex, Vector2.ZERO, color)
+				draw_set_transform(Vector2.ZERO)
+			else:
+				draw_texture(tex, p, color)
+
+
+func _draw_decals() -> void:
+	if DECAL_AREA <= 0.0 or size.x < 64 or size.y < 64:
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = _seed()
+	var n := int(size.x * size.y / DECAL_AREA)
+	for i in n:
+		var tex := TEX_DECALS[rng.randi() % TEX_DECALS.size()]
+		var room := size - tex.get_size() - Vector2(16, 16)
+		if room.x < 0 or room.y < 0:
+			continue
+		var p := (Vector2(8, 8) + Vector2(rng.randf() * room.x, rng.randf() * room.y)).floor()
+		draw_texture(tex, p, color)

@@ -11,6 +11,27 @@ signal state_changed(new_state: int)
 enum State { ICE, WATER, STEAM }
 
 const STATE_COLORS := [Color(0.72, 0.9, 1.0), Color(0.25, 0.58, 1.0), Color(0.95, 0.97, 1.0)]
+const TEX_ICE := preload("res://assets/player/p1a_ice_body.png")
+const TEX_ICE_CRACKS := [
+	preload("res://assets/player/p1b_ice_crack_light.png"),
+	preload("res://assets/player/p1b_ice_crack_medium.png"),
+	preload("res://assets/player/p1b_ice_crack_heavy.png"),
+]
+const TEX_FROST_RIM := preload("res://assets/player/p1c_ice_frost_rim.png")
+const TEX_CORE_GLOW := preload("res://assets/player/p3d_core_glow.png")
+const TEX_EYE_WHITE := preload("res://assets/player/p4a_eye_white.png")
+const TEX_PUPIL := preload("res://assets/player/p4b_pupil.png")
+const TEX_CATCHLIGHT := preload("res://assets/player/p4c_catchlight.png")
+const TEX_BLINK := [preload("res://assets/player/p4d_blink_1.png"), preload("res://assets/player/p4d_blink_2.png")]
+const TEX_EYES := {
+	"blocked": preload("res://assets/player/p4e_eyes_blocked.png"),
+	"determined": preload("res://assets/player/p4e_eyes_determined.png"),
+	"dizzy": preload("res://assets/player/p4e_eyes_dizzy.png"),
+	"happy": preload("res://assets/player/p4e_eyes_happy.png"),
+	"scared": preload("res://assets/player/p4e_eyes_scared.png"),
+}
+const TEX_BURST := preload("res://assets/vfx/v1_shift_burst_5f.png")
+
 const MASK_ICE := 1 | 2 | 4   # world + grates + breakables
 const MASK_FLUID := 1 | 4     # world + breakables
 
@@ -60,6 +81,8 @@ var _shake := 0.0
 var _was_on_floor := false
 var _blocked_flash := 0.0
 var _locked := false
+var _crack := 0.0 # ice crack overlay strength, 0..3
+var _death_face := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -108,6 +131,7 @@ func try_shift(target: int, forced := false) -> bool:
 		velocity.y = minf(velocity.y, -80.0)
 	burst.color = STATE_COLORS[state]
 	burst.restart()
+	_spawn_burst_ring(STATE_COLORS[state])
 	_squash = Vector2(1.45, 0.6) if heating else Vector2(0.65, 1.4)
 	_shake = maxf(_shake, 3.0)
 	Sfx.play("heat" if heating else "cool")
@@ -170,6 +194,8 @@ func _physics_process(delta: float) -> void:
 	var dir := Input.get_axis("move_left", "move_right")
 	if dir != 0.0:
 		_look = signf(dir)
+	if state != State.WATER:
+		_coyote = 0.0 # no mid-air jump after melting
 	match state:
 		State.ICE: _move_ice(dir, delta)
 		State.WATER: _move_water(dir, delta)
@@ -202,7 +228,10 @@ func _handle_zones(delta: float) -> void:
 			Zone.Kind.GOAL:
 				win()
 				return
+	var was_locked := _locked
 	_locked = forced != -1
+	if was_locked != _locked and Hud.has_method("set_locked"):
+		Hud.call("set_locked", _locked)
 	if _locked and state != forced:
 		try_shift(forced, true)
 
@@ -229,6 +258,7 @@ func _move_water(dir: float, delta: float) -> void:
 		_jump_buffer = 0.0
 		_coyote = 0.0
 		_squash = Vector2(0.7, 1.35)
+		fluid.on_jump()
 		Sfx.play("jump")
 	if Input.is_action_just_released("jump") and velocity.y < 0.0:
 		velocity.y *= 0.5
@@ -250,6 +280,7 @@ func _after_move(pre: Vector2) -> void:
 				block.shatter(pre)
 				velocity = pre * 0.75
 				_shake = 12.0
+				_crack = 3.0
 	var on_floor := is_on_floor()
 	if on_floor and not _was_on_floor and pre.y > 200.0:
 		if state == State.ICE:
@@ -257,8 +288,9 @@ func _after_move(pre: Vector2) -> void:
 			Sfx.play("land_ice")
 			if pre.y > 600.0:
 				_shake = maxf(_shake, 6.0)
+				_crack = maxf(_crack, clampf((pre.y - 500.0) / 200.0, 1.0, 3.0))
 		else:
-			_squash = Vector2(1.35, 0.7)
+			fluid.on_land(pre.y)
 			Sfx.play("land")
 	_was_on_floor = on_floor
 
@@ -267,6 +299,7 @@ func die() -> void:
 	if dead or won:
 		return
 	dead = true
+	_death_face = fluid.visual_center - global_position if state != State.ICE else Vector2.ZERO
 	fluid.splatter(velocity)
 	velocity = Vector2.ZERO
 	burst.color = Color(1.0, 0.45, 0.45)
@@ -289,6 +322,19 @@ func win() -> void:
 
 # --- Visuals ----------------------------------------------------------------
 
+func _spawn_burst_ring(col: Color) -> void:
+	var ring := Sprite2D.new()
+	ring.texture = TEX_BURST
+	ring.hframes = 5
+	ring.modulate = col
+	ring.z_index = 3
+	get_parent().add_child(ring)
+	ring.global_position = fluid.visual_center if state != State.ICE else global_position
+	var tw := ring.create_tween()
+	tw.tween_property(ring, "frame", 4, 0.25)
+	tw.tween_callback(ring.queue_free)
+
+
 func _process(delta: float) -> void:
 	_t += delta
 	if not Engine.is_editor_hint():
@@ -296,6 +342,7 @@ func _process(delta: float) -> void:
 		_shake = maxf(_shake - 30.0 * delta, 0.0)
 		camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _shake
 		_blocked_flash = maxf(_blocked_flash - delta, 0.0)
+		_crack = maxf(_crack - delta * 1.5, 0.0)
 		if won:
 			scale = scale.lerp(Vector2.ZERO, minf(6.0 * delta, 1.0))
 	queue_redraw()
@@ -303,8 +350,12 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	if dead:
+		# Dizzy eyes hang where the body burst, then the level reloads.
+		draw_set_transform(_death_face + Vector2(0, sin(_t * 8.0) * 1.5))
+		_draw_eye_set(TEX_EYES.dizzy)
+		draw_set_transform(Vector2.ZERO)
 		return
-	var jitter := sin(_t * 70.0) * 3.0 if _blocked_flash > 0.0 else 0.0
+	var jitter := sin(_t * 70.0) * 2.0 if _blocked_flash > 0.0 else 0.0
 	var tilt := clampf(velocity.x * 0.0005, -0.15, 0.15) if state == State.ICE else 0.0
 	var live_fluid := not Engine.is_editor_hint() and state != State.ICE
 	# Water/steam bodies are simulated by FluidBody; the face rides on their centre.
@@ -316,34 +367,25 @@ func _draw() -> void:
 	match state:
 		State.ICE: _draw_ice()
 		State.WATER:
-			if live_fluid: _draw_water_gloss()
-			else: _draw_water()
+			if not live_fluid: _draw_water()
 		State.STEAM:
 			if live_fluid: _draw_steam_core()
 			else: _draw_steam()
 	_draw_eyes()
-	if _locked:
-		draw_arc(Vector2.ZERO, 20.0, 0, TAU, 24, Color(1, 1, 1, 0.35 + sin(_t * 10.0) * 0.2), 1.5)
 	draw_set_transform(Vector2.ZERO)
 
 
-func _draw_water_gloss() -> void:
-	draw_circle(Vector2(-5, -7), 2.6, Color(1, 1, 1, 0.75))
-	draw_circle(Vector2(-1.5, -9), 1.2, Color(1, 1, 1, 0.5))
-
-
 func _draw_steam_core() -> void:
-	draw_circle(Vector2.ZERO, 11.0, Color(1, 1, 1, 0.25))
-	draw_circle(Vector2.ZERO, 8.0, Color(1, 1, 1, 0.45))
+	draw_texture(TEX_CORE_GLOW, -TEX_CORE_GLOW.get_size() * 0.5, Color(1, 1, 1, 0.8))
 
 
 func _draw_ice() -> void:
-	var r := Rect2(-15, -15, 30, 30)
-	draw_rect(r, Color(0.72, 0.9, 1.0, 0.95))
-	draw_rect(Rect2(-15, -15, 30, 7), Color(0.9, 0.98, 1.0, 0.9))
-	draw_line(Vector2(-10, -8), Vector2(-3, -11), Color.WHITE, 2.0)
-	draw_polyline(PackedVector2Array([Vector2(5, -15), Vector2(8, -6), Vector2(4, 1), Vector2(9, 8)]), Color(0.5, 0.75, 0.95), 1.0)
-	draw_rect(r, Color(0.35, 0.62, 0.88), false, 2.0)
+	draw_texture(TEX_ICE, Vector2(-15, -15))
+	if _crack > 0.05:
+		var level := clampi(ceili(_crack) - 1, 0, 2)
+		draw_texture(TEX_ICE_CRACKS[level], Vector2(-15, -15), Color(1, 1, 1, clampf(_crack - level, 0.3, 1.0)))
+	if _locked:
+		draw_texture(TEX_FROST_RIM, Vector2(-15, -15), Color(1, 1, 1, 0.7 + sin(_t * 6.0) * 0.3))
 
 
 ## Editor-only preview shapes (in game the FluidBody simulation draws these).
@@ -352,33 +394,58 @@ func _draw_water() -> void:
 	var n := 28
 	for i in n:
 		var a := TAU * i / n
-		var rr := 12.0 + sin(_t * 7.0 + i * 1.3) * 0.8 + sin(_t * 4.3 + i * 2.1) * 0.6
-		var p := Vector2(cos(a), sin(a)) * rr
+		var p := Vector2(cos(a), sin(a)) * 12.0
 		if p.y > 10.0:
 			p.y = 10.0 + (p.y - 10.0) * 0.3
 		pts.append(p)
-	draw_colored_polygon(pts, Color(0.22, 0.55, 1.0, 0.92))
-	var outline := pts.duplicate()
-	outline.append(pts[0])
-	draw_polyline(outline, Color(0.12, 0.35, 0.8), 2.0)
-	draw_circle(Vector2(-5, -6), 3.0, Color(1, 1, 1, 0.7))
+	draw_colored_polygon(pts, Color(0.25, 0.55, 1.0, 0.95))
 
 
 func _draw_steam() -> void:
 	for i in 6:
-		var a := _t * 1.5 + i * TAU / 6.0
-		var p := Vector2(cos(a) * 8.0, sin(a * 1.3) * 5.0)
-		draw_circle(p, 8.0 + sin(_t * 3.0 + i) * 1.5, Color(0.92, 0.95, 1.0, 0.5))
+		var a := i * TAU / 6.0
+		draw_circle(Vector2(cos(a) * 8.0, sin(a * 1.3) * 5.0), 8.0, Color(0.92, 0.95, 1.0, 0.5))
 	draw_circle(Vector2.ZERO, 9.0, Color(1, 1, 1, 0.75))
 
 
+func _expression() -> String:
+	if won:
+		return "happy"
+	if _blocked_flash > 0.0:
+		return "blocked"
+	if _locked:
+		return "determined"
+	if velocity.y > 650.0 or _near_spikes():
+		return "scared"
+	return ""
+
+
+func _near_spikes() -> bool:
+	if Engine.is_editor_hint() or state == State.ICE:
+		return false
+	for area in sensor.get_overlapping_areas():
+		if area is Zone and area.kind == Zone.Kind.SPIKES:
+			return true
+	return false
+
+
+func _draw_eye_set(tex: Texture2D) -> void:
+	draw_texture(tex, (-tex.get_size() * 0.5 + Vector2(0, -2)).round())
+
+
 func _draw_eyes() -> void:
-	var blink := fmod(_t, 3.7) < 0.12
-	var look_y := clampf(velocity.y * 0.004, -1.5, 1.5)
+	var expr := _expression()
+	if expr != "":
+		_draw_eye_set(TEX_EYES[expr])
+		return
+	var cycle := fmod(_t, 3.7)
+	if cycle < 0.14:
+		_draw_eye_set(TEX_BLINK[0 if cycle < 0.05 or cycle > 0.10 else 1])
+		return
+	var look := Vector2(_look, clampf(velocity.y * 0.003, -1.0, 1.0)).round()
 	for ex in [-5.0, 5.0]:
-		var e := Vector2(ex + _look * 2.0, -2.0)
-		if blink:
-			draw_line(e - Vector2(3, 0), e + Vector2(3, 0), Color(0.05, 0.08, 0.15), 1.5)
-		else:
-			draw_circle(e, 3.2, Color.WHITE)
-			draw_circle(e + Vector2(_look * 1.2, 0.5 + look_y), 1.7, Color(0.05, 0.08, 0.15))
+		var e := Vector2(ex + _look, -2.0)
+		draw_texture(TEX_EYE_WHITE, (e - Vector2(3.5, 3.5)).round())
+		var pupil := (e - Vector2(1.5, 1.5) + look).round()
+		draw_texture(TEX_PUPIL, pupil)
+		draw_texture(TEX_CATCHLIGHT, pupil + Vector2(1, 0))

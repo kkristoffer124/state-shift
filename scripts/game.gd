@@ -11,6 +11,13 @@ const LEVELS: Array[String] = [
 	"res://levels/level_03.tscn",
 	"res://levels/level_04.tscn",
 	"res://levels/level_05.tscn",
+	"res://levels/level_06.tscn",
+	"res://levels/level_07.tscn",
+	"res://levels/level_08.tscn",
+	"res://levels/level_09.tscn",
+	"res://levels/level_10.tscn",
+	"res://levels/level_11.tscn",
+	"res://levels/level_12.tscn",
 ]
 const END_SCENE := "res://scenes/end.tscn"
 const MENU_SCENE := "res://scenes/menu.tscn"

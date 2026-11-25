@@ -19,7 +19,8 @@ void fragment() {
 	float depth = clamp((a - threshold) / (1.0 - threshold), 0.0, 1.0);
 	vec3 col;
 	if (use_ramp) {
-		col = texture(ramp, vec2(depth, 0.5)).rgb;
+		// The ramp is transparent for its first third; skip that part.
+		col = texture(ramp, vec2(mix(0.36, 0.86, depth), 0.5)).rgb;
 	} else {
 		col = mix(rim_color.rgb, body_color.rgb, smoothstep(0.0, 0.18, depth));
 		col = mix(col, core_color.rgb, smoothstep(0.55, 1.0, depth) * 0.6);

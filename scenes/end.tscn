@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/menu.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/background.tscn" id="bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/u1_logo.png" id="logo"]
 
 [node name="End" type="Control"]
 layout_mode = 3
@@ -30,6 +31,14 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 theme_override_constants/separation = 16
+
+[node name="Logo" type="TextureRect" parent="Center"]
+texture_filter = 1
+custom_minimum_size = Vector2(300, 75)
+layout_mode = 2
+texture = ExtResource("logo")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Title" type="Label" parent="Center"]
 layout_mode = 2
