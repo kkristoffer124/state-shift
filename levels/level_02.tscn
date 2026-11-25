@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://scripts/level.gd" id="level"]
 [ext_resource type="PackedScene" path="res://scenes/background.tscn" id="bg"]
+[ext_resource type="PackedScene" path="res://levels/dressing/level_02_dressing.tscn" id="dressing"]
+[ext_resource type="PackedScene" path="res://levels/interactive/level_02_interactive.tscn" id="interactive"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="player"]
 [ext_resource type="PackedScene" path="res://scenes/props/wall.tscn" id="wall"]
 [ext_resource type="PackedScene" path="res://scenes/props/grate.tscn" id="grate"]
@@ -18,9 +20,13 @@ level_name = "2 - Freeze"
 
 [node name="Background" parent="." instance=ExtResource("bg")]
 
+[node name="Dressing" parent="." instance=ExtResource("dressing")]
+
 [node name="Blocks" type="Node2D" parent="."]
 
 [node name="Zones" type="Node2D" parent="."]
+
+[node name="Interactive" parent="." instance=ExtResource("interactive")]
 
 [node name="Hints" type="Node2D" parent="."]
 
