@@ -4,6 +4,8 @@ extends Node2D
 ## Camera limits are computed from the Blocks' bounds.
 
 @export var level_name := "Level"
+## Camera zoom for this room (1 = native pixel scale, whole 960x540 room visible).
+@export var room_zoom := 1.0
 ## Environment art set (assets/env_<theme>/) used by Blocks, Zones and the Background.
 @export_enum("lab", "cryo", "boiler", "sewer", "rooftop") var theme := "lab":
 	set(v):
@@ -25,6 +27,10 @@ func _ready() -> void:
 	cam.limit_top = int(bounds.position.y)
 	cam.limit_right = int(bounds.end.x)
 	cam.limit_bottom = int(bounds.end.y)
+	# Rooms are built at the art's native scale (one screen = 960x540), so the
+	# camera shows them 1:1 like the tileset mock-ups; bigger rooms scroll.
+	player.zoom_override = room_zoom
+	cam.zoom = Vector2(room_zoom, room_zoom)
 	cam.reset_smoothing()
 	# Pixel fluid simulation for the whole level (free water/steam pixels).
 	var fluid := FluidWorld.new()

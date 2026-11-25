@@ -1,0 +1,203 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/anim/water/p2_water_idle_8f.png" id="t0"]
+[ext_resource type="Texture2D" path="res://assets/anim/water/p2_water_move_8f.png" id="t1"]
+[ext_resource type="Texture2D" path="res://assets/anim/water/p2_water_jump_7f.png" id="t2"]
+[ext_resource type="Texture2D" path="res://assets/anim/water/p2_water_land_7f.png" id="t3"]
+[ext_resource type="Texture2D" path="res://assets/anim/water/p2_water_grate_12f.png" id="t4"]
+
+[sub_resource type="AtlasTexture" id="idle_0"]
+atlas = ExtResource("t0")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="idle_1"]
+atlas = ExtResource("t0")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="idle_2"]
+atlas = ExtResource("t0")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="idle_3"]
+atlas = ExtResource("t0")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="idle_4"]
+atlas = ExtResource("t0")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="idle_5"]
+atlas = ExtResource("t0")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="idle_6"]
+atlas = ExtResource("t0")
+region = Rect2(384, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="idle_7"]
+atlas = ExtResource("t0")
+region = Rect2(448, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="move_0"]
+atlas = ExtResource("t1")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="move_1"]
+atlas = ExtResource("t1")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="move_2"]
+atlas = ExtResource("t1")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="move_3"]
+atlas = ExtResource("t1")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="move_4"]
+atlas = ExtResource("t1")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="move_5"]
+atlas = ExtResource("t1")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="move_6"]
+atlas = ExtResource("t1")
+region = Rect2(384, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="move_7"]
+atlas = ExtResource("t1")
+region = Rect2(448, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="jump_0"]
+atlas = ExtResource("t2")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="jump_1"]
+atlas = ExtResource("t2")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="jump_2"]
+atlas = ExtResource("t2")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="jump_3"]
+atlas = ExtResource("t2")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="jump_4"]
+atlas = ExtResource("t2")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="jump_5"]
+atlas = ExtResource("t2")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="jump_6"]
+atlas = ExtResource("t2")
+region = Rect2(384, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="land_0"]
+atlas = ExtResource("t3")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="land_1"]
+atlas = ExtResource("t3")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="land_2"]
+atlas = ExtResource("t3")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="land_3"]
+atlas = ExtResource("t3")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="land_4"]
+atlas = ExtResource("t3")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="land_5"]
+atlas = ExtResource("t3")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="land_6"]
+atlas = ExtResource("t3")
+region = Rect2(384, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="grate_0"]
+atlas = ExtResource("t4")
+region = Rect2(0, 0, 64, 92)
+
+[sub_resource type="AtlasTexture" id="grate_1"]
+atlas = ExtResource("t4")
+region = Rect2(64, 0, 64, 92)
+
+[sub_resource type="AtlasTexture" id="grate_2"]
+atlas = ExtResource("t4")
+region = Rect2(128, 0, 64, 92)
+
+[sub_resource type="AtlasTexture" id="grate_3"]
+atlas = ExtResource("t4")
+region = Rect2(192, 0, 64, 92)
+
+[sub_resource type="AtlasTexture" id="grate_4"]
+atlas = ExtResource("t4")
+region = Rect2(256, 0, 64, 92)
+
+[sub_resource type="AtlasTexture" id="grate_5"]
+atlas = ExtResource("t4")
+region = Rect2(320, 0, 64, 92)
+
+[sub_resource type="AtlasTexture" id="grate_6"]
+atlas = ExtResource("t4")
+region = Rect2(384, 0, 64, 92)
+
+[sub_resource type="AtlasTexture" id="grate_7"]
+atlas = ExtResource("t4")
+region = Rect2(448, 0, 64, 92)
+
+[sub_resource type="AtlasTexture" id="grate_8"]
+atlas = ExtResource("t4")
+region = Rect2(512, 0, 64, 92)
+
+[sub_resource type="AtlasTexture" id="grate_9"]
+atlas = ExtResource("t4")
+region = Rect2(576, 0, 64, 92)
+
+[sub_resource type="AtlasTexture" id="grate_10"]
+atlas = ExtResource("t4")
+region = Rect2(640, 0, 64, 92)
+
+[sub_resource type="AtlasTexture" id="grate_11"]
+atlas = ExtResource("t4")
+region = Rect2(704, 0, 64, 92)
+
+[resource]
+animations = [{
+"frames": [{"duration": 1.0, "texture": SubResource("idle_0")}, {"duration": 1.0, "texture": SubResource("idle_1")}, {"duration": 1.0, "texture": SubResource("idle_2")}, {"duration": 1.0, "texture": SubResource("idle_3")}, {"duration": 1.0, "texture": SubResource("idle_4")}, {"duration": 1.0, "texture": SubResource("idle_5")}, {"duration": 1.0, "texture": SubResource("idle_6")}, {"duration": 1.0, "texture": SubResource("idle_7")}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("move_0")}, {"duration": 1.0, "texture": SubResource("move_1")}, {"duration": 1.0, "texture": SubResource("move_2")}, {"duration": 1.0, "texture": SubResource("move_3")}, {"duration": 1.0, "texture": SubResource("move_4")}, {"duration": 1.0, "texture": SubResource("move_5")}, {"duration": 1.0, "texture": SubResource("move_6")}, {"duration": 1.0, "texture": SubResource("move_7")}],
+"loop": true,
+"name": &"move",
+"speed": 12.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("jump_0")}, {"duration": 1.0, "texture": SubResource("jump_1")}, {"duration": 1.0, "texture": SubResource("jump_2")}, {"duration": 1.0, "texture": SubResource("jump_3")}, {"duration": 1.0, "texture": SubResource("jump_4")}, {"duration": 1.0, "texture": SubResource("jump_5")}, {"duration": 1.0, "texture": SubResource("jump_6")}],
+"loop": false,
+"name": &"jump",
+"speed": 16.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("land_0")}, {"duration": 1.0, "texture": SubResource("land_1")}, {"duration": 1.0, "texture": SubResource("land_2")}, {"duration": 1.0, "texture": SubResource("land_3")}, {"duration": 1.0, "texture": SubResource("land_4")}, {"duration": 1.0, "texture": SubResource("land_5")}, {"duration": 1.0, "texture": SubResource("land_6")}],
+"loop": false,
+"name": &"land",
+"speed": 16.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("grate_0")}, {"duration": 1.0, "texture": SubResource("grate_1")}, {"duration": 1.0, "texture": SubResource("grate_2")}, {"duration": 1.0, "texture": SubResource("grate_3")}, {"duration": 1.0, "texture": SubResource("grate_4")}, {"duration": 1.0, "texture": SubResource("grate_5")}, {"duration": 1.0, "texture": SubResource("grate_6")}, {"duration": 1.0, "texture": SubResource("grate_7")}, {"duration": 1.0, "texture": SubResource("grate_8")}, {"duration": 1.0, "texture": SubResource("grate_9")}, {"duration": 1.0, "texture": SubResource("grate_10")}, {"duration": 1.0, "texture": SubResource("grate_11")}],
+"loop": false,
+"name": &"grate",
+"speed": 12.0
+}]

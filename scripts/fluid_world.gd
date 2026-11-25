@@ -160,6 +160,21 @@ func is_blocked_static(pos: Vector2) -> bool:
 	return solid[c.y * w + c.x] == 1
 
 
+## Top y of the first grate cell in the column at x between y0 and y1 (NAN if none).
+func grate_top_near(x: float, y0: float, y1: float) -> float:
+	var a := _cell(Vector2(x, y0))
+	var b := _cell(Vector2(x, y1))
+	if a.x < 0 or a.x >= w:
+		return NAN
+	for y in range(maxi(a.y, 0), mini(b.y + 1, h)):
+		if solid[y * w + a.x] == 2:
+			var top := y
+			while top > 0 and solid[(top - 1) * w + a.x] == 2:
+				top -= 1
+			return origin.y + top * CELL
+	return NAN
+
+
 ## Removes up to max_count free (non-frozen) water pixels within radius and returns
 ## their positions so the blob can take them back.
 func absorb_water(center: Vector2, radius: float, max_count: int) -> PackedVector2Array:

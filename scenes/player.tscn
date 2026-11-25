@@ -2,6 +2,12 @@
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/fluid_body.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/player_visual.gd" id="vis"]
+[ext_resource type="SpriteFrames" path="res://assets/anim/ice_frames.tres" id="ice_frames"]
+[ext_resource type="SpriteFrames" path="res://assets/anim/water_frames.tres" id="water_frames"]
+[ext_resource type="Texture2D" path="res://assets/anim/ice_trails/v11_ice_skid_trail_8f.png" id="skid"]
+[ext_resource type="Texture2D" path="res://assets/anim/ice_trails/v12_ice_speed_lines_4f.png" id="speed"]
+[ext_resource type="Texture2D" path="res://assets/anim/ice_trails/v13_ice_fall_trail_4f.png" id="falltrail"]
 [ext_resource type="Texture2D" path="res://assets/vfx/v1_sparkle.png" id="t_spark"]
 
 [sub_resource type="CircleShape2D" id="Shape_body"]
@@ -26,6 +32,37 @@ script = ExtResource("1")
 z_index = 5
 z_as_relative = false
 script = ExtResource("2")
+water_pixels = 0
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("vis")
+
+[node name="FallTrail" type="Sprite2D" parent="Visual"]
+visible = false
+texture = ExtResource("falltrail")
+hframes = 4
+
+[node name="SpeedLines" type="Sprite2D" parent="Visual"]
+visible = false
+texture = ExtResource("speed")
+hframes = 4
+
+[node name="SkidTrail" type="Sprite2D" parent="Visual"]
+visible = false
+texture = ExtResource("skid")
+hframes = 8
+
+[node name="Ice" type="AnimatedSprite2D" parent="Visual"]
+position = Vector2(0, -3)
+sprite_frames = ExtResource("ice_frames")
+animation = &"idle"
+
+[node name="Water" type="AnimatedSprite2D" parent="Visual"]
+position = Vector2(0, -17)
+sprite_frames = ExtResource("water_frames")
+animation = &"idle"
+
+[node name="Face" type="Node2D" parent="Visual"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("Shape_body")

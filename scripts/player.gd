@@ -67,8 +67,11 @@ const MASK_FLUID := 1 | 4     # world + breakables
 @onready var camera: Camera2D = $Camera2D
 @onready var burst: CPUParticles2D = $ShiftBurst
 @onready var fluid: FluidBody = $FluidBody
+@onready var visual: PlayerVisual = $Visual
 
 var dead := false
+## Set by the level: fixed room zoom (ignores the Settings zoom option).
+var zoom_override := 0.0
 var won := false
 
 var _shapes := {}
@@ -110,6 +113,9 @@ func _ready() -> void:
 
 ## Camera zoom / screen shake come from the Settings autoload when it exists.
 func _apply_settings() -> void:
+	if zoom_override > 0.0:
+		camera.zoom = Vector2(zoom_override, zoom_override)
+		return
 	var settings := get_node_or_null("/root/Settings")
 	if settings == null:
 		return
@@ -273,6 +279,7 @@ func _move_water(dir: float, delta: float) -> void:
 		_coyote = 0.0
 		_squash = Vector2(0.7, 1.35)
 		fluid.on_jump()
+		visual.on_jump()
 		Sfx.play("jump")
 	if Input.is_action_just_released("jump") and velocity.y < 0.0:
 		velocity.y *= 0.5
@@ -306,6 +313,7 @@ func _after_move(pre: Vector2) -> void:
 		else:
 			fluid.on_land(pre.y)
 			Sfx.play("land")
+		visual.on_land(pre.y)
 	_was_on_floor = on_floor
 
 
@@ -367,30 +375,7 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	if dead:
-		# Dizzy eyes hang where the body burst, then the level reloads.
-		draw_set_transform(_death_face + Vector2(0, sin(_t * 8.0) * 1.5))
-		_draw_eye_set(TEX_EYES.dizzy)
-		draw_set_transform(Vector2.ZERO)
-		return
-	var jitter := sin(_t * 70.0) * 2.0 if _blocked_flash > 0.0 else 0.0
-	var tilt := clampf(velocity.x * 0.0005, -0.15, 0.15) if state == State.ICE else 0.0
-	var live_fluid := not Engine.is_editor_hint() and state != State.ICE
-	# Water/steam bodies are simulated by FluidBody; the face rides on their centre.
-	var face := Vector2.ZERO
-	if live_fluid:
-		face = (fluid.visual_center - global_position) / maxf(global_scale.x, 0.001)
-	var squash := _squash if state == State.ICE else Vector2.ONE
-	draw_set_transform(face + Vector2(jitter, 0), tilt, squash)
-	match state:
-		State.ICE: _draw_ice()
-		State.WATER:
-			if not live_fluid: _draw_water()
-		State.STEAM:
-			if live_fluid: _draw_steam_core()
-			else: _draw_steam()
-	_draw_eyes()
-	draw_set_transform(Vector2.ZERO)
+	pass # drawn by the Visual child (scripts/player_visual.gd)
 
 
 func _draw_steam_core() -> void:
@@ -467,3 +452,26 @@ func _draw_eyes() -> void:
 		var pupil := (e - Vector2(1.5, 1.5) + look).round()
 		draw_texture(TEX_PUPIL, pupil)
 		draw_texture(TEX_CATCHLIGHT, pupil + Vector2(1, 0))
+
+
+## Same as the eye drawing above, onto another CanvasItem (the Visual's Face).
+func _draw_eye_set_on(c: CanvasItem, tex: Texture2D) -> void:
+	c.draw_texture(tex, (-tex.get_size() * 0.5 + Vector2(0, -2)).round())
+
+
+func _draw_eyes_on(c: CanvasItem) -> void:
+	var expr := _expression()
+	if expr != "":
+		_draw_eye_set_on(c, TEX_EYES[expr])
+		return
+	var cycle := fmod(_t, 3.7)
+	if cycle < 0.14:
+		_draw_eye_set_on(c, TEX_BLINK[0 if cycle < 0.05 or cycle > 0.10 else 1])
+		return
+	var look := Vector2(_look, clampf(velocity.y * 0.003, -1.0, 1.0)).round()
+	for ex in [-5.0, 5.0]:
+		var e := Vector2(ex + _look, -2.0)
+		c.draw_texture(TEX_EYE_WHITE, (e - Vector2(3.5, 3.5)).round())
+		var pupil := (e - Vector2(1.5, 1.5) + look).round()
+		c.draw_texture(TEX_PUPIL, pupil)
+		c.draw_texture(TEX_CATCHLIGHT, pupil + Vector2(1, 0))

@@ -134,6 +134,15 @@ func current_points() -> PackedVector2Array:
 func on_land(impact: float) -> void:
 	if not water_active:
 		return
+	if _pos.is_empty():
+		# Animated-sprite water: splash real pixels out of the blob's feet.
+		if impact > 240.0:
+			var n := int(clampf((impact - 200.0) / 30.0, 3, 16))
+			for k in n:
+				var side := -1.0 if k % 2 == 0 else 1.0
+				_spray(center + Vector2(side * randf_range(4, 12), 8) * _scale,
+					Vector2(side * randf_range(60, 200), -randf_range(80, 120 + impact * 0.35)) * _scale)
+		return
 	_squash_v += clampf(impact * 0.012, 0.0, 9.0)
 	if impact < 240.0:
 		return
@@ -154,6 +163,10 @@ func on_land(impact: float) -> void:
 func on_jump() -> void:
 	if not water_active:
 		return
+	if _pos.is_empty():
+		for k in 3:
+			_spray(center + Vector2(randf_range(-8, 8), 9) * _scale, Vector2(randf_range(-90, 90), randf_range(-30, 40)) * _scale)
+		return
 	_squash_v -= 7.0
 	var n := 0
 	for i in _pos.size():
@@ -164,7 +177,18 @@ func on_jump() -> void:
 			n += 1
 
 
+func _spray(at: Vector2, v: Vector2) -> void:
+	var world := _get_world()
+	if world:
+		world.spawn_water(at, v)
+
+
 func splatter(impact: Vector2) -> void:
+	if water_active and _pos.is_empty():
+		for k in 34:
+			var a := randf() * TAU
+			_spray(center + Vector2(cos(a), sin(a)) * randf_range(0, 10) * _scale,
+				impact * 0.3 + (Vector2(cos(a), sin(a) - 0.8) * randf_range(120, 300)) * _scale)
 	for i in _pos.size():
 		if _alive[i] == 1:
 			var out := (_pos[i] - center).normalized()
