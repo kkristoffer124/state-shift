@@ -23,7 +23,7 @@ func _ready() -> void:
 	# Pixel fluid simulation for the whole level (free water/steam pixels).
 	var fluid := FluidWorld.new()
 	fluid.name = "FluidWorld"
-	fluid.z_index = 1
+	fluid.z_index = 4
 	add_child(fluid)
 	var blocks: Array = $Blocks.get_children()
 	var zones: Array = $Zones.get_children() if has_node("Zones") else []

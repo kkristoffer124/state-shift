@@ -10,9 +10,9 @@ extends Node2D
 ## Gameplay collision still uses the Player's own shape.
 
 @export_group("Water")
-@export var water_pixels := 118
+@export var water_pixels := 90
 @export var water_spring := 900.0
-@export var water_damping := 10.0
+@export var water_damping := 16.0
 ## How far (px) a pixel can be pulled from home before it breaks off.
 @export var water_break_distance := 14.0
 @export var absorb_radius := 15.0
@@ -257,12 +257,13 @@ func _step(delta: float, k: float, damp: float, grav: float, break_dist: float) 
 			else:
 				next = p
 				v = Vector2.ZERO
-		# Left behind (stuck on a ledge, flung by a fast move): break off.
-		if next.distance_to(target) > break_dist * _scale * (2.5 if steam_active else 1.0):
+		# Steam sheds wisps when a puff lags far behind; water never tears on its
+		# own (splashes come from landings/jumps), it just snaps back if stuck.
+		if steam_active and next.distance_to(target) > break_dist * _scale * 2.0:
 			_pos[i] = next
 			_release(i, v)
 			continue
-		if next.distance_to(center) > 70.0 * _scale:
+		if next.distance_to(target) > 36.0 * _scale:
 			next = target
 			v = center_velocity
 		_pos[i] = next
@@ -315,65 +316,46 @@ func _mass_center() -> Vector2:
 # --- Drawing (world space, pixel grid) -----------------------------------------
 
 func _draw() -> void:
-	if not (water_active or steam_active) or _pos.is_empty():
+	if not (water_active or steam_active) or _pos.is_empty() or alpha <= 0.0:
 		return
-	var cs := CELL * _scale
-	# Pack pixels onto the grid: if a cell is taken, use the nearest free one,
-	# so the body reads as solid liquid instead of a sieve.
-	var grid := {}
-	for i in _pos.size():
-		if _alive[i] == 1:
-			var k := Vector2i((_pos[i] / cs).floor())
-			if grid.has(k):
-				for o: Vector2i in PACK:
-					if not grid.has(k + o):
-						k += o
-						break
-			grid[k] = i
-	# Close pinholes: an empty cell with 3+ filled neighbours is liquid too.
-	var holes: Array[Vector2i] = []
-	for key: Vector2i in grid:
-		for o: Vector2i in [Vector2i(0, -1), Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, 1)]:
-			var e: Vector2i = key + o
-			if grid.has(e):
+	var s := _scale
+	if water_active:
+		# Pass 1: dark outline (5x5 per pixel), pass 2: body colour (3x3).
+		# Colours come from each pixel's home slot, so they never flicker.
+		var rim := C_RIM
+		rim.a = alpha
+		for i in _pos.size():
+			if _alive[i] == 1:
+				var p := _pos[i].round()
+				draw_rect(Rect2(p - Vector2(2, 2) * s, Vector2(5, 5) * s), rim)
+		var r := maxf(_homes[_homes.size() - 1].length(), 1.0)
+		for i in _pos.size():
+			if _alive[i] == 0:
 				continue
-			var n := int(grid.has(e + Vector2i(0, -1))) + int(grid.has(e + Vector2i(0, 1))) 				+ int(grid.has(e + Vector2i(-1, 0))) + int(grid.has(e + Vector2i(1, 0)))
-			if n >= 3:
-				holes.append(e)
-	for e in holes:
-		grid[e] = grid.get(e + Vector2i(0, -1), grid.get(e + Vector2i(0, 1), grid.get(e + Vector2i(-1, 0), grid.get(e + Vector2i(1, 0), 0))))
-	var sz := Vector2(cs, cs)
-	for key: Vector2i in grid:
-		var i: int = grid[key]
-		var up := grid.has(key + Vector2i(0, -1))
-		var down := grid.has(key + Vector2i(0, 1))
-		var left := grid.has(key + Vector2i(-1, 0))
-		var right := grid.has(key + Vector2i(1, 0))
-		var col: Color
-		if water_active:
-			var rel := (_vel[i] - center_velocity).length()
-			if not up:
+			var h := _homes[i] / r # -1..1 inside the disc
+			var col: Color
+			if h.y < -0.55:
 				col = C_SURFACE
-				if not left and grid.has(key + Vector2i(1, 1)):
-					col = C_SHINE
-			elif not down:
-				col = C_RIM
-			elif grid.has(key + Vector2i(0, -3)):
+			elif h.y > 0.6:
 				col = C_DEEP
 			else:
 				col = C_BODY
-			if rel > 420.0:
+			if (_vel[i] - center_velocity).length() > 380.0:
 				col = C_FOAM
-		else:
-			col = C_STEAM if (up and down and left and right) else C_STEAM_EDGE
-			col.a = 0.85 if (up and down) else 0.55
-		col.a *= alpha
-		draw_rect(Rect2(Vector2(key) * cs, sz), col)
-	# A couple of shine pixels on the water's upper left.
-	if water_active and alpha > 0.0:
-		var top := (visual_center + Vector2(-6, -8) * _scale) / cs
-		var tk := Vector2i(top.floor())
-		if grid.has(tk):
-			draw_rect(Rect2(Vector2(tk) * cs, sz), Color(1, 1, 1, 0.85 * alpha))
-			if grid.has(tk + Vector2i(1, -1)):
-				draw_rect(Rect2(Vector2(tk + Vector2i(1, -1)) * cs, sz), Color(1, 1, 1, 0.6 * alpha))
+			col.a = alpha
+			var p := _pos[i].round()
+			draw_rect(Rect2(p - Vector2(1, 1) * s, Vector2(3, 3) * s), col)
+		# Shine: two pixels on the upper left of the body.
+		var shine := (visual_center + Vector2(-5, -6) * s).round()
+		draw_rect(Rect2(shine, Vector2(2, 2) * s), Color(1, 1, 1, 0.85 * alpha))
+		draw_rect(Rect2(shine + Vector2(2, -1) * s, Vector2(1, 1) * s), Color(1, 1, 1, 0.6 * alpha))
+	else:
+		var r2 := maxf(_steam_homes[_steam_homes.size() - 1].length(), 1.0)
+		for i in _pos.size():
+			if _alive[i] == 0:
+				continue
+			var edge := clampf(_steam_homes[i % _steam_homes.size()].length() / r2, 0.0, 1.0)
+			var col := C_STEAM.lerp(C_STEAM_EDGE, edge)
+			col.a = (0.9 - edge * 0.5) * alpha
+			var p := _pos[i].round()
+			draw_rect(Rect2(p - Vector2(2, 2) * s, Vector2(4, 4) * s), col)

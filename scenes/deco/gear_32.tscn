@@ -1,9 +1,0 @@
-[gd_scene format=3]
-
-[ext_resource type="Texture2D" path="res://assets/deco/gear_32.png" id="1"]
-[ext_resource type="Script" path="res://scripts/deco/deco_motion.gd" id="2"]
-
-[node name="Gear32" type="Sprite2D"]
-texture = ExtResource("1")
-script = ExtResource("2")
-spin_speed = -1.0

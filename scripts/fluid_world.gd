@@ -139,7 +139,8 @@ func absorb_water(center: Vector2, radius: float, max_count: int) -> PackedVecto
 	var r2 := radius * radius
 	var i := wpos.size() - 1
 	while i >= 0 and got.size() < max_count:
-		if wstate[i] != 2 and wpos[i].distance_squared_to(center) < r2:
+		# Fresh splashes must land and spread a moment before being soaked up.
+		if wstate[i] == 0 and wage[i] > 0.7 and wpos[i].distance_squared_to(center) < r2:
 			got.append(wpos[i])
 			_remove_water(i)
 		i -= 1

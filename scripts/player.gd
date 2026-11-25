@@ -102,6 +102,20 @@ func _ready() -> void:
 		return
 	_apply_state_physics()
 	fluid.set_state(state, PackedVector2Array())
+	_apply_settings()
+	var settings := get_node_or_null("/root/Settings")
+	if settings and settings.has_signal("changed"):
+		settings.connect("changed", _apply_settings)
+
+
+## Camera zoom / screen shake come from the Settings autoload when it exists.
+func _apply_settings() -> void:
+	var settings := get_node_or_null("/root/Settings")
+	if settings == null:
+		return
+	var z = settings.get("camera_zoom")
+	if z != null:
+		camera.zoom = Vector2(z, z)
 
 
 func _apply_state_physics() -> void:
@@ -340,7 +354,11 @@ func _process(delta: float) -> void:
 	if not Engine.is_editor_hint():
 		_squash = _squash.lerp(Vector2.ONE, minf(12.0 * delta, 1.0))
 		_shake = maxf(_shake - 30.0 * delta, 0.0)
-		camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _shake
+		var shake_on = true
+		var settings := get_node_or_null("/root/Settings")
+		if settings and settings.get("screen_shake") != null:
+			shake_on = settings.get("screen_shake")
+		camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _shake * (0.5 if shake_on else 0.0)
 		_blocked_flash = maxf(_blocked_flash - delta, 0.0)
 		_crack = maxf(_crack - delta * 1.5, 0.0)
 		if won:
