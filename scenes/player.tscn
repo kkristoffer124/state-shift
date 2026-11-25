@@ -1,6 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/fluid_body.gd" id="2"]
+[ext_resource type="Shader" path="res://shaders/metaball.gdshader" id="3"]
 
 [sub_resource type="CircleShape2D" id="Shape_body"]
 radius = 11.0
@@ -12,15 +14,60 @@ radius = 6.0
 offsets = PackedFloat32Array(0, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
-[sub_resource type="Gradient" id="Gradient_steam"]
-offsets = PackedFloat32Array(0, 1)
-colors = PackedColorArray(1, 1, 1, 0.45, 1, 1, 1, 0)
+[sub_resource type="Gradient" id="Gradient_droplet"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.55, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="Tex_droplet"]
+gradient = SubResource("Gradient_droplet")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_puff"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.6, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="Tex_puff"]
+gradient = SubResource("Gradient_puff")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="ShaderMaterial" id="Mat_metaball"]
+shader = ExtResource("3")
+shader_parameter/threshold = 0.42
+shader_parameter/softness = 0.04
+shader_parameter/rim_color = Color(0.12, 0.35, 0.8, 1)
+shader_parameter/body_color = Color(0.25, 0.56, 1, 1)
+shader_parameter/core_color = Color(0.48, 0.74, 1, 1)
+shader_parameter/use_ramp = false
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 8
 collision_mask = 5
+z_index = 2
 floor_snap_length = 4.0
 script = ExtResource("1")
+
+[node name="FluidBody" type="Node2D" parent="."]
+z_index = -1
+script = ExtResource("2")
+droplet_texture = SubResource("Tex_droplet")
+puff_texture = SubResource("Tex_puff")
+
+[node name="Water" type="CanvasGroup" parent="FluidBody"]
+material = SubResource("Mat_metaball")
+fit_margin = 16.0
+clear_margin = 16.0
+
+[node name="Droplets" type="Node2D" parent="FluidBody/Water"]
+
+[node name="Steam" type="Node2D" parent="FluidBody"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("Shape_body")
@@ -54,18 +101,3 @@ damping_max = 300.0
 scale_amount_min = 2.0
 scale_amount_max = 4.5
 color_ramp = SubResource("Gradient_fade")
-
-[node name="SteamTrail" type="CPUParticles2D" parent="."]
-emitting = false
-amount = 20
-lifetime = 0.8
-emission_shape = 1
-emission_sphere_radius = 8.0
-direction = Vector2(0, 1)
-spread = 40.0
-gravity = Vector2(0, 0)
-initial_velocity_min = 10.0
-initial_velocity_max = 40.0
-scale_amount_min = 3.0
-scale_amount_max = 7.0
-color_ramp = SubResource("Gradient_steam")

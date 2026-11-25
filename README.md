@@ -17,6 +17,7 @@ Controls: A/D move · Space jump · **E / Shift heat up** · **Q / Ctrl cool dow
 - `levels/level_0X.tscn` — levels. Drag props from `scenes/props/` under `Blocks` or `Zones`; set `size` in the inspector (origin = top-left). Camera limits come from the Blocks' bounds automatically.
 - `scenes/props/` — wall, grate, breakable (Block), spikes, heat_zone, freeze_zone, fan, goal (Zone).
 - `scenes/player.tscn` + `scripts/player.gd` — all movement tunables are exported, grouped per state.
+- `scripts/fluid_body.gd` (Player/FluidBody) — physics visuals: WATER is ~16 spring-linked droplets rendered as one metaball blob (`shaders/metaball.gdshader` on the Water CanvasGroup), STEAM is a cloud of buoyant swirling puffs. Gameplay collision still uses the Player's own shape. Swap `droplet_texture` / `puff_texture` and the shader colours (or `use_ramp`) for real art.
 - `scripts/game.gd` (autoload `Game`) — level order (`LEVELS`), deaths, timer.
 - `scripts/sfx.gd` (autoload `Sfx`) — placeholder synth sounds; replace via `Sfx.overrides["shatter"] = preload(...)`.
 - `scenes/hud.tscn` (autoload `Hud`), `scenes/menu.tscn`, `scenes/end.tscn`.

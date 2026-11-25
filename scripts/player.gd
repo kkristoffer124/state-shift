@@ -45,7 +45,7 @@ const MASK_FLUID := 1 | 4     # world + breakables
 @onready var sensor: Area2D = $ZoneSensor
 @onready var camera: Camera2D = $Camera2D
 @onready var burst: CPUParticles2D = $ShiftBurst
-@onready var trail: CPUParticles2D = $SteamTrail
+@onready var fluid: FluidBody = $FluidBody
 
 var dead := false
 var won := false
@@ -75,15 +75,15 @@ func _ready() -> void:
 	if demo:
 		camera.enabled = false
 		set_physics_process(false)
-		trail.emitting = state == State.STEAM
+		fluid.set_state(state, PackedVector2Array())
 		return
 	_apply_state_physics()
+	fluid.set_state(state, PackedVector2Array())
 
 
 func _apply_state_physics() -> void:
 	shape_node.shape = _shapes[state]
 	collision_mask = MASK_ICE if state == State.ICE else MASK_FLUID
-	trail.emitting = state == State.STEAM
 	state_changed.emit(state)
 
 
@@ -99,9 +99,11 @@ func try_shift(target: int, forced := false) -> bool:
 			return false
 		offset = Vector2.ZERO
 	var heating := target > state
+	var seed_points := _ice_outline() if state == State.ICE else fluid.current_points()
 	global_position += offset
 	state = target as State
 	_apply_state_physics()
+	fluid.set_state(state, seed_points)
 	if state == State.STEAM:
 		velocity.y = minf(velocity.y, -80.0)
 	burst.color = STATE_COLORS[state]
@@ -110,6 +112,16 @@ func try_shift(target: int, forced := false) -> bool:
 	_shake = maxf(_shake, 3.0)
 	Sfx.play("heat" if heating else "cool")
 	return true
+
+
+## Points around the ice cube's edge, used to seed droplets/puffs when melting.
+func _ice_outline() -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	for i in 16:
+		var a := TAU * i / 16.0
+		var d := Vector2(cos(a), sin(a))
+		pts.append(global_position + d / maxf(absf(d.x), absf(d.y)) * 14.0 * global_scale.x)
+	return pts
 
 
 ## Returns a small nudge that lets the new shape fit, or null if it can't.
@@ -255,8 +267,8 @@ func die() -> void:
 	if dead or won:
 		return
 	dead = true
+	fluid.splatter(velocity)
 	velocity = Vector2.ZERO
-	trail.emitting = false
 	burst.color = Color(1.0, 0.45, 0.45)
 	burst.restart()
 	_shake = 9.0
@@ -268,6 +280,7 @@ func win() -> void:
 	if dead or won:
 		return
 	won = true
+	fluid.swirl_away()
 	burst.color = Color(0.6, 1.0, 0.7)
 	burst.restart()
 	Sfx.play("win", 0.0)
@@ -293,15 +306,35 @@ func _draw() -> void:
 		return
 	var jitter := sin(_t * 70.0) * 3.0 if _blocked_flash > 0.0 else 0.0
 	var tilt := clampf(velocity.x * 0.0005, -0.15, 0.15) if state == State.ICE else 0.0
-	draw_set_transform(Vector2(jitter, 0), tilt, _squash)
+	var live_fluid := not Engine.is_editor_hint() and state != State.ICE
+	# Water/steam bodies are simulated by FluidBody; the face rides on their centre.
+	var face := Vector2.ZERO
+	if live_fluid:
+		face = (fluid.visual_center - global_position) / maxf(global_scale.x, 0.001)
+	var squash := _squash if state == State.ICE else Vector2.ONE
+	draw_set_transform(face + Vector2(jitter, 0), tilt, squash)
 	match state:
 		State.ICE: _draw_ice()
-		State.WATER: _draw_water()
-		State.STEAM: _draw_steam()
+		State.WATER:
+			if live_fluid: _draw_water_gloss()
+			else: _draw_water()
+		State.STEAM:
+			if live_fluid: _draw_steam_core()
+			else: _draw_steam()
 	_draw_eyes()
 	if _locked:
 		draw_arc(Vector2.ZERO, 20.0, 0, TAU, 24, Color(1, 1, 1, 0.35 + sin(_t * 10.0) * 0.2), 1.5)
 	draw_set_transform(Vector2.ZERO)
+
+
+func _draw_water_gloss() -> void:
+	draw_circle(Vector2(-5, -7), 2.6, Color(1, 1, 1, 0.75))
+	draw_circle(Vector2(-1.5, -9), 1.2, Color(1, 1, 1, 0.5))
+
+
+func _draw_steam_core() -> void:
+	draw_circle(Vector2.ZERO, 11.0, Color(1, 1, 1, 0.25))
+	draw_circle(Vector2.ZERO, 8.0, Color(1, 1, 1, 0.45))
 
 
 func _draw_ice() -> void:
@@ -313,6 +346,7 @@ func _draw_ice() -> void:
 	draw_rect(r, Color(0.35, 0.62, 0.88), false, 2.0)
 
 
+## Editor-only preview shapes (in game the FluidBody simulation draws these).
 func _draw_water() -> void:
 	var pts := PackedVector2Array()
 	var n := 28
