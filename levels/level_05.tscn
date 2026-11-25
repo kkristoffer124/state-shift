@@ -1,0 +1,104 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="level"]
+[ext_resource type="PackedScene" path="res://scenes/background.tscn" id="bg"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="player"]
+[ext_resource type="PackedScene" path="res://scenes/props/wall.tscn" id="wall"]
+[ext_resource type="PackedScene" path="res://scenes/props/grate.tscn" id="grate"]
+[ext_resource type="PackedScene" path="res://scenes/props/breakable.tscn" id="breakable"]
+[ext_resource type="PackedScene" path="res://scenes/props/spikes.tscn" id="spikes"]
+[ext_resource type="PackedScene" path="res://scenes/props/heat_zone.tscn" id="heat_zone"]
+[ext_resource type="PackedScene" path="res://scenes/props/freeze_zone.tscn" id="freeze_zone"]
+[ext_resource type="PackedScene" path="res://scenes/props/fan.tscn" id="fan"]
+[ext_resource type="PackedScene" path="res://scenes/props/goal.tscn" id="goal"]
+
+[node name="Level" type="Node2D"]
+script = ExtResource("level")
+level_name = "5 - Pressure"
+
+[node name="Background" parent="." instance=ExtResource("bg")]
+
+[node name="Blocks" type="Node2D" parent="."]
+
+[node name="Zones" type="Node2D" parent="."]
+
+[node name="Hints" type="Node2D" parent="."]
+
+[node name="Ceiling" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(-64, -64)
+size = Vector2(1728, 64)
+
+[node name="WallL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(-64, 0)
+size = Vector2(64, 960)
+
+[node name="WallR" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(1600, 0)
+size = Vector2(64, 960)
+
+[node name="Floor" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(0, 832)
+size = Vector2(1600, 128)
+
+[node name="WallA" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(448, 320)
+size = Vector2(64, 512)
+
+[node name="CrackedFloor" parent="Blocks" instance=ExtResource("breakable")]
+position = Vector2(576, 640)
+size = Vector2(256, 32)
+
+[node name="WallB" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(1024, 352)
+size = Vector2(64, 480)
+
+[node name="Ledge" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(1088, 320)
+size = Vector2(512, 32)
+
+[node name="HeatZone" parent="Zones" instance=ExtResource("heat_zone")]
+position = Vector2(320, 704)
+size = Vector2(128, 128)
+
+[node name="FreezeZone" parent="Zones" instance=ExtResource("freeze_zone")]
+position = Vector2(576, 0)
+size = Vector2(256, 256)
+
+[node name="Fan" parent="Zones" instance=ExtResource("fan")]
+position = Vector2(896, 320)
+size = Vector2(128, 512)
+
+[node name="Goal" parent="Zones" instance=ExtResource("goal")]
+position = Vector2(1472, 256)
+size = Vector2(64, 64)
+
+[node name="Hint1" type="Label" parent="Hints"]
+offset_left = 40.0
+offset_top = 600.0
+offset_right = 460.0
+offset_bottom = 628.0
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
+theme_override_font_sizes/font_size = 18
+text = "Hot zones force STEAM"
+
+[node name="Hint2" type="Label" parent="Hints"]
+offset_left = 590.0
+offset_top = 270.0
+offset_right = 1010.0
+offset_bottom = 298.0
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
+theme_override_font_sizes/font_size = 18
+text = "Cold zones force ICE"
+
+[node name="Hint3" type="Label" parent="Hints"]
+offset_left = 600.0
+offset_top = 760.0
+offset_right = 1020.0
+offset_bottom = 788.0
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
+theme_override_font_sizes/font_size = 18
+text = "Fans blow gas upward"
+
+[node name="Player" parent="." instance=ExtResource("player")]
+position = Vector2(96, 810)
+state = 1

@@ -1,0 +1,92 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="level"]
+[ext_resource type="PackedScene" path="res://scenes/background.tscn" id="bg"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="player"]
+[ext_resource type="PackedScene" path="res://scenes/props/wall.tscn" id="wall"]
+[ext_resource type="PackedScene" path="res://scenes/props/grate.tscn" id="grate"]
+[ext_resource type="PackedScene" path="res://scenes/props/breakable.tscn" id="breakable"]
+[ext_resource type="PackedScene" path="res://scenes/props/spikes.tscn" id="spikes"]
+[ext_resource type="PackedScene" path="res://scenes/props/heat_zone.tscn" id="heat_zone"]
+[ext_resource type="PackedScene" path="res://scenes/props/freeze_zone.tscn" id="freeze_zone"]
+[ext_resource type="PackedScene" path="res://scenes/props/fan.tscn" id="fan"]
+[ext_resource type="PackedScene" path="res://scenes/props/goal.tscn" id="goal"]
+
+[node name="Level" type="Node2D"]
+script = ExtResource("level")
+level_name = "4 - Shatter"
+
+[node name="Background" parent="." instance=ExtResource("bg")]
+
+[node name="Blocks" type="Node2D" parent="."]
+
+[node name="Zones" type="Node2D" parent="."]
+
+[node name="Hints" type="Node2D" parent="."]
+
+[node name="Ceiling" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(-64, -64)
+size = Vector2(1408, 64)
+
+[node name="WallL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(-64, 0)
+size = Vector2(64, 1088)
+
+[node name="WallR" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(1280, 0)
+size = Vector2(64, 1088)
+
+[node name="Floor" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(0, 960)
+size = Vector2(1280, 128)
+
+[node name="UpperFloorL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(0, 448)
+size = Vector2(704, 32)
+
+[node name="CrackedFloor" parent="Blocks" instance=ExtResource("breakable")]
+position = Vector2(704, 448)
+size = Vector2(192, 32)
+
+[node name="UpperFloorR" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(896, 448)
+size = Vector2(384, 32)
+
+[node name="Spikes" parent="Zones" instance=ExtResource("spikes")]
+position = Vector2(576, 928)
+size = Vector2(384, 32)
+
+[node name="Goal" parent="Zones" instance=ExtResource("goal")]
+position = Vector2(1152, 896)
+size = Vector2(64, 64)
+
+[node name="Hint1" type="Label" parent="Hints"]
+offset_left = 40.0
+offset_top = 330.0
+offset_right = 460.0
+offset_bottom = 358.0
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
+theme_override_font_sizes/font_size = 18
+text = "CRACKED floors shatter under falling ICE"
+
+[node name="Hint2" type="Label" parent="Hints"]
+offset_left = 40.0
+offset_top = 360.0
+offset_right = 460.0
+offset_bottom = 388.0
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
+theme_override_font_sizes/font_size = 18
+text = "...but you'll need some height first"
+
+[node name="Hint3" type="Label" parent="Hints"]
+offset_left = 970.0
+offset_top = 840.0
+offset_right = 1390.0
+offset_bottom = 868.0
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
+theme_override_font_sizes/font_size = 18
+text = "Melt once you're off the spikes"
+
+[node name="Player" parent="." instance=ExtResource("player")]
+position = Vector2(96, 430)
+state = 1
