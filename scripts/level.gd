@@ -4,9 +4,15 @@ extends Node2D
 ## Camera limits are computed from the Blocks' bounds.
 
 @export var level_name := "Level"
+## Environment art set (assets/env_<theme>/) used by Blocks, Zones and the Background.
+@export_enum("lab", "cryo", "boiler", "sewer", "rooftop") var theme := "lab":
+	set(v):
+		theme = v
+		_apply_theme()
 
 
 func _ready() -> void:
+	_apply_theme()
 	if Engine.is_editor_hint():
 		return
 	var player := get_node_or_null("Player") as Player
@@ -40,3 +46,12 @@ func get_bounds() -> Rect2:
 			r = br if first else r.merge(br)
 			first = false
 	return r
+
+
+## Passes the theme on to the backdrop (Blocks/Zones look it up themselves).
+func _apply_theme() -> void:
+	if not is_inside_tree():
+		return
+	var bg := get_node_or_null("Background")
+	if bg and "theme" in bg:
+		bg.theme = theme

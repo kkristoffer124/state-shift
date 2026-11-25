@@ -10,21 +10,12 @@ enum Kind { WALL, GRATE, BREAKABLE }
 
 const LAYERS := { Kind.WALL: 1, Kind.GRATE: 2, Kind.BREAKABLE: 4 }
 
-const TEX_WALL := preload("res://assets/env/e1a_wall_9s32.png")
-const TEX_GRATE := preload("res://assets/env/e2a_grate_9s3.png")
-const TEX_CRACKED := preload("res://assets/env/e3a_cracked_block_9s8.png")
 const TEX_CRACKS: Array[Texture2D] = [
 	preload("res://assets/env/e3b_crack_1.png"),
 	preload("res://assets/env/e3b_crack_2.png"),
 	preload("res://assets/env/e3b_crack_3.png"),
 ]
-const TEX_DECALS: Array[Texture2D] = [
-	preload("res://assets/env/e1c_decal_cable_bundle.png"),
-	preload("res://assets/env/e1c_decal_number_plate.png"),
-	preload("res://assets/env/e1c_decal_pipe_elbow.png"),
-	preload("res://assets/env/e1c_decal_vent_slit.png"),
-	preload("res://assets/env/e1c_decal_warning_stripe.png"),
-]  # e1c_decal_frost_patch is left out: it reads as static noise on plain walls.
+## Wall art, grate, cracked block and decals come from the level's theme (see EnvTheme).
 const TEX_SHARDS: Array[Texture2D] = [
 	preload("res://assets/env/e3c_shard_1.png"),
 	preload("res://assets/env/e3c_shard_2.png"),
@@ -54,6 +45,7 @@ const DECAL_AREA := 45000.0
 		queue_redraw()
 
 var _box: StyleBoxTexture
+var _tex: Dictionary # EnvTheme set of the owning level
 
 
 func _ready() -> void:
@@ -71,22 +63,25 @@ func _refresh() -> void:
 	if cs and cs.shape is RectangleShape2D:
 		(cs.shape as RectangleShape2D).size = size
 		cs.position = size / 2.0
+	_tex = EnvTheme.textures(EnvTheme.find_theme(self))
 	_box = _make_box()
 	queue_redraw()
 
 
 func _make_box() -> StyleBoxTexture:
 	var box := StyleBoxTexture.new()
+	if _tex.is_empty():
+		_tex = EnvTheme.textures(EnvTheme.find_theme(self) if is_inside_tree() else EnvTheme.DEFAULT)
 	var m := 0.0
 	match kind:
 		Kind.WALL:
-			box.texture = TEX_WALL
+			box.texture = _tex.wall
 			m = 32.0
 		Kind.GRATE:
-			box.texture = TEX_GRATE
+			box.texture = _tex.grate
 			m = 3.0
 		Kind.BREAKABLE:
-			box.texture = TEX_CRACKED
+			box.texture = _tex.cracked
 			m = 8.0
 	# Never let the borders overlap on thin pieces.
 	var mx := minf(m, floorf(size.x / 2.0))
@@ -205,9 +200,12 @@ func _draw_decals() -> void:
 		return
 	var rng := RandomNumberGenerator.new()
 	rng.seed = _seed()
+	var decals: Array[Texture2D] = _tex.decals
+	if decals.is_empty():
+		return
 	var n := int(size.x * size.y / DECAL_AREA)
 	for i in n:
-		var tex := TEX_DECALS[rng.randi() % TEX_DECALS.size()]
+		var tex := decals[rng.randi() % decals.size()]
 		var room := size - tex.get_size() - Vector2(16, 16)
 		if room.x < 0 or room.y < 0:
 			continue

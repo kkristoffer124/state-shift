@@ -1,0 +1,98 @@
+{
+ "e1a_wall_9s32": [
+  0,
+  0,
+  96,
+  96
+ ],
+ "e1b_wall_fill": [
+  96,
+  0,
+  64,
+  64
+ ],
+ "e2a_grate_9s3": [
+  160,
+  0,
+  96,
+  32
+ ],
+ "e3a_cracked_block_9s8": [
+  256,
+  0,
+  96,
+  32
+ ],
+ "e4a_spike": [
+  352,
+  0,
+  16,
+  32
+ ],
+ "e4b_spike_plate": [
+  0,
+  96,
+  32,
+  6
+ ],
+ "e5a_heat_vent": [
+  32,
+  96,
+  32,
+  12
+ ],
+ "e6a_freeze_emitter": [
+  64,
+  96,
+  32,
+  16
+ ],
+ "e7a_fan_housing_9s8": [
+  96,
+  96,
+  128,
+  24
+ ],
+ "e7b_fan_blade_4f": [
+  224,
+  96,
+  96,
+  24
+ ],
+ "e1c_decal_pipe_elbow": [
+  320,
+  96,
+  32,
+  32
+ ],
+ "e1c_decal_warning_stripe": [
+  352,
+  96,
+  32,
+  10
+ ],
+ "e1c_decal_vent_slit": [
+  0,
+  128,
+  26,
+  16
+ ],
+ "e1c_decal_cable_bundle": [
+  32,
+  128,
+  32,
+  24
+ ],
+ "e1c_decal_number_plate": [
+  64,
+  128,
+  22,
+  14
+ ],
+ "e1c_decal_frost_patch": [
+  96,
+  128,
+  28,
+  22
+ ]
+}

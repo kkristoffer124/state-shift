@@ -16,6 +16,7 @@
 [node name="Level" type="Node2D"]
 script = ExtResource("level")
 level_name = "5 - Pressure"
+theme = "cryo"
 
 [node name="Background" parent="." instance=ExtResource("bg")]
 

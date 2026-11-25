@@ -10,12 +10,9 @@ extends Area2D
 
 enum Kind { SPIKES, HEAT, FREEZE, FAN, GOAL }
 
-const TEX_SPIKE := preload("res://assets/env/e4a_spike.png")             # 16x32
-const TEX_SPIKE_PLATE := preload("res://assets/env/e4b_spike_plate.png") # 32x6
-const TEX_HEAT_VENT := preload("res://assets/env/e5a_heat_vent.png")     # 32x12
+## Spikes, heat vent, freeze emitter and fan housing/blades come from the level's theme (EnvTheme).
 const TEX_HEAT_HAZE := preload("res://assets/env/e5b_heat_haze.png")     # 8x128
 const TEX_EMBER := preload("res://assets/env/e5c_ember.png")             # 4x4
-const TEX_FREEZE_EMITTER := preload("res://assets/env/e6a_freeze_emitter.png") # 32x16
 const TEX_FROST_HAZE := preload("res://assets/env/e6b_frost_haze.png")   # 8x128
 const TEX_FROST_EDGE := preload("res://assets/env/e6d_frost_edge_9s16.png")
 const TEX_SNOW: Array[Texture2D] = [
@@ -23,8 +20,6 @@ const TEX_SNOW: Array[Texture2D] = [
 	preload("res://assets/env/e6c_snowflake_2.png"),
 	preload("res://assets/env/e6c_snowflake_3.png"),
 ]
-const TEX_FAN_HOUSING := preload("res://assets/env/e7a_fan_housing_9s8.png") # 128x24
-const TEX_FAN_BLADE := preload("res://assets/env/e7b_fan_blade_4f.png")      # 4 frames of 24x24
 const TEX_AIRFLOW := preload("res://assets/env/e7c_airflow_streak.png")      # 4x32
 const TEX_GOAL_SWIRL := preload("res://assets/env/e8a_goal_swirl.png")       # 64x64
 const TEX_GOAL_GLOW := preload("res://assets/env/e8b_goal_glow.png")         # 128x128
@@ -50,6 +45,12 @@ const BLADE := 24.0
 var _t := 0.0
 var _frost_box: StyleBoxTexture
 var _fan_box: StyleBoxTexture
+# Themed textures (sizes match the assets/env originals).
+var _spike: Texture2D
+var _spike_plate: Texture2D
+var _heat_vent: Texture2D
+var _freeze_emitter: Texture2D
+var _fan_blade: Texture2D
 
 
 func _ready() -> void:
@@ -72,8 +73,14 @@ func _refresh() -> void:
 		else:
 			cs.position = size / 2.0
 		(cs.shape as RectangleShape2D).size = s
+	var tex := EnvTheme.textures(EnvTheme.find_theme(self))
+	_spike = tex.spike
+	_spike_plate = tex.spike_plate
+	_heat_vent = tex.heat_vent
+	_freeze_emitter = tex.freeze_emitter
+	_fan_blade = tex.fan_blade
 	_frost_box = _nine(TEX_FROST_EDGE, 16.0, 16.0, size)
-	_fan_box = _nine(TEX_FAN_HOUSING, 8.0, 8.0, Vector2(size.x, FAN_H))
+	_fan_box = _nine(tex.fan_housing, 8.0, 8.0, Vector2(size.x, FAN_H))
 	queue_redraw()
 
 
@@ -125,6 +132,8 @@ func _haze(tex: Texture2D, r: Rect2, mod: Color) -> void:
 
 
 func _draw() -> void:
+	if _spike == null:
+		return
 	match kind:
 		Kind.SPIKES:
 			_draw_spikes()
@@ -139,14 +148,14 @@ func _draw() -> void:
 
 
 func _draw_spikes() -> void:
-	var sw := float(TEX_SPIKE.get_width())
-	var sh := float(TEX_SPIKE.get_height())
+	var sw := float(_spike.get_width())
+	var sh := float(_spike.get_height())
 	var n := maxi(1, int(size.x / sw))
 	var x0 := floorf((size.x - n * sw) / 2.0)
 	for i in n:
-		draw_texture(TEX_SPIKE, Vector2(x0 + i * sw, size.y - sh))
-	var ph := TEX_SPIKE_PLATE.get_height()
-	_hrepeat(TEX_SPIKE_PLATE, 0.0, size.y - ph, size.x)
+		draw_texture(_spike, Vector2(x0 + i * sw, size.y - sh))
+	var ph := _spike_plate.get_height()
+	_hrepeat(_spike_plate, 0.0, size.y - ph, size.x)
 
 
 func _draw_heat() -> void:
@@ -159,21 +168,21 @@ func _draw_heat() -> void:
 		var fade := clampf(1.0 - travel / size.y, 0.0, 1.0)
 		var p := Vector2(px + sin(_t * 3.0 + i) * 4.0, py).round() - Vector2(2, 2)
 		draw_texture(TEX_EMBER, p, Color(1, 1, 1, 0.35 + 0.65 * fade))
-	_hrepeat(TEX_HEAT_VENT, 0.0, size.y - TEX_HEAT_VENT.get_height(), size.x)
+	_hrepeat(_heat_vent, 0.0, size.y - _heat_vent.get_height(), size.x)
 
 
 func _draw_freeze() -> void:
 	_haze(TEX_FROST_HAZE, Rect2(Vector2.ZERO, size), Color(1, 1, 1, 0.9))
 	if _frost_box:
 		draw_style_box(_frost_box, Rect2(Vector2.ZERO, size))
-	var top := float(TEX_FREEZE_EMITTER.get_height())
+	var top := float(_freeze_emitter.get_height())
 	var span := maxf(size.y - top, 1.0)
 	for i in int(size.x * size.y / 900.0) + 4:
 		var px := fmod(i * 41.3, size.x)
 		var py := top + fmod(_t * (20.0 + i % 4 * 8.0) + i * 47.0, span)
 		var p := Vector2(px + sin(_t * 2.0 + i) * 6.0, py).round() - Vector2(2, 2)
 		draw_texture(TEX_SNOW[i % TEX_SNOW.size()], p)
-	_hrepeat(TEX_FREEZE_EMITTER, 0.0, 0.0, size.x)
+	_hrepeat(_freeze_emitter, 0.0, 0.0, size.x)
 
 
 func _draw_fan() -> void:
@@ -199,7 +208,7 @@ func _draw_fan() -> void:
 	var n := maxi(1, int((size.x - 16.0) / 32.0))
 	var x0 := floorf((size.x - n * 32.0) / 2.0) + 4.0
 	for i in n:
-		draw_texture_rect_region(TEX_FAN_BLADE, Rect2(x0 + i * 32.0, size.y - FAN_H, BLADE, BLADE),
+		draw_texture_rect_region(_fan_blade, Rect2(x0 + i * 32.0, size.y - FAN_H, BLADE, BLADE),
 				Rect2(frame * BLADE, 0, BLADE, BLADE))
 
 
