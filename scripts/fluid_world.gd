@@ -12,10 +12,10 @@ extends Node2D
 ##   is_blocked(pos) -> bool   absorb_water(center, radius, max_count) -> PackedVector2Array
 
 const CELL := 2
-const MAX_WATER := 900
-const MAX_STEAM := 400
+const MAX_WATER := 600
+const MAX_STEAM := 220
 const GRAVITY := 1300.0
-const WATER_LIFE := 40.0
+const WATER_LIFE := 30.0
 const TICK := 1.0 / 60.0
 
 const C_SURFACE := Color("6fb0ff")
@@ -30,6 +30,8 @@ var w := 0
 var h := 0
 ## 0 empty, 1 solid, 2 grate (fluids pass, ice doesn't)
 var solid := PackedByteArray()
+## dynamic solids (gates, moving blocks): a counter per cell on top of `solid`
+var dyn := PackedByteArray()
 ## free-water occupancy: particle index + 1, 0 = empty
 var occ := PackedInt32Array()
 
@@ -40,6 +42,7 @@ var wvel := PackedVector2Array()
 var wstate := PackedByteArray()
 var wage := PackedFloat32Array()
 var wdir := PackedByteArray() # preferred sideways direction 0 = left, 1 = right
+var wsleep := PackedByteArray() # ticks a resting pixel hasn't moved (sleepers update rarely)
 
 # Free steam (no occupancy; gas overlaps)
 var spos := PackedVector2Array()
@@ -62,6 +65,8 @@ func build(bounds: Rect2, blocks: Array, zones: Array) -> void:
 	solid.fill(0)
 	occ.resize(w * h)
 	occ.fill(0)
+	dyn.resize(w * h)
+	dyn.fill(0)
 	for b in blocks:
 		if b is Block:
 			var r := Rect2(b.global_position, b.size)
@@ -93,6 +98,7 @@ func spawn_water(pos: Vector2, vel := Vector2.ZERO) -> void:
 	wstate.append(1 if vel.length() > 20.0 else 0)
 	wage.append(0.0)
 	wdir.append(randi() % 2)
+	wsleep.append(0)
 	occ[c.y * w + c.x] = i + 1
 
 
@@ -105,8 +111,21 @@ func spawn_steam(pos: Vector2, vel := Vector2.ZERO) -> void:
 	slife.append(randf_range(1.0, 2.2))
 
 
+## Dynamic pieces (gates) add/remove a solid layer without touching the level's
+## own geometry; when no dynamic layer covers a cell, clearing it removes the base
+## solid (used when a cracked block shatters).
 func set_solid_rect(rect: Rect2, is_solid: bool) -> void:
-	_fill_rect(rect, 1 if is_solid else 0)
+	var a := _cell(rect.position)
+	var b := _cell(rect.end - Vector2(0.01, 0.01))
+	for y in range(maxi(a.y, 0), mini(b.y + 1, h)):
+		for x in range(maxi(a.x, 0), mini(b.x + 1, w)):
+			var k := y * w + x
+			if is_solid:
+				dyn[k] = mini(dyn[k] + 1, 250)
+			elif dyn[k] > 0:
+				dyn[k] -= 1
+			else:
+				solid[k] = 0
 	if is_solid:
 		# Push out any water caught inside.
 		for i in range(wpos.size() - 1, -1, -1):
@@ -124,6 +143,17 @@ func water_count_in(rect: Rect2) -> int:
 
 ## True if a world position is inside solid geometry (grates are open).
 func is_blocked(pos: Vector2) -> bool:
+	var c := _cell(pos)
+	if c.x < 0 or c.y < 0 or c.x >= w or c.y >= h:
+		return true
+	var k := c.y * w + c.x
+	return solid[k] == 1 or dyn[k] > 0
+
+
+## Only the level's own geometry (ignores fluid-only walls like basins and gate
+## layers). The player's pixel body uses this so it never snags on things the
+## player itself walks through.
+func is_blocked_static(pos: Vector2) -> bool:
 	var c := _cell(pos)
 	if c.x < 0 or c.y < 0 or c.x >= w or c.y >= h:
 		return true
@@ -193,7 +223,12 @@ func _step_water(dt: float) -> void:
 		elif st == 1:
 			_step_air(i, dt)
 		elif st == 0:
-			_step_flow(i, c)
+			# Resting pixels (inside pools) only re-check every 8th tick unless woken.
+			if wsleep[i] < 6 or (i + _tick) % 8 == 0:
+				if _step_flow(i, c):
+					wsleep[i] = 0
+				elif wsleep[i] < 255:
+					wsleep[i] += 1
 		i += 1 if forward else -1
 	removals.sort()
 	for k in range(removals.size() - 1, -1, -1):
@@ -238,21 +273,21 @@ func _step_air(i: int, dt: float) -> void:
 	wvel[i] = v
 
 
-func _step_flow(i: int, c: Vector2i) -> void:
+func _step_flow(i: int, c: Vector2i) -> bool:
 	# Falling-sand rules: down, diagonal down, then spread sideways.
 	if _open(c.x, c.y + 1):
 		_move(i, c, Vector2i(c.x, c.y + 1))
 		wstate[i] = 1
 		wvel[i] = Vector2(0, 120)
-		return
+		return true
 	var d := 1 if wdir[i] == 1 else -1
 	if _open(c.x + d, c.y + 1):
 		_move(i, c, Vector2i(c.x + d, c.y + 1))
-		return
+		return true
 	if _open(c.x - d, c.y + 1):
 		_move(i, c, Vector2i(c.x - d, c.y + 1))
 		wdir[i] = 1 - wdir[i]
-		return
+		return true
 	# Spread up to 3 cells; settle when there's nowhere to go.
 	var moved := 0
 	var cc := c
@@ -265,6 +300,7 @@ func _step_flow(i: int, c: Vector2i) -> void:
 			break
 	if moved == 0:
 		wdir[i] = 1 - wdir[i]
+	return moved > 0
 
 
 func _step_steam(dt: float) -> void:
@@ -314,14 +350,27 @@ func _open(x: int, y: int) -> bool:
 	if x < 0 or y < 0 or x >= w or y >= h:
 		return false
 	var k := y * w + x
-	return solid[k] != 1 and occ[k] == 0
+	return solid[k] != 1 and dyn[k] == 0 and occ[k] == 0
 
 
 func _move(i: int, from: Vector2i, to: Vector2i) -> void:
 	occ[from.y * w + from.x] = 0
+	_wake(from.x, from.y - 1)
+	_wake(from.x - 1, from.y)
+	_wake(from.x + 1, from.y)
+	_wake(from.x - 1, from.y - 1)
+	_wake(from.x + 1, from.y - 1)
 	occ[to.y * w + to.x] = i + 1
 	wcell[i] = to
 	wpos[i] = _center(to)
+
+
+func _wake(x: int, y: int) -> void:
+	if x < 0 or y < 0 or x >= w or y >= h:
+		return
+	var j := occ[y * w + x]
+	if j > 0:
+		wsleep[j - 1] = 0
 
 
 func _free_cell_near(c: Vector2i) -> Vector2i:
@@ -364,6 +413,7 @@ func _remove_water(i: int) -> void:
 		wstate[i] = wstate[last]
 		wage[i] = wage[last]
 		wdir[i] = wdir[last]
+		wsleep[i] = wsleep[last]
 		var lc := wcell[i]
 		occ[lc.y * w + lc.x] = i + 1
 	wcell.resize(last)
@@ -372,6 +422,7 @@ func _remove_water(i: int) -> void:
 	wstate.resize(last)
 	wage.resize(last)
 	wdir.resize(last)
+	wsleep.resize(last)
 
 
 func _remove_steam(i: int) -> void:

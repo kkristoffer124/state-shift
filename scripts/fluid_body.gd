@@ -47,6 +47,7 @@ var alpha := 1.0
 var _pos := PackedVector2Array()
 var _vel := PackedVector2Array()
 var _alive := PackedByteArray()
+var _stuck := PackedFloat32Array()
 var _homes := PackedVector2Array()
 var _steam_homes := PackedVector2Array()
 var _squash := 0.0
@@ -103,6 +104,8 @@ func set_state(state: int, from_points: PackedVector2Array) -> void:
 	_pos.resize(n)
 	_vel.resize(n)
 	_alive.resize(n)
+	_stuck.resize(n)
+	_stuck.fill(0.0)
 	for i in n:
 		var p := center + _home(i)
 		if was_fluid and not old.is_empty():
@@ -247,16 +250,27 @@ func _step(delta: float, k: float, damp: float, grav: float, break_dist: float) 
 			v += Vector2(randf_range(-1, 1), randf_range(-1, 1)) * 400.0 * delta
 		v *= exp(-damp * delta)
 		var next := p + v * delta
-		if world and world.is_blocked(next):
-			if not world.is_blocked(Vector2(next.x, p.y)):
+		# Where the player's own body is, there's no wall (the physics agreed),
+		# so only pixels outside the body collide with the fluid grid.
+		var outside := next.distance_to(center) > 10.0 * _scale
+		if world and outside and world.is_blocked_static(next):
+			if not world.is_blocked_static(Vector2(next.x, p.y)):
 				next.y = p.y
 				v.y = 0.0
-			elif not world.is_blocked(Vector2(p.x, next.y)):
+			elif not world.is_blocked_static(Vector2(p.x, next.y)):
 				next.x = p.x
 				v.x = 0.0
 			else:
 				next = p
 				v = Vector2.ZERO
+			_stuck[i] += delta
+		else:
+			_stuck[i] = 0.0
+		# A pixel pinned behind something for a moment rejoins the body.
+		if _stuck[i] > 0.12 and next.distance_to(target) > 3.0 * _scale 				and not (world and world.is_blocked_static(target)):
+			next = target
+			v = center_velocity
+			_stuck[i] = 0.0
 		# Steam sheds wisps when a puff lags far behind; water never tears on its
 		# own (splashes come from landings/jumps), it just snaps back if stuck.
 		if steam_active and next.distance_to(target) > break_dist * _scale * 2.0:
