@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/deco/floor_debris_4v.png" id="1"]
+
+[node name="FloorDebris" type="Sprite2D"]
+texture = ExtResource("1")
+hframes = 4
+centered = false
+offset = Vector2(-16, -8)

@@ -1,6 +1,7 @@
-﻿extends Node
-## Headless solvability test for levels 6-12: plays a scripted solution for each
-## level with real input actions and checks the goal is reached in time.
+extends Node
+## Headless solvability test for levels 1-12: plays a scripted solution for each
+## level with real input actions and checks the goal is reached in time. Levels whose
+## exit is behind a channel-driven IxGate must also have opened it on the way.
 ##   godot --headless --path . res://tests/levels_test.tscn [-- --only=7 --trace]
 
 const ACTIONS := ["move_left", "move_right", "jump", "heat", "cool"]
@@ -20,6 +21,7 @@ func _ready() -> void:
 		elif a == "--trace":
 			_trace = true
 	var solutions := {
+		1: _solve_01, 2: _solve_02, 3: _solve_03, 4: _solve_04, 5: _solve_05,
 		6: _solve_06, 7: _solve_07, 8: _solve_08, 9: _solve_09,
 		10: _solve_10, 11: _solve_11, 12: _solve_12,
 	}
@@ -47,8 +49,15 @@ func _play(n: int, solve: Callable) -> void:
 	_release_all()
 	var secs := _frame / 120.0
 	var ok := p.won and not p.dead and secs < 90.0
-	print(("  ok   " if ok else "  FAIL ") + "%s (%s) won=%s dead=%s t=%.1fs pos=%s state=%d"
-		% [path.get_file(), level.level_name, p.won, p.dead, secs, p.global_position.round(), p.state])
+	# Every gameplay gate in the level must have been opened by the run.
+	var gates := []
+	for g in level.find_children("*", "AnimatableBody2D", true, false):
+		if g is IxGate and g.channel != "":
+			gates.append("%s:%s" % [g.name, "open" if g.is_open else "SHUT"])
+			if not g.is_open:
+				ok = false
+	print(("  ok   " if ok else "  FAIL ") + "%s (%s) won=%s dead=%s t=%.1fs pos=%s state=%d %s"
+		% [path.get_file(), level.level_name, p.won, p.dead, secs, p.global_position.round(), p.state, " ".join(gates)])
 	if not ok:
 		_fails += 1
 
@@ -170,6 +179,66 @@ func _hop_right_to_goal() -> void:
 
 
 # --- Solutions ---------------------------------------------------------------
+
+## 1: hop the step, drop through the grate into the basin (opens the exit shutter), walk out.
+func _solve_01() -> void:
+	await _until(_x_gt(240), 300, ["move_right"])
+	Input.action_press("jump")
+	await _until(_x_gt(420), 300, ["move_right"])
+	Input.action_release("jump")
+	await _until(_x_gt(560), 300, ["move_right"])
+	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 560, 300)
+	await _seek_goal(900)
+
+
+## 2: freeze, slide over the spikes and the ICE plate (opens the shutter), melt, hop the ledge.
+func _solve_02() -> void:
+	await _to_ice()
+	await _until(func() -> bool: return p.global_position.x > 1150 and absf(p.velocity.x) < 5.0, 900, ["move_right"])
+	await _tap("heat")
+	await _wait(10)
+	await _hop_right_to_goal()
+
+
+## 3: steam under the grate, rise past the roof turbine (opens the shutter), drift right, condense.
+func _solve_03() -> void:
+	await _until(_x_gt(340), 300, ["move_right"])
+	await _to_steam()
+	await _until(_y_lt(60), 900)
+	await _until(_x_gt(1160), 900, ["move_right"])
+	await _tap("cool")
+	await _until(_on_floor(), 300)
+	await _seek_goal()
+
+
+## 4: steam to the roof, freeze over the crack, smash through, slide over the plate and out.
+func _solve_04() -> void:
+	await _to_steam()
+	await _until(_y_lt(60), 900)
+	await _until(_x_gt(790), 600, ["move_right"])
+	await _to_ice()
+	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 900, 600)
+	await _until(_x_gt(1150), 900, ["move_right"])
+	await _seek_goal()
+
+
+## 5: heat zone lifts you, cold zone drops you as ICE through the crack onto the plate
+## (opens the fan hatch); walk to the fan as water, steam up the shaft, condense on the ledge.
+func _solve_05() -> void:
+	await _until(func() -> bool: return p.state == Player.State.STEAM, 600, ["move_right"])
+	await _until(_y_lt(300), 900)
+	await _until(func() -> bool: return p.state == Player.State.ICE, 600, ["move_right"])
+	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 780, 600)
+	await _wait(20)
+	await _tap("heat")
+	await _until(_x_gt(940), 600, ["move_right"])
+	await _to_steam()
+	await _until(_y_lt(280), 900)
+	await _until(_x_gt(1200), 600, ["move_right"])
+	await _tap("cool")
+	await _until(_on_floor(), 300)
+	await _seek_goal()
+
 
 ## 6: walk to the pit edge, steam, let the side fan carry you, condense over the far ledge.
 func _solve_06() -> void:

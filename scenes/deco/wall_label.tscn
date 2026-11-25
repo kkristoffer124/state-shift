@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/deco/wall_labels_12v.png" id="1"]
+
+[node name="WallLabel" type="Sprite2D"]
+texture = ExtResource("1")
+vframes = 12

@@ -1,3 +1,93 @@
-[gd_scene format=3]
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/interactive/turbine.tscn" id="turbine"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/gate.tscn" id="gate"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/steam_vent.tscn" id="vent"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/drip_pipe.tscn" id="drip"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/puddle.tscn" id="puddle"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/light.tscn" id="light"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/swing_lamp.tscn" id="swing"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/spark_wire.tscn" id="wire"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/flask_shelf.tscn" id="shelf"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/tracker.tscn" id="tracker"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/debris.tscn" id="debris"]
 
 [node name="Interactive" type="Node2D"]
+
+[node name="Gameplay" type="Node2D" parent="."]
+
+[node name="Ambient" type="Node2D" parent="."]
+
+[node name="RoofTurbine" parent="Gameplay" instance=ExtResource("turbine")]
+position = Vector2(480, 44)
+channel = "exit"
+radius = 40.0
+charge_time = 0.25
+pole_length = 26.0
+
+[node name="ExitShutter" parent="Gameplay" instance=ExtResource("gate")]
+position = Vector2(1080, 0)
+channel = "exit"
+size = Vector2(24, 384)
+
+[node name="FloorVent" parent="Ambient" instance=ExtResource("vent")]
+position = Vector2(180, 960)
+height = 300.0
+period = 3.0
+
+[node name="OverhangDrip" parent="Ambient" instance=ExtResource("drip")]
+position = Vector2(90, 700)
+pipe_length = 12.0
+interval = 0.7
+burst = 1
+
+[node name="Puddle" parent="Ambient" instance=ExtResource("puddle")]
+position = Vector2(60, 960)
+width = 64.0
+
+[node name="VentLight" parent="Ambient" instance=ExtResource("light")]
+position = Vector2(320, 672)
+faultiness = 0.4
+
+[node name="Tube1" parent="Ambient" instance=ExtResource("light")]
+position = Vector2(860, 0)
+style = 1
+
+[node name="Lamp1" parent="Ambient" instance=ExtResource("swing")]
+position = Vector2(300, 0)
+length = 260.0
+
+[node name="Lamp2" parent="Ambient" instance=ExtResource("swing")]
+position = Vector2(760, 448)
+length = 80.0
+
+[node name="Wire" parent="Ambient" instance=ExtResource("wire")]
+position = Vector2(980, 448)
+length = 70.0
+
+[node name="Shelf" parent="Ambient" instance=ExtResource("shelf")]
+position = Vector2(800, 348)
+width = 48.0
+sense_depth = 36.0
+seed_value = 2
+
+[node name="Camera" parent="Ambient" instance=ExtResource("tracker")]
+position = Vector2(1240, 0)
+flip = true
+rest_angle = 1.0
+
+[node name="Monitor" parent="Ambient" instance=ExtResource("tracker")]
+position = Vector2(960, 384)
+style = 1
+
+[node name="Papers" parent="Ambient" instance=ExtResource("debris")]
+position = Vector2(200, 960)
+count = 8
+width = 220.0
+
+[node name="Dust" parent="Ambient" instance=ExtResource("debris")]
+position = Vector2(520, 960)
+kind = 2
+count = 20
+width = 700.0
+ceiling = 400.0

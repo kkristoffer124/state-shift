@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://scenes/deco/additive.tres" id="1"]
+[ext_resource type="Texture2D" path="res://assets/deco/glow_soft.png" id="2"]
+[ext_resource type="Script" path="res://scripts/deco/deco_motion.gd" id="3"]
+
+[node name="Glow" type="Sprite2D"]
+material = ExtResource("1")
+texture = ExtResource("2")
+texture_filter = 2
+modulate = Color(0.5, 0.85, 1, 0.2)
+script = ExtResource("3")
+pulse_min = 0.8
+pulse_max = 1.0
+pulse_speed = 1.5

@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/deco/wall_panel_2v.png" id="1"]
+
+[node name="WallPanel" type="Sprite2D"]
+texture = ExtResource("1")
+hframes = 2
+centered = false
+offset = Vector2(-12, -16)

@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/deco/terminal_4f.png" id="1"]
+[ext_resource type="Script" path="res://scripts/deco/deco_anim.gd" id="2"]
+[ext_resource type="Material" path="res://scenes/deco/additive.tres" id="3"]
+[ext_resource type="Texture2D" path="res://assets/deco/glow_soft.png" id="4"]
+[ext_resource type="Script" path="res://scripts/deco/deco_motion.gd" id="5"]
+
+[node name="Terminal" type="Sprite2D"]
+texture = ExtResource("1")
+hframes = 4
+centered = false
+offset = Vector2(-20, -48)
+script = ExtResource("2")
+fps = 3.0
+
+[node name="ScreenGlow" type="Sprite2D" parent="."]
+material = ExtResource("3")
+modulate = Color(0.4, 0.85, 0.95, 0.12)
+position = Vector2(-1, -33)
+texture = ExtResource("4")
+texture_filter = 2
+scale = Vector2(0.7, 0.7)
+script = ExtResource("5")
+flicker = 0.15

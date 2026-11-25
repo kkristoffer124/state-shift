@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/deco/gear_64.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/deco/fan_blades_big.png" id="2"]
+[ext_resource type="Script" path="res://scripts/deco/deco_motion.gd" id="3"]
+
+[node name="BigFan" type="Node2D"]
+
+[node name="Ring" type="Sprite2D" parent="."]
+texture = ExtResource("1")
+scale = Vector2(1.6, 1.6)
+modulate = Color(0.55, 0.6, 0.7, 1)
+
+[node name="Blades" type="Sprite2D" parent="."]
+texture = ExtResource("2")
+script = ExtResource("3")
+spin_speed = 2.5

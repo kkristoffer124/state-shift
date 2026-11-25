@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/deco/tank_algae_6f.png" id="1"]
+[ext_resource type="Script" path="res://scripts/deco/deco_anim.gd" id="2"]
+[ext_resource type="Material" path="res://scenes/deco/additive.tres" id="3"]
+[ext_resource type="Texture2D" path="res://assets/deco/glow_soft.png" id="4"]
+[ext_resource type="Script" path="res://scripts/deco/deco_motion.gd" id="5"]
+
+[node name="TankAlgae" type="Sprite2D"]
+texture = ExtResource("1")
+hframes = 6
+centered = false
+offset = Vector2(-24, -96)
+script = ExtResource("2")
+fps = 4.0
+
+[node name="Glow" type="Sprite2D" parent="."]
+material = ExtResource("3")
+modulate = Color(0.35, 0.95, 0.6, 0.12)
+position = Vector2(0, -48)
+texture = ExtResource("4")
+texture_filter = 2
+scale = Vector2(1.2, 1.2)
+script = ExtResource("5")
+pulse_min = 0.7
+pulse_max = 1.0
+pulse_speed = 1.3

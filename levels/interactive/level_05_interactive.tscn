@@ -1,3 +1,88 @@
-[gd_scene format=3]
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/interactive/ice_plate.tscn" id="plate"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/gate.tscn" id="gate"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/debris.tscn" id="debris"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/swing_lamp.tscn" id="swing"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/flask_shelf.tscn" id="shelf"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/light.tscn" id="light"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/spark_wire.tscn" id="wire"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/tracker.tscn" id="tracker"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/drip_pipe.tscn" id="drip"]
 
 [node name="Interactive" type="Node2D"]
+
+[node name="Gameplay" type="Node2D" parent="."]
+
+[node name="Ambient" type="Node2D" parent="."]
+
+[node name="IcePlate" parent="Gameplay" instance=ExtResource("plate")]
+position = Vector2(544, 832)
+channel = "hatch"
+width = 288.0
+
+[node name="FanHatch" parent="Gameplay" instance=ExtResource("gate")]
+position = Vector2(896, 304)
+channel = "hatch"
+size = Vector2(192, 16)
+anchor = 2
+
+[node name="FanPapers" parent="Ambient" instance=ExtResource("debris")]
+position = Vector2(900, 832)
+count = 6
+width = 110.0
+margin = 4.0
+ceiling = 500.0
+
+[node name="StartPapers" parent="Ambient" instance=ExtResource("debris")]
+position = Vector2(60, 832)
+count = 6
+width = 160.0
+seed_value = 3
+
+[node name="Lamp1" parent="Ambient" instance=ExtResource("swing")]
+position = Vector2(150, 0)
+length = 300.0
+
+[node name="ExitSign" parent="Ambient" instance=ExtResource("swing")]
+position = Vector2(1300, 0)
+style = 2
+length = 150.0
+
+[node name="Shelf" parent="Ambient" instance=ExtResource("shelf")]
+position = Vector2(330, 560)
+width = 48.0
+sense_depth = 260.0
+
+[node name="FanLight" parent="Ambient" instance=ExtResource("light")]
+position = Vector2(1056, 343)
+style = 2
+color = Color(0.7, 0.9, 1.0, 1.0)
+
+[node name="Tube1" parent="Ambient" instance=ExtResource("light")]
+position = Vector2(300, 0)
+style = 1
+faultiness = 0.6
+
+[node name="Tube2" parent="Ambient" instance=ExtResource("light")]
+position = Vector2(1350, 352)
+style = 1
+
+[node name="Wire" parent="Ambient" instance=ExtResource("wire")]
+position = Vector2(420, 0)
+length = 50.0
+
+[node name="Camera" parent="Ambient" instance=ExtResource("tracker")]
+position = Vector2(1580, 0)
+flip = true
+rest_angle = 1.1
+
+[node name="Monitor" parent="Ambient" instance=ExtResource("tracker")]
+position = Vector2(1200, 320)
+style = 1
+
+[node name="Drip" parent="Ambient" instance=ExtResource("drip")]
+position = Vector2(40, 136)
+pipe_length = 120.0
+interval = 0.9
+burst = 1

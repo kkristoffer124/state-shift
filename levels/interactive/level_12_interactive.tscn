@@ -1,3 +1,101 @@
-[gd_scene format=3]
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/interactive/ice_plate.tscn" id="plate"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/gate.tscn" id="gate"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/turbine.tscn" id="turbine"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/flask_shelf.tscn" id="shelf"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/swing_lamp.tscn" id="swing"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/drip_pipe.tscn" id="drip"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/spark_wire.tscn" id="wire"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/tracker.tscn" id="tracker"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/light.tscn" id="light"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/debris.tscn" id="debris"]
 
 [node name="Interactive" type="Node2D"]
+
+[node name="Gameplay" type="Node2D" parent="."]
+
+[node name="Ambient" type="Node2D" parent="."]
+
+[node name="ChamberPlate" parent="Gameplay" instance=ExtResource("plate")]
+position = Vector2(944, 704)
+channel = "corridor"
+width = 96.0
+
+[node name="CorridorShutter" parent="Gameplay" instance=ExtResource("gate")]
+position = Vector2(1440, 96)
+channel = "corridor"
+size = Vector2(24, 256)
+
+[node name="ShaftTurbine" parent="Ambient" instance=ExtResource("turbine")]
+position = Vector2(1216, 230)
+
+[node name="QuakeShelf" parent="Ambient" instance=ExtResource("shelf")]
+position = Vector2(360, 270)
+width = 56.0
+count = 4
+sense_depth = 40.0
+
+[node name="ChamberShelf" parent="Ambient" instance=ExtResource("shelf")]
+position = Vector2(980, 600)
+width = 48.0
+seed_value = 3
+sense_depth = 100.0
+
+[node name="WindLamp1" parent="Ambient" instance=ExtResource("swing")]
+position = Vector2(1620, 96)
+length = 60.0
+
+[node name="WindLamp2" parent="Ambient" instance=ExtResource("swing")]
+position = Vector2(1820, 96)
+length = 90.0
+
+[node name="ChamberLamp" parent="Ambient" instance=ExtResource("swing")]
+position = Vector2(800, 352)
+length = 120.0
+
+[node name="StartLamp" parent="Ambient" instance=ExtResource("swing")]
+position = Vector2(200, 0)
+length = 160.0
+
+[node name="ChamberDrip" parent="Ambient" instance=ExtResource("drip")]
+position = Vector2(740, 368)
+pipe_length = 0.0
+interval = 0.5
+
+[node name="Wire" parent="Ambient" instance=ExtResource("wire")]
+position = Vector2(1360, 96)
+length = 50.0
+
+[node name="Camera" parent="Ambient" instance=ExtResource("tracker")]
+position = Vector2(620, 0)
+flip = true
+rest_angle = 1.2
+
+[node name="Monitor" parent="Ambient" instance=ExtResource("tracker")]
+position = Vector2(1330, 352)
+style = 1
+
+[node name="Tube1" parent="Ambient" instance=ExtResource("light")]
+position = Vector2(900, 352)
+style = 1
+faultiness = 0.7
+
+[node name="Beacon" parent="Ambient" instance=ExtResource("light")]
+position = Vector2(2100, 120)
+style = 2
+color = Color(0.4, 1.0, 0.6, 1.0)
+
+[node name="CorridorPapers" parent="Ambient" instance=ExtResource("debris")]
+position = Vector2(1290, 352)
+count = 6
+width = 120.0
+margin = 300.0
+ceiling = 250.0
+
+[node name="Dust" parent="Ambient" instance=ExtResource("debris")]
+position = Vector2(40, 320)
+kind = 2
+count = 16
+width = 560.0
+ceiling = 280.0
