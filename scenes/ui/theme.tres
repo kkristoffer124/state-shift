@@ -1,0 +1,233 @@
+[gd_resource type="Theme" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/menu/btn_normal.png" id="t_btn_normal"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/btn_focus.png" id="t_btn_focus"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/btn_pressed.png" id="t_btn_pressed"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/btn_disabled.png" id="t_btn_disabled"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/panel.png" id="t_panel"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/slider_track.png" id="t_slider_track"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/slider_fill.png" id="t_slider_fill"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/tile_normal.png" id="t_tile_normal"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/tile_focus.png" id="t_tile_focus"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/tile_pressed.png" id="t_tile_pressed"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/tile_locked.png" id="t_tile_locked"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/tile_locked_focus.png" id="t_tile_locked_focus"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/grabber.png" id="t_grabber"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/grabber_focus.png" id="t_grabber_focus"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/toggle_on.png" id="t_toggle_on"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/toggle_off.png" id="t_toggle_off"]
+
+[sub_resource type="StyleBoxEmpty" id="empty"]
+
+[sub_resource type="StyleBoxTexture" id="btn_n"]
+content_margin_left = 22.0
+content_margin_top = 7.0
+content_margin_right = 22.0
+content_margin_bottom = 13.0
+texture = ExtResource("t_btn_normal")
+texture_margin_left = 20.0
+texture_margin_top = 18.0
+texture_margin_right = 20.0
+texture_margin_bottom = 22.0
+
+[sub_resource type="StyleBoxTexture" id="btn_f"]
+content_margin_left = 22.0
+content_margin_top = 7.0
+content_margin_right = 22.0
+content_margin_bottom = 13.0
+texture = ExtResource("t_btn_focus")
+texture_margin_left = 20.0
+texture_margin_top = 18.0
+texture_margin_right = 20.0
+texture_margin_bottom = 22.0
+
+[sub_resource type="StyleBoxTexture" id="btn_p"]
+content_margin_left = 22.0
+content_margin_top = 11.0
+content_margin_right = 22.0
+content_margin_bottom = 9.0
+texture = ExtResource("t_btn_pressed")
+texture_margin_left = 20.0
+texture_margin_top = 22.0
+texture_margin_right = 20.0
+texture_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxTexture" id="btn_d"]
+content_margin_left = 22.0
+content_margin_top = 7.0
+content_margin_right = 22.0
+content_margin_bottom = 13.0
+texture = ExtResource("t_btn_disabled")
+texture_margin_left = 20.0
+texture_margin_top = 18.0
+texture_margin_right = 20.0
+texture_margin_bottom = 22.0
+
+[sub_resource type="StyleBoxTexture" id="panel"]
+content_margin_left = 28.0
+content_margin_top = 22.0
+content_margin_right = 28.0
+content_margin_bottom = 22.0
+texture = ExtResource("t_panel")
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
+
+[sub_resource type="StyleBoxTexture" id="slider"]
+content_margin_left = 0.0
+content_margin_top = 6.0
+content_margin_right = 0.0
+content_margin_bottom = 6.0
+texture = ExtResource("t_slider_track")
+texture_margin_left = 6.0
+texture_margin_top = 4.0
+texture_margin_right = 6.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="slider_fill"]
+content_margin_left = 0.0
+content_margin_top = 6.0
+content_margin_right = 0.0
+content_margin_bottom = 6.0
+texture = ExtResource("t_slider_fill")
+texture_margin_left = 6.0
+texture_margin_top = 4.0
+texture_margin_right = 6.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="tile_n"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 14.0
+texture = ExtResource("t_tile_normal")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxTexture" id="tile_f"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 14.0
+texture = ExtResource("t_tile_focus")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxTexture" id="tile_p"]
+content_margin_left = 12.0
+content_margin_top = 14.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+texture = ExtResource("t_tile_pressed")
+texture_margin_left = 12.0
+texture_margin_top = 16.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="tile_l"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 14.0
+texture = ExtResource("t_tile_locked")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxTexture" id="tile_lf"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 14.0
+texture = ExtResource("t_tile_locked_focus")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 16.0
+
+[resource]
+default_font_size = 18
+Button/colors/font_color = Color(0.851, 0.9333, 1, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/colors/font_focus_color = Color(1, 1, 1, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+Button/colors/font_disabled_color = Color(0.3647, 0.4824, 0.5765, 1)
+Button/colors/font_outline_color = Color(0.05098, 0.07843, 0.149, 0.9)
+Button/constants/outline_size = 4
+Button/constants/h_separation = 8
+Button/font_sizes/font_size = 18
+Button/styles/normal = SubResource("btn_n")
+Button/styles/hover = SubResource("btn_f")
+Button/styles/focus = SubResource("empty")
+Button/styles/pressed = SubResource("btn_p")
+Button/styles/hover_pressed = SubResource("btn_p")
+Button/styles/disabled = SubResource("btn_d")
+ChapterTile/base_type = &"Button"
+ChapterTile/styles/normal = SubResource("tile_n")
+ChapterTile/styles/hover = SubResource("tile_f")
+ChapterTile/styles/focus = SubResource("empty")
+ChapterTile/styles/pressed = SubResource("tile_p")
+ChapterTile/styles/hover_pressed = SubResource("tile_p")
+ChapterTile/styles/disabled = SubResource("tile_l")
+LockedTile/base_type = &"Button"
+LockedTile/styles/normal = SubResource("tile_l")
+LockedTile/styles/hover = SubResource("tile_lf")
+LockedTile/styles/focus = SubResource("empty")
+LockedTile/styles/pressed = SubResource("tile_lf")
+LockedTile/styles/hover_pressed = SubResource("tile_lf")
+LockedTile/styles/disabled = SubResource("tile_l")
+LockedTile/colors/font_color = Color(0.3647, 0.4824, 0.5765, 1)
+LockedTile/colors/font_hover_color = Color(0.5608, 0.6627, 0.7608, 1)
+Label/colors/font_color = Color(0.851, 0.9333, 1, 1)
+Label/colors/font_outline_color = Color(0.05098, 0.07843, 0.149, 0.9)
+Label/colors/font_shadow_color = Color(0.05098, 0.07843, 0.149, 0.6)
+Label/constants/outline_size = 4
+Label/constants/shadow_offset_x = 0
+Label/constants/shadow_offset_y = 2
+HeaderLabel/base_type = &"Label"
+HeaderLabel/font_sizes/font_size = 30
+HeaderLabel/colors/font_color = Color(0.851, 0.9333, 1, 1)
+HeaderLabel/constants/outline_size = 6
+DimLabel/base_type = &"Label"
+DimLabel/font_sizes/font_size = 14
+DimLabel/colors/font_color = Color(0.5608, 0.6627, 0.7608, 1)
+AccentLabel/base_type = &"Label"
+AccentLabel/colors/font_color = Color(0.549, 0.7529, 1, 1)
+PanelContainer/styles/panel = SubResource("panel")
+Panel/styles/panel = SubResource("panel")
+HSlider/styles/slider = SubResource("slider")
+HSlider/styles/grabber_area = SubResource("slider_fill")
+HSlider/styles/grabber_area_highlight = SubResource("slider_fill")
+HSlider/styles/focus = SubResource("empty")
+HSlider/icons/grabber = ExtResource("t_grabber")
+HSlider/icons/grabber_highlight = ExtResource("t_grabber_focus")
+HSlider/constants/center_grabber = 1
+CheckButton/styles/normal = SubResource("empty")
+CheckButton/styles/hover = SubResource("empty")
+CheckButton/styles/pressed = SubResource("empty")
+CheckButton/styles/hover_pressed = SubResource("empty")
+CheckButton/styles/focus = SubResource("empty")
+CheckButton/styles/disabled = SubResource("empty")
+CheckButton/icons/checked = ExtResource("t_toggle_on")
+CheckButton/icons/unchecked = ExtResource("t_toggle_off")
+CheckButton/icons/checked_disabled = ExtResource("t_toggle_on")
+CheckButton/icons/unchecked_disabled = ExtResource("t_toggle_off")
+CheckButton/icons/checked_mirrored = ExtResource("t_toggle_on")
+CheckButton/icons/unchecked_mirrored = ExtResource("t_toggle_off")
+CheckButton/colors/font_color = Color(0.851, 0.9333, 1, 1)
+CycleButton/base_type = &"Button"
+CycleButton/styles/normal = SubResource("empty")
+CycleButton/styles/hover = SubResource("empty")
+CycleButton/styles/pressed = SubResource("empty")
+CycleButton/styles/hover_pressed = SubResource("empty")
+CycleButton/styles/focus = SubResource("empty")
+CycleButton/styles/disabled = SubResource("empty")
+CycleButton/colors/font_hover_color = Color(0.549, 0.7529, 1, 1)
+CycleButton/colors/font_focus_color = Color(0.549, 0.7529, 1, 1)

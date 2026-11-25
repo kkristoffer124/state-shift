@@ -1,8 +1,25 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/menu.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/background.tscn" id="bg"]
+[ext_resource type="Script" path="res://scripts/ui/end_screen.gd" id="1"]
+[ext_resource type="Theme" path="res://scenes/ui/theme.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/ui/anim_backdrop.gd" id="3"]
 [ext_resource type="Texture2D" path="res://assets/ui/u1_logo.png" id="logo"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f01.png" id="f1"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f02.png" id="f2"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f03.png" id="f3"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f04.png" id="f4"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f05.png" id="f5"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f06.png" id="f6"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f07.png" id="f7"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f08.png" id="f8"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f09.png" id="f9"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f10.png" id="f10"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f11.png" id="f11"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f12.png" id="f12"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f13.png" id="f13"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f14.png" id="f14"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f15.png" id="f15"]
+[ext_resource type="Texture2D" path="res://assets/ui/end_screen/u7_end_screen_f16.png" id="f16"]
 
 [node name="End" type="Control"]
 layout_mode = 3
@@ -11,51 +28,116 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2")
 script = ExtResource("1")
-is_end_screen = true
 
-[node name="Background" parent="." instance=ExtResource("bg")]
-
-[node name="Center" type="VBoxContainer" parent="."]
+[node name="Backdrop" type="TextureRect" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -150.0
-offset_right = 300.0
-offset_bottom = 150.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-alignment = 1
-theme_override_constants/separation = 16
-
-[node name="Logo" type="TextureRect" parent="Center"]
-texture_filter = 1
-custom_minimum_size = Vector2(300, 75)
-layout_mode = 2
-texture = ExtResource("logo")
+mouse_filter = 2
+texture = ExtResource("f1")
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 6
+script = ExtResource("3")
+frames = Array[Texture2D]([ExtResource("f1"), ExtResource("f2"), ExtResource("f3"), ExtResource("f4"), ExtResource("f5"), ExtResource("f6"), ExtResource("f7"), ExtResource("f8"), ExtResource("f9"), ExtResource("f10"), ExtResource("f11"), ExtResource("f12"), ExtResource("f13"), ExtResource("f14"), ExtResource("f15"), ExtResource("f16")])
 
-[node name="Title" type="Label" parent="Center"]
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -404.0
+offset_top = -262.0
+offset_right = -24.0
+offset_bottom = -22.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 1, 0.8, 1)
-theme_override_font_sizes/font_size = 56
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+theme_override_colors/font_color = Color(0.72, 1, 0.84, 1)
+theme_override_font_sizes/font_size = 34
 text = "YOU ESCAPED!"
 horizontal_alignment = 1
 
-[node name="Stats" type="Label" parent="Center"]
+[node name="Sub" type="Label" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "Time 0:00      Puddles lost 0"
+theme_type_variation = &"DimLabel"
+text = "All 12 chapters complete"
 horizontal_alignment = 1
 
-[node name="Again" type="Label" parent="Center"]
+[node name="Stats" type="GridContainer" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.6)
-theme_override_font_sizes/font_size = 18
-text = "SPACE play again  ·  ESC menu"
-horizontal_alignment = 1
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 28
+theme_override_constants/v_separation = 2
+columns = 2
+
+[node name="TimeLabel" type="Label" parent="Panel/VBox/Stats"]
+layout_mode = 2
+theme_type_variation = &"DimLabel"
+theme_override_font_sizes/font_size = 16
+text = "Run time"
+
+[node name="Time" type="Label" parent="Panel/VBox/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0:00.0"
+horizontal_alignment = 2
+
+[node name="DeathsLabel" type="Label" parent="Panel/VBox/Stats"]
+layout_mode = 2
+theme_type_variation = &"DimLabel"
+theme_override_font_sizes/font_size = 16
+text = "Puddles lost"
+
+[node name="Deaths" type="Label" parent="Panel/VBox/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+horizontal_alignment = 2
+
+[node name="BestLabel" type="Label" parent="Panel/VBox/Stats"]
+layout_mode = 2
+theme_type_variation = &"DimLabel"
+theme_override_font_sizes/font_size = 16
+text = "Best total"
+
+[node name="Best" type="Label" parent="Panel/VBox/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"AccentLabel"
+text = "0:00.0"
+horizontal_alignment = 2
+
+[node name="Spacer" type="Control" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="MainMenu" type="Button" parent="Panel/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Main menu"
+
+[node name="Chapters" type="Button" parent="Panel/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Chapter select"

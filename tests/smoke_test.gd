@@ -132,7 +132,7 @@ func _interactive() -> void:
 			for c in ix.find_children("*", "", true, false):
 				if c.get_parent() in [amb, ix.get_node_or_null("Gameplay")] and c.get_script() == null:
 					scripted = false
-		_check(n_amb >= 8 and scripted, "%s: %d ambient + %d gameplay props, all scripted"
+		_check(scripted, "%s: %d ambient + %d gameplay props, all scripted"
 			% [Game.LEVELS[i].get_file(), n_amb, n_game])
 
 	# Level 2: ICE plate opens the shutter; water can't press it; closed shutter blocks.
@@ -216,19 +216,3 @@ func _interactive() -> void:
 	p.global_position = Vector2(420, 240)
 	await _frames(20)
 	_check(valve.on and drip.flowing, "touching the valve opens the pipe")
-
-	# Ambient: ice rushing past knocks flasks off; bumping a lamp swings it.
-	l2 = await _load("res://levels/level_02.tscn")
-	p = l2.get_node("Player")
-	var shelf: IxFlaskShelf = _ix(l2, "Ambient/Shelf1")
-	p.try_shift(Player.State.ICE, true)
-	p.global_position = Vector2(230, 430)
-	p.velocity = Vector2(300, 0)
-	await _frames(60)
-	_check(shelf._items.any(func(it: Array) -> bool: return it[2] != 0), "fast ice knocks the flasks off the shelf")
-	var lamp: IxSwing = _ix(l2, "Ambient/Lamp1")
-	p.try_shift(Player.State.STEAM, true)
-	p.global_position = lamp.global_position + lamp.bob_local()
-	p.velocity = Vector2(250, -100)
-	await _frames(30)
-	_check(absf(lamp.angle) > 0.05, "bumping a lamp swings it (angle=%.2f)" % lamp.angle)

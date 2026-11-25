@@ -2,12 +2,6 @@
 
 [ext_resource type="PackedScene" path="res://scenes/interactive/ice_plate.tscn" id="plate"]
 [ext_resource type="PackedScene" path="res://scenes/interactive/gate.tscn" id="gate"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/flask_shelf.tscn" id="shelf"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/swing_lamp.tscn" id="swing"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/spark_wire.tscn" id="wire"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/tracker.tscn" id="tracker"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/light.tscn" id="light"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/debris.tscn" id="debris"]
 
 [node name="Interactive" type="Node2D"]
 
@@ -24,50 +18,3 @@ width = 96.0
 position = Vector2(1430, 0)
 channel = "exit"
 size = Vector2(24, 704)
-
-[node name="StartShelf" parent="Ambient" instance=ExtResource("shelf")]
-position = Vector2(170, 400)
-width = 56.0
-sense_depth = 48.0
-
-[node name="Lamp1" parent="Ambient" instance=ExtResource("swing")]
-position = Vector2(120, 0)
-length = 200.0
-
-[node name="Lamp2" parent="Ambient" instance=ExtResource("swing")]
-position = Vector2(1200, 0)
-length = 260.0
-
-[node name="PitWire" parent="Ambient" instance=ExtResource("wire")]
-position = Vector2(1000, 0)
-length = 90.0
-
-[node name="Camera" parent="Ambient" instance=ExtResource("tracker")]
-position = Vector2(230, 0)
-flip = true
-rest_angle = 1.2
-
-[node name="Monitor" parent="Ambient" instance=ExtResource("tracker")]
-position = Vector2(1040, 768)
-style = 1
-
-[node name="Tube1" parent="Ambient" instance=ExtResource("light")]
-position = Vector2(1100, 0)
-style = 1
-
-[node name="PitBeacon" parent="Ambient" instance=ExtResource("light")]
-position = Vector2(864, 820)
-style = 2
-color = Color(1.0, 0.35, 0.3, 1.0)
-
-[node name="Dust" parent="Ambient" instance=ExtResource("debris")]
-position = Vector2(980, 760)
-kind = 2
-count = 24
-width = 600.0
-ceiling = 300.0
-
-[node name="Papers" parent="Ambient" instance=ExtResource("debris")]
-position = Vector2(20, 448)
-count = 5
-width = 120.0

@@ -3,13 +3,6 @@
 [ext_resource type="PackedScene" path="res://scenes/interactive/turbine.tscn" id="turbine"]
 [ext_resource type="PackedScene" path="res://scenes/interactive/gate.tscn" id="gate"]
 [ext_resource type="PackedScene" path="res://scenes/interactive/drip_pipe.tscn" id="drip"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/puddle.tscn" id="puddle"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/swing_lamp.tscn" id="swing"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/spark_wire.tscn" id="wire"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/flask_shelf.tscn" id="shelf"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/tracker.tscn" id="tracker"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/light.tscn" id="light"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/debris.tscn" id="debris"]
 
 [node name="Interactive" type="Node2D"]
 
@@ -33,53 +26,3 @@ size = Vector2(24, 448)
 position = Vector2(750, 1008)
 pipe_length = 0.0
 interval = 0.6
-
-[node name="Puddle" parent="Ambient" instance=ExtResource("puddle")]
-position = Vector2(360, 1216)
-width = 80.0
-
-[node name="Lamp1" parent="Ambient" instance=ExtResource("swing")]
-position = Vector2(930, 992)
-length = 80.0
-
-[node name="Lamp2" parent="Ambient" instance=ExtResource("swing")]
-position = Vector2(700, 736)
-length = 60.0
-
-[node name="Wire" parent="Ambient" instance=ExtResource("wire")]
-position = Vector2(860, 480)
-length = 60.0
-
-[node name="Shelf" parent="Ambient" instance=ExtResource("shelf")]
-position = Vector2(60, 1170)
-width = 48.0
-sense_depth = 40.0
-
-[node name="Camera" parent="Ambient" instance=ExtResource("tracker")]
-position = Vector2(940, 992)
-flip = true
-rest_angle = 1.2
-
-[node name="Monitor" parent="Ambient" instance=ExtResource("tracker")]
-position = Vector2(740, 704)
-style = 1
-
-[node name="Light1" parent="Ambient" instance=ExtResource("light")]
-position = Vector2(300, 0)
-style = 1
-
-[node name="Light2" parent="Ambient" instance=ExtResource("light")]
-position = Vector2(900, 736)
-style = 0
-
-[node name="Dust" parent="Ambient" instance=ExtResource("debris")]
-position = Vector2(20, 1210)
-kind = 2
-count = 24
-width = 900.0
-ceiling = 200.0
-
-[node name="Papers" parent="Ambient" instance=ExtResource("debris")]
-position = Vector2(220, 448)
-count = 5
-width = 120.0

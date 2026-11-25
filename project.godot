@@ -17,9 +17,16 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+Save="*res://scripts/save.gd"
+Settings="*res://scripts/settings.gd"
 Sfx="*res://scripts/sfx.gd"
 Game="*res://scripts/game.gd"
 Hud="*res://scenes/hud.tscn"
+Overlay="*res://scenes/ui/overlay.tscn"
+
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
 
 [display]
 

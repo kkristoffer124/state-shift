@@ -1,11 +1,6 @@
 [gd_scene load_steps=7 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/interactive/turbine.tscn" id="turbine"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/swing_lamp.tscn" id="swing"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/debris.tscn" id="debris"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/tracker.tscn" id="tracker"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/spark_wire.tscn" id="wire"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/light.tscn" id="light"]
 
 [node name="Interactive" type="Node2D"]
 
@@ -14,64 +9,3 @@
 [node name="WindTurbine" parent="Ambient" instance=ExtResource("turbine")]
 position = Vector2(700, 150)
 pole_length = 132.0
-
-[node name="WindChain1" parent="Ambient" instance=ExtResource("swing")]
-position = Vector2(520, 0)
-style = 1
-length = 110.0
-
-[node name="WindChain2" parent="Ambient" instance=ExtResource("swing")]
-position = Vector2(760, 0)
-style = 1
-length = 150.0
-
-[node name="WindLamp" parent="Ambient" instance=ExtResource("swing")]
-position = Vector2(960, 0)
-length = 120.0
-
-[node name="ExitSign" parent="Ambient" instance=ExtResource("swing")]
-position = Vector2(1300, 0)
-style = 2
-length = 60.0
-
-[node name="Papers" parent="Ambient" instance=ExtResource("debris")]
-position = Vector2(180, 288)
-count = 8
-width = 190.0
-margin = 1100.0
-ceiling = 270.0
-
-[node name="WindDust" parent="Ambient" instance=ExtResource("debris")]
-position = Vector2(390, 384)
-kind = 2
-count = 30
-width = 620.0
-margin = 560.0
-ceiling = 340.0
-
-[node name="Leaves" parent="Ambient" instance=ExtResource("debris")]
-position = Vector2(1100, 288)
-kind = 1
-count = 6
-width = 200.0
-
-[node name="Camera" parent="Ambient" instance=ExtResource("tracker")]
-position = Vector2(40, 0)
-rest_angle = 0.5
-
-[node name="Monitor" parent="Ambient" instance=ExtResource("tracker")]
-position = Vector2(1380, 288)
-style = 1
-
-[node name="Wire" parent="Ambient" instance=ExtResource("wire")]
-position = Vector2(1180, 0)
-length = 70.0
-
-[node name="Beacon" parent="Ambient" instance=ExtResource("light")]
-position = Vector2(1040, 270)
-style = 2
-color = Color(1.0, 0.35, 0.3, 1.0)
-
-[node name="Tube1" parent="Ambient" instance=ExtResource("light")]
-position = Vector2(200, 0)
-style = 1

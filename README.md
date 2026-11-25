@@ -11,7 +11,7 @@ You're a blob of matter that shifts between three states to escape a lab.
 | WATER | small, nimble | jump, drip through grates | touch spikes |
 | STEAM | floats up, drifts | rise, pass grates, ride fans | touch spikes, go down |
 
-Controls: A/D move · Space jump · **E / Shift heat up** · **Q / Ctrl cool down** · R restart · Esc menu · N skip level (debug builds only)
+Controls: A/D move · Space jump · **E / Shift heat up** · **Q / Ctrl cool down** · R restart · Esc pause · N skip level (debug builds only)
 
 ## Project layout
 - `levels/level_0X.tscn` — levels. Drag props from `scenes/props/` under `Blocks` or `Zones`; set `size` in the inspector (origin = top-left). Camera limits come from the Blocks' bounds automatically.
@@ -24,9 +24,19 @@ Controls: A/D move · Space jump · **E / Shift heat up** · **Q / Ctrl cool dow
 
 All visuals are placeholder `_draw()` shapes — replace with your own art.
 
+## Front-end and progression
+- Main menu (`scenes/menu.tscn`): Continue, New game, Load (chapter select), Settings, Quit (hidden on web).
+- Every level is a chapter with a title card and a completion card; progress and best times are saved to `user://save.cfg` by the `Save` autoload.
+- `Settings` autoload: volumes (Master/Music/SFX buses), fullscreen, screen shake, camera zoom (1.5x/2x/3x, default 2x).
+- `Overlay` autoload: chapter cards, pause menu (Esc), fades.
+- Backdrop: `scenes/background.tscn` plays the animated e9a/e9b lab loops with parallax.
+- Water/steam: `scripts/fluid_body.gd` (the player's pixel body) and `scripts/fluid_world.gd` (free falling-sand water/steam per level).
+
 ## Testing
 ```
 godot --headless --path . res://tests/smoke_test.tscn
+godot --headless --fixed-fps 120 --path . res://tests/levels_test.tscn
+godot --headless --path . res://tests/menu_test.tscn
 ```
 Web export preset "Web" -> `../state-shift-builds/web/` (zip that folder for itch).
 

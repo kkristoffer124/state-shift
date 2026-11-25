@@ -14,6 +14,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	for i in 10:
 		var p := AudioStreamPlayer.new()
+		p.bus = &"SFX"
 		add_child(p)
 		_players.append(p)
 	_streams["heat"] = _sweep([[260.0, 620.0, 0.16]], "sine", 0.35)

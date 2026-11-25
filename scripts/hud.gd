@@ -15,6 +15,7 @@ const LOCK_SCALE := Vector2(2, 2)
 
 @onready var level_label: Label = $LevelLabel
 @onready var deaths_label: Label = $DeathsLabel
+@onready var progress_label: Label = $ProgressLabel
 @onready var icons: Array[TextureRect] = [$StateBar/Icons/Ice, $StateBar/Icons/Water, $StateBar/Icons/Steam]
 @onready var lock: TextureRect = $StateBar/Lock
 
@@ -28,12 +29,29 @@ func _ready() -> void:
 	lock.scale = LOCK_SCALE
 	Game.state_changed.connect(_on_state_changed)
 	Game.level_changed.connect(_on_level_changed)
-	Game.deaths_changed.connect(func(d: int) -> void: deaths_label.text = "Puddles lost: %d" % d)
+	Game.deaths_changed.connect(func(d: int) -> void:
+		deaths_label.text = "Puddles lost: %d" % d
+		_flash_top())
 
 
 func _on_level_changed(level_name: String, index: int, total: int) -> void:
-	level_label.text = "%s   (%d/%d)" % [level_name, index + 1, total]
+	level_label.text = "Chapter %d — %s" % [index + 1, Game.title_from_level_name(level_name)]
+	progress_label.text = "%d / %d" % [index + 1, total]
 	set_locked(false)
+	_flash_top()
+
+
+var _top_tween: Tween
+
+## The top labels show for a few seconds, then fade so they never cover the level.
+func _flash_top() -> void:
+	if _top_tween:
+		_top_tween.kill()
+	for l in [level_label, deaths_label, progress_label]:
+		l.modulate.a = 1.0
+	_top_tween = create_tween().set_parallel()
+	for l in [level_label, deaths_label, progress_label]:
+		_top_tween.tween_property(l, "modulate:a", 0.0, 0.8).set_delay(3.5)
 
 
 func _on_state_changed(s: int) -> void:

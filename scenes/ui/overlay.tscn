@@ -1,0 +1,274 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/overlay.gd" id="1"]
+[ext_resource type="Theme" path="res://scenes/ui/theme.tres" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_panel.tscn" id="3"]
+
+[sub_resource type="Gradient" id="band_grad"]
+offsets = PackedFloat32Array(0, 0.22, 0.78, 1)
+colors = PackedColorArray(0.05, 0.08, 0.15, 0, 0.05, 0.08, 0.15, 0.82, 0.05, 0.08, 0.15, 0.82, 0.05, 0.08, 0.15, 0)
+
+[sub_resource type="GradientTexture2D" id="band_tex"]
+gradient = SubResource("band_grad")
+width = 128
+height = 4
+
+[sub_resource type="Gradient" id="line_grad"]
+offsets = PackedFloat32Array(0, 0.3, 0.7, 1)
+colors = PackedColorArray(0.25, 0.55, 1, 0, 0.25, 0.55, 1, 0.9, 0.25, 0.55, 1, 0.9, 0.25, 0.55, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="line_tex"]
+gradient = SubResource("line_grad")
+width = 128
+height = 2
+
+[node name="Overlay" type="CanvasLayer"]
+process_mode = 3
+layer = 50
+script = ExtResource("1")
+
+[node name="ChapterCard" type="Control" parent="."]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2")
+
+[node name="Band" type="TextureRect" parent="ChapterCard"]
+layout_mode = 1
+anchor_top = 0.68
+anchor_right = 1.0
+anchor_bottom = 0.68
+offset_top = -62.0
+offset_bottom = 62.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("band_tex")
+expand_mode = 1
+
+[node name="LineTop" type="TextureRect" parent="ChapterCard"]
+layout_mode = 1
+anchor_left = 0.2
+anchor_top = 0.68
+anchor_right = 0.8
+anchor_bottom = 0.68
+offset_top = -62.0
+offset_bottom = -60.0
+mouse_filter = 2
+texture = SubResource("line_tex")
+expand_mode = 1
+
+[node name="LineBottom" type="TextureRect" parent="ChapterCard"]
+layout_mode = 1
+anchor_left = 0.2
+anchor_top = 0.68
+anchor_right = 0.8
+anchor_bottom = 0.68
+offset_top = 60.0
+offset_bottom = 62.0
+mouse_filter = 2
+texture = SubResource("line_tex")
+expand_mode = 1
+
+[node name="Box" type="VBoxContainer" parent="ChapterCard"]
+layout_mode = 1
+anchor_top = 0.68
+anchor_right = 1.0
+anchor_bottom = 0.68
+offset_top = -56.0
+offset_bottom = 56.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="Num" type="Label" parent="ChapterCard/Box"]
+layout_mode = 2
+theme_type_variation = &"AccentLabel"
+theme_override_font_sizes/font_size = 18
+text = "CHAPTER 1"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="ChapterCard/Box"]
+layout_mode = 2
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 50
+text = "Drip"
+horizontal_alignment = 1
+
+[node name="CompleteCard" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2")
+
+[node name="Band" type="TextureRect" parent="CompleteCard"]
+layout_mode = 1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -84.0
+offset_bottom = 84.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("band_tex")
+expand_mode = 1
+
+[node name="LineTop" type="TextureRect" parent="CompleteCard"]
+layout_mode = 1
+anchor_left = 0.2
+anchor_top = 0.5
+anchor_right = 0.8
+anchor_bottom = 0.5
+offset_top = -84.0
+offset_bottom = -82.0
+mouse_filter = 2
+texture = SubResource("line_tex")
+expand_mode = 1
+
+[node name="LineBottom" type="TextureRect" parent="CompleteCard"]
+layout_mode = 1
+anchor_left = 0.2
+anchor_top = 0.5
+anchor_right = 0.8
+anchor_bottom = 0.5
+offset_top = 82.0
+offset_bottom = 84.0
+mouse_filter = 2
+texture = SubResource("line_tex")
+expand_mode = 1
+
+[node name="Box" type="VBoxContainer" parent="CompleteCard"]
+layout_mode = 1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -78.0
+offset_bottom = 78.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Title" type="Label" parent="CompleteCard/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 1, 0.84, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 36
+text = "CHAPTER 1 COMPLETE"
+horizontal_alignment = 1
+
+[node name="Stats" type="Label" parent="CompleteCard/Box"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Drip      Time 0:00.0      Puddles lost 0"
+horizontal_alignment = 1
+
+[node name="Best" type="Label" parent="CompleteCard/Box"]
+layout_mode = 2
+theme_type_variation = &"AccentLabel"
+theme_override_font_sizes/font_size = 16
+text = "NEW BEST TIME"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="CompleteCard/Box"]
+layout_mode = 2
+theme_type_variation = &"DimLabel"
+text = "SPACE  continue"
+horizontal_alignment = 1
+
+[node name="PauseMenu" type="Control" parent="."]
+process_mode = 3
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2")
+
+[node name="Dim" type="ColorRect" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.08, 0.15, 0.62)
+
+[node name="Center" type="CenterContainer" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="PauseMenu/Center"]
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="PauseMenu/Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="PauseMenu/Center/Panel/VBox"]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="PauseChapter" type="Label" parent="PauseMenu/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DimLabel"
+text = "Chapter 1 - Drip"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="PauseMenu/Center/Panel/VBox"]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="Resume" type="Button" parent="PauseMenu/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Resume"
+
+[node name="Restart" type="Button" parent="PauseMenu/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Restart chapter"
+
+[node name="Settings" type="Button" parent="PauseMenu/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Settings"
+
+[node name="MainMenu" type="Button" parent="PauseMenu/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Main menu"
+
+[node name="SettingsPanel" parent="PauseMenu" instance=ExtResource("3")]
+visible = false
+layout_mode = 1
+
+[node name="Fade" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.05, 0.08, 0.15, 0)
