@@ -2,19 +2,6 @@
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/fluid_body.gd" id="2"]
-[ext_resource type="Shader" path="res://shaders/metaball.gdshader" id="3"]
-[ext_resource type="Texture2D" path="res://assets/player/p2a_droplet_falloff.png" id="t_drop"]
-[ext_resource type="Texture2D" path="res://assets/player/p2b_water_ramp.png" id="t_ramp"]
-[ext_resource type="Texture2D" path="res://assets/player/p2c_highlight.png" id="t_hl"]
-[ext_resource type="Texture2D" path="res://assets/player/p2f_puddle_splat_1.png" id="t_sp1"]
-[ext_resource type="Texture2D" path="res://assets/player/p2f_puddle_splat_2.png" id="t_sp2"]
-[ext_resource type="Texture2D" path="res://assets/player/p2f_puddle_splat_3.png" id="t_sp3"]
-[ext_resource type="Texture2D" path="res://assets/player/p3a_puff_1.png" id="t_pf1"]
-[ext_resource type="Texture2D" path="res://assets/player/p3a_puff_2.png" id="t_pf2"]
-[ext_resource type="Texture2D" path="res://assets/player/p3a_puff_3.png" id="t_pf3"]
-[ext_resource type="Texture2D" path="res://assets/player/p3a_puff_4.png" id="t_pf4"]
-[ext_resource type="Texture2D" path="res://assets/player/p3b_wisp.png" id="t_wisp"]
-[ext_resource type="Texture2D" path="res://assets/player/p3c_steam_age_ramp.png" id="t_sramp"]
 [ext_resource type="Texture2D" path="res://assets/vfx/v1_sparkle.png" id="t_spark"]
 
 [sub_resource type="CircleShape2D" id="Shape_body"]
@@ -27,16 +14,6 @@ radius = 6.0
 offsets = PackedFloat32Array(0, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
-[sub_resource type="ShaderMaterial" id="Mat_metaball"]
-shader = ExtResource("3")
-shader_parameter/threshold = 0.42
-shader_parameter/softness = 0.04
-shader_parameter/rim_color = Color(0.12, 0.35, 0.8, 1)
-shader_parameter/body_color = Color(0.25, 0.56, 1, 1)
-shader_parameter/core_color = Color(0.48, 0.74, 1, 1)
-shader_parameter/use_ramp = true
-shader_parameter/ramp = ExtResource("t_ramp")
-
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 8
 collision_mask = 5
@@ -47,26 +24,6 @@ script = ExtResource("1")
 [node name="FluidBody" type="Node2D" parent="."]
 z_index = -1
 script = ExtResource("2")
-droplet_texture = ExtResource("t_drop")
-splat_textures = Array[Texture2D]([ExtResource("t_sp1"), ExtResource("t_sp2"), ExtResource("t_sp3")])
-highlight_texture = ExtResource("t_hl")
-puff_textures = Array[Texture2D]([ExtResource("t_pf1"), ExtResource("t_pf2"), ExtResource("t_pf3"), ExtResource("t_pf4")])
-wisp_texture = ExtResource("t_wisp")
-steam_ramp = ExtResource("t_sramp")
-
-[node name="Splats" type="Node2D" parent="FluidBody"]
-
-[node name="Water" type="CanvasGroup" parent="FluidBody"]
-texture_filter = 2
-material = SubResource("Mat_metaball")
-fit_margin = 16.0
-clear_margin = 16.0
-
-[node name="Droplets" type="Node2D" parent="FluidBody/Water"]
-
-[node name="Gloss" type="Node2D" parent="FluidBody"]
-
-[node name="Steam" type="Node2D" parent="FluidBody"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("Shape_body")

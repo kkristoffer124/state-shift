@@ -103,6 +103,9 @@ func _make_box() -> StyleBoxTexture:
 
 func shatter(impact_velocity: Vector2) -> void:
 	collision_layer = 0
+	var fluid := get_tree().get_first_node_in_group("fluid_world")
+	if fluid:
+		fluid.set_solid_rect(Rect2(global_position, size), false)
 	Sfx.play("shatter")
 	var host := get_parent()
 	var origin := global_position

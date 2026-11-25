@@ -20,6 +20,14 @@ func _ready() -> void:
 	cam.limit_right = int(bounds.end.x)
 	cam.limit_bottom = int(bounds.end.y)
 	cam.reset_smoothing()
+	# Pixel fluid simulation for the whole level (free water/steam pixels).
+	var fluid := FluidWorld.new()
+	fluid.name = "FluidWorld"
+	fluid.z_index = 1
+	add_child(fluid)
+	var blocks: Array = $Blocks.get_children()
+	var zones: Array = $Zones.get_children() if has_node("Zones") else []
+	fluid.build(bounds, blocks, zones)
 	Game.on_level_ready(self, player)
 
 

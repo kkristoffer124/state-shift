@@ -1,176 +1,211 @@
 class_name FluidBody
 extends Node2D
-## Physics-driven visuals for the WATER and STEAM states.
-##  WATER: a soft body of droplets on springs (with squash/stretch springs),
-##         loose splash droplets that fly off and merge back, and puddle splats.
-##         Body + loose drops are rendered together as one metaball surface
-##         (Water CanvasGroup + shaders/metaball.gdshader).
-##  STEAM: a cloud of buoyant, swirling puff sprites that peel off as wisps.
-## Gameplay collision still uses the Player's CharacterBody2D shape; this node
-## only simulates how the body LOOKS. Positions are in world space (top_level).
+## The player's WATER / STEAM body as pixel particles (Sandboxels-style).
+## Each pixel is pulled towards a "home" slot around the player by a spring, but
+## moves and collides on its own against the level's FluidWorld grid, so the
+## body sloshes, squashes against floors and walls, and lags when you move.
+## Hard landings and fast moves throw pixels off; they become free water in the
+## FluidWorld (they pool, flow and drip through grates) and the blob soaks them
+## back up when it passes. Steam pixels peel off as rising wisps.
+## Gameplay collision still uses the Player's own shape.
 
 @export_group("Water")
-@export var droplet_count := 18
-@export var droplet_texture: Texture2D
-## Drawn radius of one body droplet sprite (before the metaball threshold).
-@export var droplet_radius := 14.0
-## Drawn radius of a loose splash droplet.
-@export var splash_radius := 10.0
-## Rest distance of droplets from the body centre.
-@export var ring_radius := 7.0
-@export var spring := 1100.0
-@export var damping := 16.0
-@export var droplet_gravity := 0.3
-## Squash/stretch spring (landing flattens, jumping stretches).
-@export var squash_stiffness := 260.0
-@export var squash_damping := 9.0
-@export var splat_textures: Array[Texture2D] = []
-@export var highlight_texture: Texture2D
+@export var water_pixels := 118
+@export var water_spring := 900.0
+@export var water_damping := 10.0
+## How far (px) a pixel can be pulled from home before it breaks off.
+@export var water_break_distance := 14.0
+@export var absorb_radius := 15.0
 
 @export_group("Steam")
-@export var puff_count := 30
-@export var puff_textures: Array[Texture2D] = []
-@export var wisp_texture: Texture2D
-@export var steam_ramp: Texture2D
-@export var puff_size := Vector2(7.0, 11.0)
-@export var puff_life := Vector2(0.7, 1.5)
-@export var cohesion := 70.0
-@export var buoyancy := 60.0
-@export var swirl := 40.0
+@export var steam_pixels := 80
+@export var steam_spring := 140.0
+@export var steam_damping := 5.0
+@export var steam_break_distance := 16.0
 
-const MASK := 1 | 4 # world + breakables (grates never stop fluids)
-const GRATE_MASK := 2
-const GRAVITY := 1300.0
+const CELL := 2
+const PACK: Array[Vector2i] = [Vector2i(0, -1), Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, 1),
+	Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(1, 1),
+	Vector2i(0, -2), Vector2i(-2, 0), Vector2i(2, 0), Vector2i(0, 2)]
+const C_SURFACE := Color("6fb0ff")
+const C_BODY := Color("3f8cff")
+const C_DEEP := Color("1f59cc")
+const C_RIM := Color("1a4aad")
+const C_FOAM := Color("cfe6ff")
+const C_SHINE := Color("e8f3ff")
+const C_STEAM := Color("f2f7ff")
+const C_STEAM_EDGE := Color("c5d3e6")
 
 var center := Vector2.ZERO
 var center_velocity := Vector2.ZERO
+## Where the face should be drawn (pinned to the body, nudged towards its mass).
 var visual_center := Vector2.ZERO
 var water_active := false
 var steam_active := false
 var alpha := 1.0
 
-# Body droplets
-var _drops := PackedVector2Array()
-var _drop_vel := PackedVector2Array()
-var _bound := true
-var _squash := 0.0     # >0 flattened, <0 stretched tall
+var _pos := PackedVector2Array()
+var _vel := PackedVector2Array()
+var _alive := PackedByteArray()
+var _homes := PackedVector2Array()
+var _steam_homes := PackedVector2Array()
+var _squash := 0.0
 var _squash_v := 0.0
-# Loose splash droplets: {pos, vel, age, life, r}
-var _loose: Array[Dictionary] = []
-# Puddle splats on surfaces: {pos, age, tex, flip}
-var _splats: Array[Dictionary] = []
-# Steam puffs
-var _puffs: Array[Dictionary] = []
-var _cohesive := true
-var _ramp_img: Image
-
-var _ray := PhysicsRayQueryParameters2D.new()
-var _point := PhysicsPointQueryParameters2D.new()
+var _regen := 0.0
 var _fading := false
 var _scale := 1.0
 var _t := 0.0
-var _drip_timer := 0.0
-var _prev_center_vel := Vector2.ZERO
-
-@onready var droplets_node: Node2D = $Water/Droplets
-@onready var steam_node: Node2D = $Steam
-@onready var splats_node: Node2D = $Splats
-@onready var gloss_node: Node2D = $Gloss
+var _world: FluidWorld
+var _prev_vx := 0.0
+var _spent := false # died/won: no more refilling
 
 
 func _ready() -> void:
 	top_level = true
 	global_position = Vector2.ZERO
-	droplets_node.draw.connect(_draw_droplets)
-	steam_node.draw.connect(_draw_steam)
-	splats_node.draw.connect(_draw_splats)
-	gloss_node.draw.connect(_draw_gloss)
-	var body := get_parent() as CollisionObject2D
-	_ray.collision_mask = MASK
-	if body:
-		_ray.exclude = [body.get_rid()]
-	_point.collision_mask = GRATE_MASK
-	_point.collide_with_bodies = true
 	_scale = (get_parent() as Node2D).global_scale.x
 	center = get_parent().global_position
 	visual_center = center
-	if steam_ramp:
-		_ramp_img = steam_ramp.get_image()
+	_homes = _disc(water_pixels, 0.0)
+	_steam_homes = _disc(steam_pixels, 1.6)
+
+
+## Pixel slots on a 2 px lattice filling a disc, nearest-first.
+func _disc(count: int, spread: float) -> PackedVector2Array:
+	var cells: Array[Vector2] = []
+	for y in range(-12, 13):
+		for x in range(-12, 13):
+			cells.append(Vector2(x, y) * CELL)
+	cells.sort_custom(func(a: Vector2, b: Vector2) -> bool: return a.length_squared() < b.length_squared())
+	var out := PackedVector2Array()
+	for i in count:
+		out.append(cells[i] * (1.0 + spread * (cells[i].length() / 24.0)))
+	return out
+
+
+func _get_world() -> FluidWorld:
+	if _world == null or not is_instance_valid(_world):
+		_world = get_tree().get_first_node_in_group("fluid_world") as FluidWorld
+	return _world
 
 
 # --- Public API (called by Player) ------------------------------------------
 
 func set_state(state: int, from_points: PackedVector2Array) -> void:
-	var was_water := water_active
-	var old_drops := _drops.duplicate()
+	var was_fluid := water_active or steam_active
+	var old := _pos.duplicate()
+	var old_alive := _alive.duplicate()
 	water_active = state == Player.State.WATER
 	steam_active = state == Player.State.STEAM
-	_bound = true
-	_cohesive = true
 	_squash = 0.0
-	_squash_v = 0.0
-	if water_active:
-		var src := from_points
-		if src.is_empty():
-			src = _puff_points()
-		_spawn_droplets(src)
-		_squash_v = 4.0 # melt/condense: a little slump on arrival
-	elif was_water:
-		_drops.clear()
-		_drop_vel.clear()
+	_squash_v = 3.0 if water_active else 0.0
+	var n := water_pixels if water_active else steam_pixels if steam_active else 0
+	_pos.resize(n)
+	_vel.resize(n)
+	_alive.resize(n)
+	for i in n:
+		var p := center + _home(i)
+		if was_fluid and not old.is_empty():
+			var j := (i * old.size()) / n
+			if old_alive[j] == 1:
+				p = old[j]
+		elif not from_points.is_empty():
+			# Melting from ice: start spread over the cube, then slump.
+			p = center + Vector2(randf_range(-14, 14), randf_range(-14, 14)) * _scale
+		_pos[i] = p
+		_vel[i] = center_velocity * 0.6
+		_alive[i] = 1
 	if steam_active:
-		var src := old_drops if was_water else from_points
-		_spawn_puffs(src)
+		for i in n:
+			_vel[i] += Vector2(randf_range(-60, 60), randf_range(-90, 0))
 
 
-## Droplet / puff positions, used to seed the next state.
 func current_points() -> PackedVector2Array:
-	if water_active:
-		return _drops.duplicate()
-	return _puff_points()
+	var out := PackedVector2Array()
+	for i in _pos.size():
+		if _alive[i] == 1:
+			out.append(_pos[i])
+	return out
 
 
-## Called by the player when it lands. impact = downward speed before landing.
 func on_land(impact: float) -> void:
 	if not water_active:
 		return
 	_squash_v += clampf(impact * 0.012, 0.0, 9.0)
-	if impact > 260.0:
-		var n := int(clampf((impact - 200.0) / 70.0, 1, 9))
-		var foot := center + Vector2(0, 9) * _scale
-		for i in n:
-			var side := -1.0 if i % 2 == 0 else 1.0
-			_spawn_loose(foot + Vector2(side * randf_range(4, 10), -2) * _scale,
-				Vector2(side * randf_range(60, 200), -randf_range(120, 120 + impact * 0.45)) * _scale)
-		if impact > 420.0:
-			_add_splat(foot + Vector2(0, 2) * _scale)
+	if impact < 240.0:
+		return
+	# Throw pixels from the bottom half outwards: a real splash.
+	var budget := int(clampf((impact - 200.0) / 18.0, 2, water_pixels * 0.35))
+	var order := range(_pos.size())
+	order.shuffle()
+	for i in order:
+		if budget <= 0:
+			break
+		if _alive[i] == 1 and _homes[i].y > 2.0:
+			var side := signf(_homes[i].x) if _homes[i].x != 0.0 else (1.0 if randf() < 0.5 else -1.0)
+			var v := Vector2(side * randf_range(70, 240), -randf_range(80, 140 + impact * 0.45)) * _scale
+			_release(i, v)
+			budget -= 1
 
 
 func on_jump() -> void:
 	if not water_active:
 		return
 	_squash_v -= 7.0
-	var foot := center + Vector2(0, 9) * _scale
-	for i in 3:
-		_spawn_loose(foot + Vector2(randf_range(-6, 6), 0) * _scale,
-			Vector2(randf_range(-110, 110), randf_range(-60, 40)) * _scale)
+	var n := 0
+	for i in _pos.size():
+		if n >= 5:
+			break
+		if _alive[i] == 1 and _homes[i].y > 6.0 and randf() < 0.4:
+			_release(i, Vector2(randf_range(-120, 120), randf_range(-40, 60)) * _scale)
+			n += 1
 
 
 func splatter(impact: Vector2) -> void:
-	_bound = false
-	_cohesive = false
-	for i in _drops.size():
-		_spawn_loose(_drops[i], impact * 0.3 + Vector2(randf_range(-260, 260), randf_range(-340, -80)) * _scale, true)
-	_drops.clear()
-	_drop_vel.clear()
-	for p in _puffs:
-		var out: Vector2 = (p.pos - center).normalized()
-		p.vel = out * randf_range(120, 260) * _scale + Vector2(0, -60)
+	for i in _pos.size():
+		if _alive[i] == 1:
+			var out := (_pos[i] - center).normalized()
+			_release(i, impact * 0.3 + (out * randf_range(120, 320) + Vector2(0, -160)) * _scale)
 	_fading = true
+	_spent = true
 
 
 func swirl_away() -> void:
 	_fading = true
+	_spent = true
+
+
+func _release(i: int, v: Vector2) -> void:
+	_alive[i] = 0
+	var world := _get_world()
+	if world == null:
+		return
+	if water_active:
+		world.spawn_water(_pos[i], v)
+	elif steam_active:
+		world.spawn_steam(_pos[i], v)
+
+
+func _home(i: int) -> Vector2:
+	if water_active:
+		var h := _homes[i]
+		var sx := 1.0 + _squash
+		var sy := 1.0 - _squash * 0.8
+		var o := Vector2(h.x * sx, h.y * sy)
+		if _squash > 0.0:
+			o.y += _squash * 7.0 # flatten towards the floor
+		# Stretch along fast motion.
+		var sp := center_velocity.length()
+		if sp > 60.0:
+			var d := center_velocity / sp
+			var st := clampf(sp / 2600.0, 0.0, 0.15)
+			o = d * o.dot(d) * (1.0 + st) + d.orthogonal() * o.dot(d.orthogonal()) * (1.0 - st * 0.5)
+		return o * _scale
+	# Steam churns: homes rotate slowly and breathe.
+	var h2 := _steam_homes[i % _steam_homes.size()]
+	var a := _t * (0.8 + (i % 5) * 0.15) * (1.0 if i % 2 == 0 else -1.0)
+	var breathe := 1.0 + sin(_t * 2.0 + i) * 0.12
+	return h2.rotated(a * 0.6) * breathe * _scale
 
 
 # --- Simulation ---------------------------------------------------------------
@@ -179,280 +214,166 @@ func _physics_process(delta: float) -> void:
 	_t += delta
 	var body := get_parent() as Node2D
 	var new_center := body.global_position
-	_prev_center_vel = center_velocity
 	center_velocity = (new_center - center) / delta
 	center = new_center
 	if _fading:
-		alpha = maxf(alpha - delta * 1.4, 0.0)
-	var space := get_world_2d().direct_space_state
+		alpha = maxf(alpha - delta * 2.0, 0.0)
 	if water_active:
-		_step_water(delta, space)
-	_step_loose(delta, space)
-	_step_splats(delta)
-	_step_steam(delta, space)
-	var target := center
-	if water_active and not _drops.is_empty():
-		target = _average(_drops)
+		_step(delta, water_spring, water_damping, 1300.0 * 0.25, water_break_distance)
+		_refill(delta)
 	elif steam_active:
-		target = _average(_puff_points(true))
-	var follow := 60.0 if water_active else 14.0
-	visual_center = visual_center.lerp(target, minf(follow * delta, 1.0))
-	droplets_node.queue_redraw()
-	steam_node.queue_redraw()
-	splats_node.queue_redraw()
-	gloss_node.queue_redraw()
+		_step(delta, steam_spring, steam_damping, -90.0, steam_break_distance)
+		_refill(delta)
+	visual_center = center + (_mass_center() - center).limit_length(3.0 * _scale)
+	_prev_vx = center_velocity.x
+	queue_redraw()
 
 
-func _step_water(delta: float, space: PhysicsDirectSpaceState2D) -> void:
-	# Squash spring: smooth, overshooting jelly response.
-	_squash_v += (-squash_stiffness * _squash - squash_damping * _squash_v) * delta
-	_squash = clampf(_squash + _squash_v * delta, -0.55, 0.6)
-	# Sudden horizontal stops slosh the body.
-	var dv := center_velocity.x - _prev_center_vel.x
-	if absf(dv) > 120.0:
-		_squash_v += absf(dv) * 0.004
-	# Stretch along the direction of motion.
-	var speed := center_velocity.length()
-	var dir := center_velocity / speed if speed > 1.0 else Vector2.UP
-	var stretch := clampf(speed / 1400.0, 0.0, 0.3)
-	var sx := 1.0 + _squash
-	var sy := 1.0 - _squash * 0.85
-	var n := _drops.size()
-	var g := Vector2(0, GRAVITY) * _scale
-	for i in n:
-		var p := _drops[i]
-		var v := _drop_vel[i]
-		var a := TAU * i / n + sin(_t * 3.0 + i) * 0.05
-		var o := Vector2(cos(a), sin(a)) * ring_radius * _scale
-		o = dir * o.dot(dir) * (1.0 + stretch) + dir.orthogonal() * o.dot(dir.orthogonal()) * (1.0 - stretch * 0.5)
-		o = Vector2(o.x * sx, o.y * sy)
-		if _squash > 0.0:
-			o.y += _squash * 6.0 * _scale # flatten towards the floor, not the middle
-		var home := center + o
-		v += ((home - p) * spring + g * droplet_gravity) * delta
-		v *= exp(-damping * delta)
-		if p.distance_to(center) > 60.0 * _scale:
-			p = home
-			v = center_velocity
+func _step(delta: float, k: float, damp: float, grav: float, break_dist: float) -> void:
+	_squash_v += (-260.0 * _squash - 9.0 * _squash_v) * delta
+	_squash = clampf(_squash + _squash_v * delta, -0.5, 0.6)
+	var dvx := center_velocity.x - _prev_vx
+	if water_active and absf(dvx) > 150.0:
+		_squash_v += absf(dvx) * 0.003
+	var world := _get_world()
+	for i in _pos.size():
+		if _alive[i] == 0:
+			continue
+		var p := _pos[i]
+		var v := _vel[i]
+		var target := center + _home(i)
+		v += ((target - p) * k + Vector2(0, grav)) * delta
+		if steam_active:
+			v += Vector2(randf_range(-1, 1), randf_range(-1, 1)) * 400.0 * delta
+		v *= exp(-damp * delta)
 		var next := p + v * delta
-		_ray.from = p
-		_ray.to = next
-		var hit := space.intersect_ray(_ray)
-		if hit:
-			var nrm: Vector2 = hit.normal
-			next = hit.position + nrm * 1.0
-			v = v.slide(nrm) * 0.8
-		_drops[i] = next
-		_drop_vel[i] = v
-	# Drip while squeezing through a grate.
-	_point.position = center
-	_drip_timer -= delta
-	if _drip_timer <= 0.0 and not space.intersect_point(_point, 1).is_empty():
-		_drip_timer = 0.05
-		_spawn_loose(center + Vector2(randf_range(-8, 8), 6) * _scale, Vector2(randf_range(-30, 30), randf_range(60, 160)) * _scale)
-
-
-func _step_loose(delta: float, space: PhysicsDirectSpaceState2D) -> void:
-	var keep: Array[Dictionary] = []
-	for d in _loose:
-		d.age += delta
-		var v: Vector2 = d.vel
-		v.y += GRAVITY * _scale * delta
-		var next: Vector2 = d.pos + v * delta
-		_ray.from = d.pos
-		_ray.to = next
-		var hit := space.intersect_ray(_ray)
-		if hit:
-			if hit.normal.y < -0.5 and (d.age > 0.05 or d.orphan):
-				# Hit the floor: leave a small splat and disappear.
-				if randf() < 0.5 or d.orphan:
-					_add_splat(hit.position)
-				continue
-			next = hit.position + hit.normal * 1.0
-			v = v.bounce(hit.normal) * 0.3
-		# Merge back into the body when they fall onto it.
-		if water_active and _bound and not d.orphan and d.age > 0.12 and next.distance_to(center) < 12.0 * _scale:
-			continue
-		if d.age > d.life:
-			continue
-		d.pos = next
-		d.vel = v
-		keep.append(d)
-	_loose = keep
-
-
-func _step_splats(delta: float) -> void:
-	var keep: Array[Dictionary] = []
-	for s in _splats:
-		s.age += delta
-		if s.age < 1.4:
-			keep.append(s)
-	_splats = keep
-
-
-func _step_steam(delta: float, space: PhysicsDirectSpaceState2D) -> void:
-	var alive: Array[Dictionary] = []
-	for p in _puffs:
-		p.age += delta
-		if p.age >= p.life:
-			if steam_active and _cohesive:
-				_reset_puff(p, center + _rand_in_circle(6.0 * _scale))
+		if world and world.is_blocked(next):
+			if not world.is_blocked(Vector2(next.x, p.y)):
+				next.y = p.y
+				v.y = 0.0
+			elif not world.is_blocked(Vector2(p.x, next.y)):
+				next.x = p.x
+				v.x = 0.0
 			else:
-				continue
-		var to_c: Vector2 = center - p.pos
-		var v: Vector2 = p.vel
-		var attached: bool = p.attached and _cohesive
-		if attached:
-			v += to_c * cohesion * delta
-			v += Vector2(-to_c.y, to_c.x).normalized() * swirl * delta * signf(p.spin)
-			if to_c.length() > 18.0 * _scale and p.age > p.life * 0.4:
-				p.attached = false
-		v += Vector2(0, -buoyancy * (1.0 if attached else 1.6)) * delta * _scale
-		v += Vector2(sin(_t * 2.3 + p.seed), cos(_t * 1.7 + p.seed)) * 30.0 * delta
-		v *= exp(-3.0 * delta)
-		var next: Vector2 = p.pos + v * delta
-		_ray.from = p.pos
-		_ray.to = next
-		var hit := space.intersect_ray(_ray)
-		if hit:
-			next = hit.position + hit.normal * 2.0
-			v = v.slide(hit.normal) * 0.5
-		p.pos = next
-		p.vel = v
-		alive.append(p)
-	_puffs = alive
+				next = p
+				v = Vector2.ZERO
+		# Left behind (stuck on a ledge, flung by a fast move): break off.
+		if next.distance_to(target) > break_dist * _scale * (2.5 if steam_active else 1.0):
+			_pos[i] = next
+			_release(i, v)
+			continue
+		if next.distance_to(center) > 70.0 * _scale:
+			next = target
+			v = center_velocity
+		_pos[i] = next
+		_vel[i] = v
 
 
-# --- Spawning -----------------------------------------------------------------
-
-func _spawn_droplets(src: PackedVector2Array) -> void:
-	_drops.resize(droplet_count)
-	_drop_vel.resize(droplet_count)
-	for i in droplet_count:
-		var p := center + _rand_in_circle(8.0 * _scale)
-		if not src.is_empty():
-			p = src[(i * src.size()) / droplet_count]
-		_drops[i] = p
-		_drop_vel[i] = center_velocity * 0.5
-
-
-func _spawn_loose(at: Vector2, vel: Vector2, orphan := false) -> void:
-	if _loose.size() > 60:
+func _refill(delta: float) -> void:
+	if _spent:
 		return
-	_loose.append({ "pos": at, "vel": vel, "age": 0.0, "life": randf_range(0.8, 1.4),
-		"r": randf_range(0.7, 1.0), "orphan": orphan })
-
-
-func _add_splat(at: Vector2) -> void:
-	if splat_textures.is_empty() or _splats.size() > 12:
+	var missing: Array[int] = []
+	for i in _alive.size():
+		if _alive[i] == 0:
+			missing.append(i)
+	if missing.is_empty():
 		return
-	_splats.append({ "pos": at, "age": 0.0, "tex": splat_textures.pick_random(), "flip": randf() < 0.5 })
+	var world := _get_world()
+	var got := PackedVector2Array()
+	if water_active and world:
+		got = world.absorb_water(center, absorb_radius * _scale, missing.size())
+	var k := 0
+	for p in got:
+		var i := missing[k]
+		_pos[i] = p
+		_vel[i] = (center - p) * 4.0
+		_alive[i] = 1
+		k += 1
+	# The body slowly regenerates whatever it couldn't soak back up.
+	_regen += delta * (40.0 if steam_active else 18.0)
+	while _regen >= 1.0 and k < missing.size():
+		_regen -= 1.0
+		var i := missing[k]
+		_pos[i] = center + _home(i) * 0.3
+		_vel[i] = center_velocity
+		_alive[i] = 1
+		k += 1
+	if k >= missing.size():
+		_regen = 0.0
 
 
-func _spawn_puffs(src: PackedVector2Array) -> void:
-	for i in puff_count:
-		var p := {}
-		var at := center + _rand_in_circle(8.0 * _scale)
-		if not src.is_empty():
-			at = src[i % src.size()] + _rand_in_circle(3.0 * _scale)
-		_reset_puff(p, at)
-		p.age = randf() * p.life * 0.5
-		p.vel = (at - center) * 4.0 + Vector2(0, -80) * _scale
-		_puffs.append(p)
-
-
-func _reset_puff(p: Dictionary, at: Vector2) -> void:
-	p.pos = at
-	p.vel = center_velocity * 0.6 + _rand_in_circle(30.0)
-	p.age = 0.0
-	p.life = randf_range(puff_life.x, puff_life.y)
-	p.size = randf_range(puff_size.x, puff_size.y) * _scale
-	p.attached = true
-	p.spin = randf_range(-1, 1)
-	p.seed = randf() * 100.0
-	p.tex = randi() % maxi(puff_textures.size(), 1)
-
-
-func _puff_points(attached_only := false) -> PackedVector2Array:
-	var pts := PackedVector2Array()
-	for p in _puffs:
-		if not attached_only or p.attached:
-			pts.append(p.pos)
-	return pts
-
-
-# --- Drawing (world space) ------------------------------------------------------
-
-func _draw_droplets() -> void:
-	if droplet_texture == null:
-		return
-	var col := Color(1, 1, 1, alpha)
-	if water_active:
-		var r := droplet_radius * _scale
-		for p in _drops:
-			droplets_node.draw_texture_rect(droplet_texture, Rect2(p - Vector2(r, r), Vector2(r, r) * 2.0), false, col)
-	for d in _loose:
-		var shrink := clampf(1.0 - (d.age - d.life * 0.6) / (d.life * 0.4), 0.0, 1.0)
-		var r: float = splash_radius * _scale * d.r * shrink
-		if r > 0.5:
-			droplets_node.draw_texture_rect(droplet_texture, Rect2(d.pos - Vector2(r, r), Vector2(r, r) * 2.0), false, col)
-
-
-func _draw_gloss() -> void:
-	if not water_active or highlight_texture == null or _drops.is_empty():
-		return
-	var top := visual_center + Vector2(-6, -9 + _squash * 6.0) * _scale
-	var sz := highlight_texture.get_size() * _scale * Vector2(1.0 + _squash * 0.5, 1.0 - _squash * 0.4)
-	gloss_node.draw_texture_rect(highlight_texture, Rect2(top - sz * 0.5, sz), false, Color(1, 1, 1, 0.8 * alpha))
-
-
-func _draw_splats() -> void:
-	for s in _splats:
-		var tex: Texture2D = s.tex
-		var a := clampf(1.0 - (s.age - 0.6) / 0.8, 0.0, 1.0) * 0.85
-		var sz := tex.get_size() * _scale * (0.6 + minf(s.age * 6.0, 0.4))
-		if s.flip:
-			sz.x = -sz.x
-		splats_node.draw_texture_rect(tex, Rect2(s.pos - Vector2(sz.x * 0.5, sz.y - 2.0), sz), false, Color(1, 1, 1, a))
-
-
-func _draw_steam() -> void:
-	if puff_textures.is_empty():
-		return
-	for p in _puffs:
-		var k: float = p.age / p.life
-		var fade := sin(k * PI)
-		var tint := _ramp_color(k)
-		tint.a *= fade * 0.75 * alpha
-		var s: float = p.size * (1.0 + k * 0.8)
-		if not p.attached and wisp_texture:
-			var vel: Vector2 = p.vel
-			steam_node.draw_set_transform(p.pos, vel.angle(), Vector2.ONE)
-			var w := wisp_texture.get_size() * (s / 30.0)
-			steam_node.draw_texture_rect(wisp_texture, Rect2(-w * 0.5, w), false, tint)
-			steam_node.draw_set_transform(Vector2.ZERO)
-		else:
-			var tex: Texture2D = puff_textures[p.tex % puff_textures.size()]
-			steam_node.draw_texture_rect(tex, Rect2(p.pos - Vector2(s, s), Vector2(s, s) * 2.0), false, tint)
-
-
-func _ramp_color(k: float) -> Color:
-	if _ramp_img == null:
-		return Color(0.95, 0.97, 1.0, 1.0)
-	var x := clampi(int(k * (_ramp_img.get_width() - 1)), 0, _ramp_img.get_width() - 1)
-	return _ramp_img.get_pixel(x, _ramp_img.get_height() / 2)
-
-
-# --- Helpers --------------------------------------------------------------------
-
-static func _rand_in_circle(r: float) -> Vector2:
-	return Vector2.from_angle(randf() * TAU) * sqrt(randf()) * r
-
-
-static func _average(pts: PackedVector2Array) -> Vector2:
-	if pts.is_empty():
-		return Vector2.ZERO
+func _mass_center() -> Vector2:
 	var s := Vector2.ZERO
-	for p in pts:
-		s += p
-	return s / pts.size()
+	var n := 0
+	for i in _pos.size():
+		if _alive[i] == 1:
+			s += _pos[i]
+			n += 1
+	return s / n if n > 0 else center
+
+
+# --- Drawing (world space, pixel grid) -----------------------------------------
+
+func _draw() -> void:
+	if not (water_active or steam_active) or _pos.is_empty():
+		return
+	var cs := CELL * _scale
+	# Pack pixels onto the grid: if a cell is taken, use the nearest free one,
+	# so the body reads as solid liquid instead of a sieve.
+	var grid := {}
+	for i in _pos.size():
+		if _alive[i] == 1:
+			var k := Vector2i((_pos[i] / cs).floor())
+			if grid.has(k):
+				for o: Vector2i in PACK:
+					if not grid.has(k + o):
+						k += o
+						break
+			grid[k] = i
+	# Close pinholes: an empty cell with 3+ filled neighbours is liquid too.
+	var holes: Array[Vector2i] = []
+	for key: Vector2i in grid:
+		for o: Vector2i in [Vector2i(0, -1), Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, 1)]:
+			var e: Vector2i = key + o
+			if grid.has(e):
+				continue
+			var n := int(grid.has(e + Vector2i(0, -1))) + int(grid.has(e + Vector2i(0, 1))) 				+ int(grid.has(e + Vector2i(-1, 0))) + int(grid.has(e + Vector2i(1, 0)))
+			if n >= 3:
+				holes.append(e)
+	for e in holes:
+		grid[e] = grid.get(e + Vector2i(0, -1), grid.get(e + Vector2i(0, 1), grid.get(e + Vector2i(-1, 0), grid.get(e + Vector2i(1, 0), 0))))
+	var sz := Vector2(cs, cs)
+	for key: Vector2i in grid:
+		var i: int = grid[key]
+		var up := grid.has(key + Vector2i(0, -1))
+		var down := grid.has(key + Vector2i(0, 1))
+		var left := grid.has(key + Vector2i(-1, 0))
+		var right := grid.has(key + Vector2i(1, 0))
+		var col: Color
+		if water_active:
+			var rel := (_vel[i] - center_velocity).length()
+			if not up:
+				col = C_SURFACE
+				if not left and grid.has(key + Vector2i(1, 1)):
+					col = C_SHINE
+			elif not down:
+				col = C_RIM
+			elif grid.has(key + Vector2i(0, -3)):
+				col = C_DEEP
+			else:
+				col = C_BODY
+			if rel > 420.0:
+				col = C_FOAM
+		else:
+			col = C_STEAM if (up and down and left and right) else C_STEAM_EDGE
+			col.a = 0.85 if (up and down) else 0.55
+		col.a *= alpha
+		draw_rect(Rect2(Vector2(key) * cs, sz), col)
+	# A couple of shine pixels on the water's upper left.
+	if water_active and alpha > 0.0:
+		var top := (visual_center + Vector2(-6, -8) * _scale) / cs
+		var tk := Vector2i(top.floor())
+		if grid.has(tk):
+			draw_rect(Rect2(Vector2(tk) * cs, sz), Color(1, 1, 1, 0.85 * alpha))
+			if grid.has(tk + Vector2i(1, -1)):
+				draw_rect(Rect2(Vector2(tk + Vector2i(1, -1)) * cs, sz), Color(1, 1, 1, 0.6 * alpha))
