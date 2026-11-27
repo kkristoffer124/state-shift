@@ -1,11 +1,21 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/interactive/turbine.tscn" id="turbine"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/drip_pipe.tscn" id="drip"]
 
 [node name="Interactive" type="Node2D"]
 
+[node name="Gameplay" type="Node2D" parent="."]
+
 [node name="Ambient" type="Node2D" parent="."]
 
-[node name="WindTurbine" parent="Ambient" instance=ExtResource("turbine")]
-position = Vector2(700, 150)
-pole_length = 132.0
+[node name="Outfall1" parent="Ambient" instance=ExtResource("drip")]
+position = Vector2(352, 400)
+pipe_length = 0
+interval = 0.5
+burst = 2
+
+[node name="Outfall2" parent="Ambient" instance=ExtResource("drip")]
+position = Vector2(608, 400)
+pipe_length = 0
+interval = 0.7
+burst = 2

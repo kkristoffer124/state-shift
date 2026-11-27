@@ -29,69 +29,93 @@ theme = "lab"
 [node name="Hints" type="Node2D" parent="."]
 
 [node name="Ceiling" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, -64)
-size = Vector2(1728, 64)
+position = Vector2(0, 0)
+size = Vector2(960, 32)
 
 [node name="WallL" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, 0)
-size = Vector2(64, 768)
+position = Vector2(0, 32)
+size = Vector2(32, 448)
 
 [node name="WallR" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1600, 0)
-size = Vector2(64, 768)
+position = Vector2(928, 32)
+size = Vector2(32, 448)
 
 [node name="Floor" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 448)
-size = Vector2(1600, 320)
+position = Vector2(0, 480)
+size = Vector2(960, 60)
+
+[node name="Walkway" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 256)
+size = Vector2(608, 32)
 
 [node name="Ledge" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1248, 384)
-size = Vector2(352, 64)
+position = Vector2(640, 288)
+size = Vector2(96, 32)
 
-[node name="Spikes" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(384, 416)
-size = Vector2(704, 32)
+[node name="Step1" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(640, 416)
+size = Vector2(96, 64)
+
+[node name="Step2" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(736, 352)
+size = Vector2(192, 128)
+
+[node name="FloorSpikes" parent="Zones" instance=ExtResource("spikes")]
+position = Vector2(224, 448)
+size = Vector2(192, 32)
+
+[node name="WalkSpikes" parent="Zones" instance=ExtResource("spikes")]
+position = Vector2(384, 224)
+size = Vector2(160, 32)
 
 [node name="Goal" parent="Zones" instance=ExtResource("goal")]
-position = Vector2(1472, 320)
+position = Vector2(104, 184)
 size = Vector2(64, 64)
 
 [node name="Hint1" type="Label" parent="Hints"]
-offset_left = 40.0
-offset_top = 230.0
-offset_right = 460.0
-offset_bottom = 258.0
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
-text = "Q / CTRL   cool down"
+offset_left = 48
+offset_top = 320
+offset_right = 224
+offset_bottom = 340
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "Q / CTRL  cool down"
 
 [node name="Hint2" type="Label" parent="Hints"]
-offset_left = 40.0
-offset_top = 260.0
-offset_right = 460.0
-offset_bottom = 288.0
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
-text = "E / SHIFT  heat up"
-
-[node name="Hint3" type="Label" parent="Hints"]
-offset_left = 560.0
-offset_top = 320.0
-offset_right = 980.0
-offset_bottom = 348.0
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_left = 230
+offset_top = 380
+offset_right = 438
+offset_bottom = 400
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "ICE doesn't mind spikes"
 
+[node name="Hint3" type="Label" parent="Hints"]
+offset_left = 480
+offset_top = 330
+offset_right = 648
+offset_bottom = 350
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "E / SHIFT  heat up"
+
 [node name="Hint4" type="Label" parent="Hints"]
-offset_left = 1110.0
-offset_top = 260.0
-offset_right = 1530.0
-offset_bottom = 288.0
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
-text = "Plates need heavy ICE. Melt to jump"
+offset_left = 250
+offset_top = 200
+offset_right = 442
+offset_bottom = 220
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "Plates need heavy ICE"
 
 [node name="Player" parent="." instance=ExtResource("player")]
-position = Vector2(96, 430)
+position = Vector2(80, 469)
 state = 1

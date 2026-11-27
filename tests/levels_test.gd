@@ -168,180 +168,202 @@ func _to_ice() -> void:
 		await _tap("cool")
 
 
-## Backs up a little, then a full (held) jump to the right onto a ledge, then into the goal.
-func _hop_right_to_goal() -> void:
-	await _hold(["move_left"], 20)
-	Input.action_press("move_right")
+## Holds `actions` + jump for `frames` (a full-height hop), then lets go of everything.
+func _jump(actions: Array, frames := 45) -> void:
 	Input.action_press("jump")
-	await _wait(50)
-	_release_all()
+	await _hold(actions, frames)
+	Input.action_release("jump")
+
+
+## Walks right until x > `x`, then hops right.
+func _jump_at(x: float, frames := 30) -> void:
+	await _until(_x_gt(x), 400, ["move_right"])
+	await _jump(["move_right"], frames)
+
+
+func _stopped() -> bool:
+	return absf(p.velocity.x) < 5.0 and p.is_on_floor()
+
+
+# --- Solutions (rooms are 960x540 unless noted) --------------------------------
+
+## 1: hop both crates, drip through the grate into the basin (opens the shutter),
+## walk left off the tier and into the goal chamber.
+func _solve_01() -> void:
+	await _jump_at(190)
+	await _jump_at(330)
+	await _until(_y_gt(300), 400, ["move_right"])
+	await _until(_on_floor(), 200, ["move_right"])
+	await _wait(30)
+	await _until(_y_gt(440), 600, ["move_left"])
 	await _seek_goal()
 
 
-# --- Solutions ---------------------------------------------------------------
-
-## 1: hop the step, drop through the grate into the basin (opens the exit shutter), walk out.
-func _solve_01() -> void:
-	await _until(_x_gt(240), 300, ["move_right"])
-	Input.action_press("jump")
-	await _until(_x_gt(420), 300, ["move_right"])
-	Input.action_release("jump")
-	await _until(_x_gt(560), 300, ["move_right"])
-	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 560, 300)
-	await _seek_goal(900)
-
-
-## 2: freeze, slide over the spikes and the ICE plate (opens the shutter), melt, hop the ledge.
+## 2: freeze and slide over the floor spikes, melt, climb the steps and ledge,
+## freeze on the walkway and slide left over the spikes and the plate into the goal.
 func _solve_02() -> void:
 	await _to_ice()
-	await _until(func() -> bool: return p.global_position.x > 1150 and absf(p.velocity.x) < 5.0, 900, ["move_right"])
+	await _until(func() -> bool: return p.global_position.x > 600 and _stopped(), 900, ["move_right"])
 	await _tap("heat")
 	await _wait(10)
-	await _hop_right_to_goal()
+	await _jump(["move_right"], 40)
+	await _until(_on_floor(), 120)
+	await _jump(["move_right"], 40)
+	await _until(_on_floor(), 120)
+	await _until(_x_gt(760), 120, ["move_right"])
+	await _jump(["move_left"], 40)
+	await _until(_on_floor(), 120)
+	await _until(_x_lt(680), 200, ["move_left"])
+	await _jump(["move_left"], 25)
+	await _until(_on_floor(), 120)
+	await _wait(10)
+	await _to_ice()
+	await _until(func() -> bool: return p.won, 900, ["move_left"])
 
 
-## 3: steam under the grate, rise past the roof turbine (opens the shutter), drift right, condense.
+## 3: steam up grate 1, slide left under the shelf to grate 2, rise, drift right past
+## the turbine (opens the shutter), condense over the goal block.
 func _solve_03() -> void:
-	await _until(_x_gt(340), 300, ["move_right"])
+	await _until(_x_gt(336), 300, ["move_right"])
 	await _to_steam()
-	await _until(_y_lt(60), 900)
-	await _until(_x_gt(1160), 900, ["move_right"])
+	await _until(_y_lt(300), 600)
+	await _until(_y_lt(180), 600, ["move_left"])
+	await _until(_y_lt(100), 300)
+	await _until(_x_gt(820), 900, ["move_right"])
 	await _tap("cool")
 	await _until(_on_floor(), 300)
 	await _seek_goal()
 
 
-## 4: steam to the roof, freeze over the crack, smash through, slide over the plate and out.
+## 4: steam to the roof, freeze over the crack, smash through onto the spikes,
+## slide over the plate (opens the shutter) into the goal.
 func _solve_04() -> void:
 	await _to_steam()
-	await _until(_y_lt(60), 900)
-	await _until(_x_gt(790), 600, ["move_right"])
+	await _until(_y_lt(90), 600)
+	await _until(_x_gt(590), 600, ["move_right"])
+	await _wait(20)
 	await _to_ice()
-	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 900, 600)
-	await _until(_x_gt(1150), 900, ["move_right"])
-	await _seek_goal()
+	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 440, 600)
+	await _until(func() -> bool: return p.won, 900, ["move_right"])
 
 
 ## 5: heat zone lifts you, cold zone drops you as ICE through the crack onto the plate
-## (opens the fan hatch); walk to the fan as water, steam up the shaft, condense on the ledge.
+## (opens the fan hatch); walk to the fan, steam up the shaft, condense on the shelf.
 func _solve_05() -> void:
 	await _until(func() -> bool: return p.state == Player.State.STEAM, 600, ["move_right"])
-	await _until(_y_lt(300), 900)
-	await _until(func() -> bool: return p.state == Player.State.ICE, 600, ["move_right"])
-	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 780, 600)
+	await _until(func() -> bool: return p.state == Player.State.ICE, 900, ["move_right"])
+	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 400, 600)
 	await _wait(20)
 	await _tap("heat")
-	await _until(_x_gt(940), 600, ["move_right"])
+	await _until(_x_gt(744), 600, ["move_right"])
 	await _to_steam()
-	await _until(_y_lt(280), 900)
-	await _until(_x_gt(1200), 600, ["move_right"])
+	await _until(_y_lt(150), 900)
+	await _until(_x_gt(860), 600, ["move_right"])
 	await _tap("cool")
 	await _until(_on_floor(), 300)
 	await _seek_goal()
 
 
-## 6: walk to the pit edge, steam, let the side fan carry you, condense over the far ledge.
+## 6: walk to the ledge edge, steam, let the side fan carry you under the baffle, condense over the far ledge.
 func _solve_06() -> void:
-	await _until(_x_gt(360), 300, ["move_right"])
+	await _until(_x_gt(196), 300, ["move_right"])
 	await _to_steam()
-	await _until(_x_gt(1300), 400, ["move_right"])
+	await _until(_x_gt(880), 600, ["move_right"])
 	await _tap("cool")
 	await _until(_on_floor(), 200)
 	await _seek_goal()
 
 
-## 7: drip through grate 1, freeze mid-fall, slide to grate 2, melt, drip, freeze, slide to the grate wall, melt, walk in.
+## 7: drip through grate 1, freeze mid-fall, slide to grate 2, melt, drip, freeze,
+## slide to the grate wall, melt, walk through into the goal.
 func _solve_07() -> void:
-	await _until(_x_gt(700), 400, ["move_right"])
-	await _until(_y_gt(300), 120)
-	await _tap("cool")
+	await _until(_y_gt(230), 600, ["move_right"])
+	await _to_ice()
 	await _until(_on_floor(), 200)
-	await _until(func() -> bool: return p.global_position.x > 1200 and absf(p.velocity.x) < 5.0, 900, ["move_right"])
+	await _until(func() -> bool: return p.global_position.x < 80 and _stopped(), 900, ["move_left"])
 	await _tap("heat")
+	await _until(_y_gt(370), 200)
+	await _to_ice()
 	await _until(_on_floor(), 200)
-	await _wait(5)
-	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 900, 200)
-	await _tap("cool")
-	await _until(func() -> bool: return p.global_position.x < 180 and absf(p.velocity.x) < 5.0, 900, ["move_left"])
+	await _until(func() -> bool: return p.global_position.x > 680 and _stopped(), 900, ["move_right"])
 	await _tap("heat")
-	await _until(_x_lt(60), 300, ["move_left"])
+	await _seek_goal()
 
 
-## 8: steam up the left shaft, over to the attic grate, drip, freeze, smash 3 floors, slide to goal.
+## 8: walk into the shaft, steam up past the turbine (opens the attic shutter), drift over
+## the column, freeze, smash both cracked floors and slide into the goal.
 func _solve_08() -> void:
+	await _until(_x_lt(100), 600, ["move_left"])
 	await _to_steam()
-	await _until(_y_lt(120), 900)
-	await _until(_x_gt(860), 600, ["move_right"])
-	await _tap("cool")
-	await _until(_y_gt(240), 200)
-	await _tap("cool")
-	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 1250, 600)
-	await _until(_x_gt(1200), 600, ["move_right"])
+	await _until(_y_lt(90), 900)
+	await _until(_x_gt(730), 900, ["move_right"])
+	await _to_ice()
+	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 440, 600)
+	await _until(func() -> bool: return p.won, 600, ["move_right"])
 
 
-## 9: walk into vent 1 holding right; ride vents and cold air over both barriers; melt at the end and hop up.
+## 9: hold right: vents lift you over the barriers, cold bands drop you; the plate opens the exit.
 func _solve_09() -> void:
-	await _until(_x_gt(1360), 2400, ["move_right"])
-	await _until(func() -> bool: return absf(p.velocity.x) < 5.0 and p.is_on_floor(), 600, ["move_right"])
-	await _tap("heat")
-	await _wait(10)
-	await _hop_right_to_goal()
+	await _until(func() -> bool: return p.won, 2400, ["move_right"])
 
 
-## 10: freeze, accelerate through the spike tunnel, fly over the pit, melt and hop the ledge.
+## 10: hop up P1, P2 and the ledge, freeze at its back, build speed through the spike
+## tunnel, fly the pit, slide over the plate (opens the shutter) into the goal.
 func _solve_10() -> void:
+	await _until(_x_gt(90), 200, ["move_right"])
+	await _jump(["move_right"])
+	await _until(_on_floor(), 120)
+	await _until(_x_lt(142), 200, ["move_left"])
+	await _jump(["move_left"])
+	await _until(_on_floor(), 120)
+	await _until(_x_lt(60), 120, ["move_left"])
+	await _jump(["move_right"], 70)
+	await _until(_on_floor(), 120)
+	await _until(_x_lt(180), 200, ["move_left"])
 	await _to_ice()
-	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 750, 900, ["move_right"])
-	await _until(func() -> bool: return p.global_position.x > 1300, 600, ["move_right"])
-	await _until(func() -> bool: return absf(p.velocity.x) < 5.0, 600, ["move_right"])
-	await _tap("heat")
-	await _wait(10)
-	await _hop_right_to_goal()
+	await _until(func() -> bool: return p.won, 900, ["move_right"])
 
 
-## 11: walk under grate 1, steam up, condense left of it, walk to grate 2, steam up,
-## freeze on grate 2, ice across the spiked shelf, steam up grate 3, condense over the goal.
+## 11 (960x1080): hop onto the crate and over the spikes, steam up grate 1 and veer left of the spikes, slide under
+## the shelf to grate 2, freeze above it, ice over the spiked shelf, melt, steam up grate 3,
+## drift left past the roof turbine (opens the shutter), condense over the goal.
 func _solve_11() -> void:
-	await _until(_x_gt(832), 600, ["move_right"])
+	await _jump_at(320)
+	await _until(_on_floor(), 120)
+	await _jump_at(458, 20)
+	await _until(_on_floor(), 120, ["move_right"])
+	await _until(_x_gt(752), 600, ["move_right"])
 	await _to_steam()
-	await _until(_y_lt(940), 600)
-	await _until(_x_lt(720), 300, ["move_left"])
-	await _until(_y_lt(780), 600)
-	await _tap("cool")
-	await _until(_on_floor(), 200)
-	await _until(_x_lt(128), 600, ["move_left"])
-	await _to_steam()
-	await _until(_y_lt(520), 600)
+	await _until(_y_lt(796), 600)
+	await _until(_y_lt(540), 900, ["move_left"])
 	await _to_ice()
 	await _until(_on_floor(), 200)
-	await _until(_x_gt(740), 600, ["move_right"])
-	await _until(func() -> bool: return absf(p.velocity.x) < 5.0, 900)
+	await _until(func() -> bool: return p.global_position.x > 860 and _stopped(), 900, ["move_right"])
 	await _tap("heat")
-	await _until(_x_lt(840), 300, ["move_left"])
-	await _tap("heat")
-	await _until(_y_lt(200), 900)
+	await _until(_x_lt(816), 300, ["move_left"])
+	await _to_steam()
+	await _until(_y_lt(100), 900)
 	await _until(_x_lt(100), 900, ["move_left"])
 	await _tap("cool")
+	await _until(_on_floor(), 200)
+	await _seek_goal()
 
 
-## 12: steam to the roof, drop as ice through the crack, slide over spikes to the grate,
-## melt through it into the vent, condense on the shelf, then ride the crosswind to the goal.
+## 12 (1920x540): steam to the roof, drop as ice through the crack onto the spikes, slide over
+## the plate (opens the shutter) to the grate wall, melt through it into the heat zone and
+## ride the crosswind over the spike pit; condense on the goal ledge.
 func _solve_12() -> void:
+	await _until(_x_gt(200), 200, ["move_right"])
 	await _to_steam()
-	await _until(_y_lt(60), 600)
-	await _until(_x_gt(540), 600, ["move_right"])
+	await _until(_y_lt(90), 600)
+	await _until(_x_gt(560), 600, ["move_right"])
+	await _wait(20)
 	await _to_ice()
-	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 600, 600)
-	await _until(func() -> bool: return p.global_position.x > 1000 and absf(p.velocity.x) < 5.0, 900, ["move_right"])
+	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y > 400, 600)
+	await _until(func() -> bool: return p.global_position.x > 1000 and _stopped(), 900, ["move_right"])
 	await _tap("heat")
 	await _until(func() -> bool: return p.state == Player.State.STEAM, 600, ["move_right"])
-	await _until(_y_lt(160), 900)
-	await _until(_x_gt(1340), 300, ["move_right"])
+	await _until(_x_gt(1780), 900, ["move_right"])
 	await _tap("cool")
-	await _until(_on_floor(), 200)
-	await _until(_x_gt(1450), 300, ["move_right"])
-	await _to_steam()
-	await _until(_x_gt(2100), 600, ["move_right"])
-	await _tap("cool")
-	await _until(_on_floor(), 200)
+	await _until(_on_floor(), 300)
 	await _seek_goal()

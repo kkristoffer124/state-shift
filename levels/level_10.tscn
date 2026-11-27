@@ -29,72 +29,76 @@ theme = "boiler"
 [node name="Hints" type="Node2D" parent="."]
 
 [node name="Ceiling" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, -64)
-size = Vector2(1728, 64)
+position = Vector2(0, 0)
+size = Vector2(960, 32)
 
 [node name="WallL" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, 0)
-size = Vector2(64, 960)
+position = Vector2(0, 32)
+size = Vector2(32, 448)
 
 [node name="WallR" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1600, 0)
-size = Vector2(64, 960)
+position = Vector2(928, 32)
+size = Vector2(32, 448)
 
-[node name="StartFloor" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 448)
-size = Vector2(768, 448)
+[node name="Floor" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(0, 480)
+size = Vector2(960, 60)
+
+[node name="P1" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(128, 416)
+size = Vector2(160, 32)
+
+[node name="P2" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 352)
+size = Vector2(64, 32)
+
+[node name="LedgeA" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(160, 288)
+size = Vector2(192, 32)
 
 [node name="TunnelRoof" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(256, 0)
-size = Vector2(704, 384)
+position = Vector2(256, 200)
+size = Vector2(320, 32)
 
-[node name="PitFloor" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(768, 864)
-size = Vector2(192, 32)
-
-[node name="Landing" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(960, 768)
-size = Vector2(640, 128)
-
-[node name="Ledge" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1344, 704)
-size = Vector2(256, 64)
-
-[node name="RoofSpikes" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(960, 416)
-rotation = 3.14159
-size = Vector2(704, 32)
+[node name="LedgeB" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(480, 416)
+size = Vector2(448, 64)
 
 [node name="TunnelSpikes" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(256, 416)
-size = Vector2(512, 32)
+position = Vector2(576, 264)
+rotation = 3.14159
+size = Vector2(320, 32)
 
 [node name="PitSpikes" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(768, 832)
-size = Vector2(192, 32)
+position = Vector2(352, 448)
+size = Vector2(128, 32)
 
 [node name="Goal" parent="Zones" instance=ExtResource("goal")]
-position = Vector2(1504, 640)
+position = Vector2(848, 352)
 size = Vector2(64, 64)
 
 [node name="Hint1" type="Label" parent="Hints"]
 offset_left = 40
-offset_top = 250
-offset_right = 460
-offset_bottom = 278
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_top = 240
+offset_right = 232
+offset_bottom = 260
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "Build up speed as ICE"
 
 [node name="Hint2" type="Label" parent="Hints"]
-offset_left = 40
-offset_top = 280
-offset_right = 460
-offset_bottom = 308
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_left = 330
+offset_top = 120
+offset_right = 530
+offset_bottom = 140
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "Fell short? R restarts"
 
 [node name="Player" parent="." instance=ExtResource("player")]
-position = Vector2(96, 426)
+position = Vector2(64, 469)
 state = 1

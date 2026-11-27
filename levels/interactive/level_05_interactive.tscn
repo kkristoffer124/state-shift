@@ -1,8 +1,7 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/interactive/ice_plate.tscn" id="plate"]
 [ext_resource type="PackedScene" path="res://scenes/interactive/gate.tscn" id="gate"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/drip_pipe.tscn" id="drip"]
 
 [node name="Interactive" type="Node2D"]
 
@@ -11,18 +10,12 @@
 [node name="Ambient" type="Node2D" parent="."]
 
 [node name="IcePlate" parent="Gameplay" instance=ExtResource("plate")]
-position = Vector2(544, 832)
+position = Vector2(464, 448)
 channel = "hatch"
-width = 288.0
+width = 96
 
 [node name="FanHatch" parent="Gameplay" instance=ExtResource("gate")]
-position = Vector2(896, 304)
+position = Vector2(704, 224)
 channel = "hatch"
-size = Vector2(192, 16)
+size = Vector2(96, 16)
 anchor = 2
-
-[node name="Drip" parent="Ambient" instance=ExtResource("drip")]
-position = Vector2(40, 136)
-pipe_length = 120.0
-interval = 0.9
-burst = 1

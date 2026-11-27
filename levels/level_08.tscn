@@ -29,75 +29,75 @@ theme = "boiler"
 [node name="Hints" type="Node2D" parent="."]
 
 [node name="Ceiling" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, -64)
-size = Vector2(1408, 64)
+position = Vector2(0, 0)
+size = Vector2(960, 32)
 
 [node name="WallL" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, 0)
-size = Vector2(64, 1472)
+position = Vector2(0, 32)
+size = Vector2(32, 448)
 
 [node name="WallR" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1280, 0)
-size = Vector2(64, 1472)
+position = Vector2(928, 32)
+size = Vector2(32, 448)
 
 [node name="Floor" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 1344)
-size = Vector2(1280, 64)
+position = Vector2(0, 480)
+size = Vector2(960, 60)
+
+[node name="CeilL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 32)
+size = Vector2(608, 32)
 
 [node name="Divider" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(384, 192)
-size = Vector2(64, 1152)
+position = Vector2(160, 128)
+size = Vector2(32, 256)
 
-[node name="AtticL" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(448, 192)
-size = Vector2(192, 32)
-
-[node name="AtticGrate" parent="Blocks" instance=ExtResource("grate")]
-position = Vector2(640, 192)
+[node name="Attic" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(192, 128)
 size = Vector2(448, 32)
 
-[node name="AtticR" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1088, 192)
-size = Vector2(192, 32)
+[node name="ColumnL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(640, 160)
+size = Vector2(32, 320)
 
-[node name="Crack1" parent="Blocks" instance=ExtResource("breakable")]
-position = Vector2(448, 512)
-size = Vector2(832, 32)
+[node name="CrackedFloor1" parent="Blocks" instance=ExtResource("breakable")]
+position = Vector2(672, 256)
+size = Vector2(128, 32)
 
-[node name="Crack2" parent="Blocks" instance=ExtResource("breakable")]
-position = Vector2(448, 768)
-size = Vector2(832, 32)
+[node name="CrackedFloor2" parent="Blocks" instance=ExtResource("breakable")]
+position = Vector2(672, 384)
+size = Vector2(128, 32)
 
-[node name="Crack3" parent="Blocks" instance=ExtResource("breakable")]
-position = Vector2(448, 1024)
-size = Vector2(832, 32)
-
-[node name="Spikes" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(448, 1312)
-size = Vector2(640, 32)
+[node name="Boiler" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(800, 160)
+size = Vector2(128, 256)
 
 [node name="Goal" parent="Zones" instance=ExtResource("goal")]
-position = Vector2(1184, 1280)
+position = Vector2(856, 416)
 size = Vector2(64, 64)
 
 [node name="Hint1" type="Label" parent="Hints"]
-offset_left = 40
-offset_top = 1180
-offset_right = 460
-offset_bottom = 1208
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_left = 210
+offset_top = 200
+offset_right = 346
+offset_bottom = 220
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "Get high first"
 
 [node name="Hint2" type="Label" parent="Hints"]
-offset_left = 480
-offset_top = 60
-offset_right = 900
-offset_bottom = 88
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
-text = "Drip, then freeze in the fall"
+offset_left = 660
+offset_top = 120
+offset_right = 948
+offset_bottom = 140
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "Fall far enough to break them all"
 
 [node name="Player" parent="." instance=ExtResource("player")]
-position = Vector2(96, 1322)
+position = Vector2(256, 469)
 state = 1

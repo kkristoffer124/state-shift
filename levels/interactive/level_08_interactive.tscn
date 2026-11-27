@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/interactive/steam_vent.tscn" id="vent"]
 [ext_resource type="PackedScene" path="res://scenes/interactive/turbine.tscn" id="turbine"]
@@ -11,19 +11,17 @@
 [node name="Ambient" type="Node2D" parent="."]
 
 [node name="ShaftVent" parent="Ambient" instance=ExtResource("vent")]
-position = Vector2(200, 1344)
-height = 600.0
+position = Vector2(96, 480)
+height = 300
 period = 2.4
 
 [node name="ShaftTurbine" parent="Gameplay" instance=ExtResource("turbine")]
-position = Vector2(96, 820)
+position = Vector2(96, 112)
 channel = "attic"
-radius = 30.0
+radius = 34
 
 [node name="AtticShutter" parent="Gameplay" instance=ExtResource("gate")]
-position = Vector2(460, 0)
+position = Vector2(400, 64)
 channel = "attic"
-size = Vector2(24, 192)
-
-[node name="ShaftTurbine2" parent="Ambient" instance=ExtResource("turbine")]
-position = Vector2(290, 420)
+size = Vector2(24, 64)
+anchor = 1

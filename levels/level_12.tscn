@@ -29,94 +29,100 @@ theme = "rooftop"
 [node name="Hints" type="Node2D" parent="."]
 
 [node name="Ceiling" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, -64)
-size = Vector2(2368, 64)
+position = Vector2(0, 0)
+size = Vector2(1920, 32)
 
 [node name="WallL" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, 0)
-size = Vector2(64, 832)
+position = Vector2(0, 32)
+size = Vector2(32, 448)
 
 [node name="WallR" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(2240, 0)
-size = Vector2(64, 832)
+position = Vector2(1888, 32)
+size = Vector2(32, 448)
 
 [node name="Floor" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 704)
-size = Vector2(2240, 64)
+position = Vector2(0, 480)
+size = Vector2(1920, 60)
 
-[node name="StartFloor" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 320)
-size = Vector2(448, 384)
+[node name="CeilL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 32)
+size = Vector2(384, 32)
 
-[node name="Crack" parent="Blocks" instance=ExtResource("breakable")]
-position = Vector2(448, 320)
-size = Vector2(192, 32)
+[node name="MidL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(288, 256)
+size = Vector2(224, 32)
 
-[node name="Separator" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(640, 0)
-size = Vector2(64, 352)
+[node name="CrackedFloor" parent="Blocks" instance=ExtResource("breakable")]
+position = Vector2(512, 256)
+size = Vector2(160, 32)
 
-[node name="ChamberRoof" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(704, 0)
-size = Vector2(448, 352)
+[node name="MidR" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(672, 256)
+size = Vector2(224, 32)
+
+[node name="AtticWall" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(864, 32)
+size = Vector2(32, 224)
+
+[node name="ChamberWall" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(288, 288)
+size = Vector2(32, 192)
+
+[node name="ChamberFloor" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(320, 448)
+size = Vector2(568, 32)
+
+[node name="Pillar" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(1088, 32)
+size = Vector2(32, 320)
 
 [node name="GrateWall" parent="Blocks" instance=ExtResource("grate")]
-position = Vector2(1056, 352)
-size = Vector2(32, 352)
+position = Vector2(1088, 352)
+size = Vector2(32, 128)
 
-[node name="ShaftRoof" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1152, 0)
-size = Vector2(128, 128)
-
-[node name="Shelf" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1280, 352)
-size = Vector2(192, 352)
-
-[node name="CorridorRoof" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1280, 0)
-size = Vector2(960, 96)
-
-[node name="Landing" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1984, 352)
-size = Vector2(256, 352)
+[node name="GoalLedge" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(1728, 320)
+size = Vector2(160, 160)
 
 [node name="ChamberSpikes" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(448, 672)
-size = Vector2(480, 32)
+position = Vector2(480, 416)
+size = Vector2(192, 32)
 
-[node name="Vent" parent="Zones" instance=ExtResource("heat_zone")]
-position = Vector2(1152, 448)
-size = Vector2(128, 256)
+[node name="Heat" parent="Zones" instance=ExtResource("heat_zone")]
+position = Vector2(1152, 384)
+size = Vector2(96, 96)
+
+[node name="Crosswind" parent="Zones" instance=ExtResource("fan")]
+position = Vector2(1728, 192)
+rotation = 1.5708
+size = Vector2(160, 608)
+push_direction = Vector2(1, 0)
+push_strength = 1800
 
 [node name="PitSpikes" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(1472, 672)
-size = Vector2(512, 32)
+position = Vector2(1248, 448)
+size = Vector2(480, 32)
 
-[node name="RoofSpikes" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(1984, 128)
+[node name="CeilingSpikes" parent="Zones" instance=ExtResource("spikes")]
+position = Vector2(1728, 64)
 rotation = 3.14159
-size = Vector2(512, 32)
-
-[node name="SideFan" parent="Zones" instance=ExtResource("fan")]
-position = Vector2(1984, 128)
-rotation = 1.5708
-size = Vector2(544, 512)
-push_direction = Vector2(1, 0)
-push_strength = 2000
+size = Vector2(480, 32)
 
 [node name="Goal" parent="Zones" instance=ExtResource("goal")]
-position = Vector2(2144, 288)
+position = Vector2(1792, 256)
 size = Vector2(64, 64)
 
 [node name="Hint1" type="Label" parent="Hints"]
-offset_left = 40
+offset_left = 48
 offset_top = 200
-offset_right = 460
-offset_bottom = 228
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_right = 320
+offset_bottom = 220
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "One last shift. Use everything."
 
 [node name="Player" parent="." instance=ExtResource("player")]
-position = Vector2(96, 298)
+position = Vector2(80, 469)
 state = 1

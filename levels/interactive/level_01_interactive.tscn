@@ -1,8 +1,9 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/interactive/drip_pipe.tscn" id="drip"]
 [ext_resource type="PackedScene" path="res://scenes/interactive/basin.tscn" id="basin"]
 [ext_resource type="PackedScene" path="res://scenes/interactive/gate.tscn" id="gate"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/drip_pipe.tscn" id="drip"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/flask_shelf.tscn" id="shelf"]
 
 [node name="Interactive" type="Node2D"]
 
@@ -10,20 +11,26 @@
 
 [node name="Ambient" type="Node2D" parent="."]
 
-[node name="DripOverGrate" parent="Ambient" instance=ExtResource("drip")]
-position = Vector2(600, 160)
-pipe_length = 144.0
-interval = 0.35
-burst = 2
-
 [node name="Basin" parent="Gameplay" instance=ExtResource("basin")]
-position = Vector2(518, 568)
+position = Vector2(544, 312)
 channel = "exit"
-size = Vector2(116, 40)
+size = Vector2(96, 40)
 threshold = 50
 player_fill_time = 0.08
 
 [node name="ExitShutter" parent="Gameplay" instance=ExtResource("gate")]
-position = Vector2(1136, 512)
+position = Vector2(144, 224)
 channel = "exit"
-size = Vector2(24, 96)
+size = Vector2(24, 256)
+
+[node name="DripOverGrate" parent="Ambient" instance=ExtResource("drip")]
+position = Vector2(592, 120)
+pipe_length = 88
+interval = 0.35
+burst = 2
+
+[node name="Flasks" parent="Ambient" instance=ExtResource("shelf")]
+position = Vector2(792, 224)
+width = 112
+count = 4
+seed_value = 3

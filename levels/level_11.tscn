@@ -29,89 +29,98 @@ theme = "rooftop"
 [node name="Hints" type="Node2D" parent="."]
 
 [node name="Ceiling" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, -64)
-size = Vector2(1088, 64)
+position = Vector2(0, 0)
+size = Vector2(960, 32)
 
 [node name="WallL" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, 0)
-size = Vector2(64, 1344)
+position = Vector2(0, 32)
+size = Vector2(32, 988)
 
 [node name="WallR" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(960, 0)
-size = Vector2(64, 1344)
+position = Vector2(928, 32)
+size = Vector2(32, 988)
 
 [node name="Floor" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 1216)
-size = Vector2(960, 64)
+position = Vector2(0, 1020)
+size = Vector2(960, 60)
 
-[node name="Shelf1L" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 960)
-size = Vector2(768, 32)
+[node name="CeilThick" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 32)
+size = Vector2(896, 32)
+
+[node name="S1L" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 800)
+size = Vector2(672, 32)
 
 [node name="Grate1" parent="Blocks" instance=ExtResource("grate")]
-position = Vector2(768, 960)
+position = Vector2(704, 800)
+size = Vector2(96, 32)
+
+[node name="S1R" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(800, 800)
 size = Vector2(128, 32)
 
-[node name="Shelf1R" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(896, 960)
-size = Vector2(64, 32)
-
-[node name="Shelf2L" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 704)
+[node name="S2L" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 576)
 size = Vector2(64, 32)
 
 [node name="Grate2" parent="Blocks" instance=ExtResource("grate")]
-position = Vector2(64, 704)
-size = Vector2(128, 32)
+position = Vector2(96, 576)
+size = Vector2(96, 32)
 
-[node name="Shelf2R" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(192, 704)
-size = Vector2(768, 32)
+[node name="S2R" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(192, 576)
+size = Vector2(736, 32)
 
-[node name="Shelf3L" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 448)
-size = Vector2(768, 32)
+[node name="S3L" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 352)
+size = Vector2(736, 32)
 
 [node name="Grate3" parent="Blocks" instance=ExtResource("grate")]
-position = Vector2(768, 448)
-size = Vector2(128, 32)
+position = Vector2(768, 352)
+size = Vector2(96, 32)
 
-[node name="Shelf3R" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(896, 448)
+[node name="S3R" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(864, 352)
 size = Vector2(64, 32)
 
-[node name="Roof1" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(704, 1024)
-rotation = 3.14159
-size = Vector2(704, 32)
+[node name="Crate" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(352, 988)
+size = Vector2(128, 32)
 
-[node name="Roof2" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(640, 768)
-rotation = 3.14159
-size = Vector2(384, 32)
+[node name="FloorSpikes" parent="Zones" instance=ExtResource("spikes")]
+position = Vector2(480, 988)
+size = Vector2(96, 32)
 
-[node name="Roof3" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(704, 512)
+[node name="Spikes1" parent="Zones" instance=ExtResource("spikes")]
+position = Vector2(848, 640)
 rotation = 3.14159
-size = Vector2(448, 32)
+size = Vector2(160, 32)
 
 [node name="ShelfSpikes" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(256, 672)
-size = Vector2(448, 32)
+position = Vector2(256, 544)
+size = Vector2(384, 32)
+
+[node name="Spikes2" parent="Zones" instance=ExtResource("spikes")]
+position = Vector2(256, 416)
+rotation = 3.14159
+size = Vector2(224, 32)
 
 [node name="Goal" parent="Zones" instance=ExtResource("goal")]
-position = Vector2(64, 384)
+position = Vector2(64, 288)
 size = Vector2(64, 64)
 
 [node name="Hint1" type="Label" parent="Hints"]
-offset_left = 40
-offset_top = 1150
-offset_right = 460
-offset_bottom = 1178
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_left = 480
+offset_top = 900
+offset_right = 688
+offset_bottom = 920
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "Look up before you rise"
 
 [node name="Player" parent="." instance=ExtResource("player")]
-position = Vector2(96, 1194)
+position = Vector2(96, 1009)
 state = 1

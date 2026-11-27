@@ -29,68 +29,94 @@ theme = "lab"
 [node name="Hints" type="Node2D" parent="."]
 
 [node name="Ceiling" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, -64)
-size = Vector2(1408, 64)
+position = Vector2(0, 0)
+size = Vector2(960, 32)
 
 [node name="WallL" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, 0)
-size = Vector2(64, 1088)
+position = Vector2(0, 32)
+size = Vector2(32, 448)
 
 [node name="WallR" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1280, 0)
-size = Vector2(64, 1088)
+position = Vector2(928, 32)
+size = Vector2(32, 448)
 
 [node name="Floor" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 960)
-size = Vector2(1280, 128)
+position = Vector2(0, 480)
+size = Vector2(960, 60)
 
-[node name="Pillar" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(448, 256)
-size = Vector2(64, 704)
+[node name="CeilL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 32)
+size = Vector2(416, 32)
 
-[node name="Overhang" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 640)
+[node name="MidL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 192)
+size = Vector2(96, 32)
+
+[node name="Grate2" parent="Blocks" instance=ExtResource("grate")]
+position = Vector2(128, 192)
+size = Vector2(96, 32)
+
+[node name="MidR" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(224, 192)
+size = Vector2(224, 32)
+
+[node name="LowL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 320)
 size = Vector2(256, 32)
 
-[node name="Grate" parent="Blocks" instance=ExtResource("grate")]
-position = Vector2(256, 640)
-size = Vector2(192, 32)
+[node name="Grate1" parent="Blocks" instance=ExtResource("grate")]
+position = Vector2(288, 320)
+size = Vector2(96, 32)
 
-[node name="Platform" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(640, 384)
-size = Vector2(640, 64)
+[node name="LowR" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(384, 320)
+size = Vector2(64, 32)
+
+[node name="Divider" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(448, 192)
+size = Vector2(32, 160)
+
+[node name="GoalBlock" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(736, 256)
+size = Vector2(192, 224)
 
 [node name="Goal" parent="Zones" instance=ExtResource("goal")]
-position = Vector2(1152, 320)
+position = Vector2(840, 192)
 size = Vector2(64, 64)
 
 [node name="Hint1" type="Label" parent="Hints"]
-offset_left = 32.0
-offset_top = 840.0
-offset_right = 452.0
-offset_bottom = 868.0
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
-text = "Heat twice to become STEAM. Gas rises!"
+offset_left = 48
+offset_top = 372
+offset_right = 232
+offset_bottom = 392
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "Heat up: STEAM rises"
 
 [node name="Hint2" type="Label" parent="Hints"]
-offset_left = 32.0
-offset_top = 580.0
-offset_right = 452.0
-offset_bottom = 608.0
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_left = 200
+offset_top = 252
+offset_right = 448
+offset_bottom = 272
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "Gas slips through grates too"
 
 [node name="Hint3" type="Label" parent="Hints"]
-offset_left = 560.0
-offset_top = 180.0
-offset_right = 980.0
-offset_bottom = 208.0
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_left = 500
+offset_top = 150
+offset_right = 796
+offset_bottom = 170
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "Steam spins turbines. Cool to land"
 
 [node name="Player" parent="." instance=ExtResource("player")]
-position = Vector2(96, 940)
+position = Vector2(80, 469)
 state = 1

@@ -29,70 +29,60 @@ theme = "boiler"
 [node name="Hints" type="Node2D" parent="."]
 
 [node name="Ceiling" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, -64)
-size = Vector2(1728, 64)
+position = Vector2(0, 0)
+size = Vector2(960, 32)
 
 [node name="WallL" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, 0)
-size = Vector2(64, 768)
+position = Vector2(0, 32)
+size = Vector2(32, 448)
 
 [node name="WallR" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1600, 0)
-size = Vector2(64, 768)
+position = Vector2(928, 32)
+size = Vector2(32, 448)
 
 [node name="Floor" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 576)
-size = Vector2(1600, 128)
+position = Vector2(0, 480)
+size = Vector2(960, 60)
 
 [node name="Barrier1" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(448, 224)
-size = Vector2(64, 352)
+position = Vector2(288, 256)
+size = Vector2(32, 224)
 
 [node name="Barrier2" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1024, 224)
-size = Vector2(64, 352)
+position = Vector2(640, 224)
+size = Vector2(32, 256)
 
-[node name="Ledge" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1472, 512)
-size = Vector2(128, 64)
+[node name="Heat1" parent="Zones" instance=ExtResource("heat_zone")]
+position = Vector2(96, 320)
+size = Vector2(96, 160)
 
-[node name="Vent1" parent="Zones" instance=ExtResource("heat_zone")]
-position = Vector2(320, 192)
-size = Vector2(128, 384)
+[node name="Freeze1" parent="Zones" instance=ExtResource("freeze_zone")]
+position = Vector2(352, 32)
+size = Vector2(96, 160)
 
-[node name="Vent2" parent="Zones" instance=ExtResource("heat_zone")]
-position = Vector2(928, 192)
-size = Vector2(96, 384)
+[node name="Heat2" parent="Zones" instance=ExtResource("heat_zone")]
+position = Vector2(480, 320)
+size = Vector2(96, 160)
 
-[node name="Cold1" parent="Zones" instance=ExtResource("freeze_zone")]
-position = Vector2(384, 0)
-size = Vector2(384, 160)
-
-[node name="Cold2" parent="Zones" instance=ExtResource("freeze_zone")]
-position = Vector2(960, 0)
-size = Vector2(384, 160)
-
-[node name="Spikes2" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(512, 544)
-size = Vector2(384, 32)
-
-[node name="Spikes3" parent="Zones" instance=ExtResource("spikes")]
-position = Vector2(1088, 544)
-size = Vector2(256, 32)
+[node name="Freeze2" parent="Zones" instance=ExtResource("freeze_zone")]
+position = Vector2(704, 32)
+size = Vector2(96, 128)
 
 [node name="Goal" parent="Zones" instance=ExtResource("goal")]
-position = Vector2(1504, 448)
+position = Vector2(864, 400)
 size = Vector2(64, 64)
 
 [node name="Hint1" type="Label" parent="Hints"]
 offset_left = 40
-offset_top = 400
-offset_right = 460
-offset_bottom = 428
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_top = 300
+offset_right = 376
+offset_bottom = 320
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "Vents lift, cold air drops. Just steer!"
 
 [node name="Player" parent="." instance=ExtResource("player")]
-position = Vector2(96, 554)
+position = Vector2(48, 469)
 state = 1

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/interactive/lever.tscn" id="lever"]
 [ext_resource type="PackedScene" path="res://scenes/interactive/drip_pipe.tscn" id="drip"]
@@ -10,19 +10,13 @@
 [node name="Ambient" type="Node2D" parent="."]
 
 [node name="Valve" parent="Gameplay" instance=ExtResource("lever")]
-position = Vector2(420, 256)
+position = Vector2(420, 160)
 channel = "pipe"
 style = 1
 
 [node name="GratePipe1" parent="Ambient" instance=ExtResource("drip")]
-position = Vector2(704, 60)
-pipe_length = 44.0
+position = Vector2(848, 96)
+pipe_length = 64
 channel = "pipe"
 interval = 0.25
 burst = 2
-
-[node name="GratePipe2" parent="Ambient" instance=ExtResource("drip")]
-position = Vector2(1220, 400)
-pipe_length = 96.0
-interval = 0.6
-burst = 1

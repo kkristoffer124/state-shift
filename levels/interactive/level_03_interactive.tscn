@@ -1,9 +1,8 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/interactive/turbine.tscn" id="turbine"]
 [ext_resource type="PackedScene" path="res://scenes/interactive/gate.tscn" id="gate"]
 [ext_resource type="PackedScene" path="res://scenes/interactive/steam_vent.tscn" id="vent"]
-[ext_resource type="PackedScene" path="res://scenes/interactive/drip_pipe.tscn" id="drip"]
 
 [node name="Interactive" type="Node2D"]
 
@@ -12,24 +11,19 @@
 [node name="Ambient" type="Node2D" parent="."]
 
 [node name="RoofTurbine" parent="Gameplay" instance=ExtResource("turbine")]
-position = Vector2(480, 44)
+position = Vector2(600, 72)
 channel = "exit"
-radius = 40.0
+radius = 32
 charge_time = 0.25
-pole_length = 26.0
+pole_length = 22
 
 [node name="ExitShutter" parent="Gameplay" instance=ExtResource("gate")]
-position = Vector2(1080, 0)
+position = Vector2(736, 32)
 channel = "exit"
-size = Vector2(24, 384)
+size = Vector2(24, 224)
+anchor = 1
 
 [node name="FloorVent" parent="Ambient" instance=ExtResource("vent")]
-position = Vector2(180, 960)
-height = 300.0
-period = 3.0
-
-[node name="OverhangDrip" parent="Ambient" instance=ExtResource("drip")]
-position = Vector2(90, 700)
-pipe_length = 12.0
-interval = 0.7
-burst = 1
+position = Vector2(608, 480)
+height = 200
+period = 3

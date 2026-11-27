@@ -9,7 +9,7 @@ func _ready() -> void:
 		if a.begins_with("--out="):
 			out = a.substr(6)
 	DirAccess.make_dir_recursive_absolute(out)
-	for n in range(6, 13):
+	for n in range(1, 13):
 		var path := "res://levels/level_%02d.tscn" % n
 		var level: Node2D = load(path).instantiate()
 		add_child(level)

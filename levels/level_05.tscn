@@ -29,80 +29,104 @@ theme = "cryo"
 [node name="Hints" type="Node2D" parent="."]
 
 [node name="Ceiling" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, -64)
-size = Vector2(1728, 64)
+position = Vector2(0, 0)
+size = Vector2(960, 32)
 
 [node name="WallL" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(-64, 0)
-size = Vector2(64, 960)
+position = Vector2(0, 32)
+size = Vector2(32, 448)
 
 [node name="WallR" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1600, 0)
-size = Vector2(64, 960)
+position = Vector2(928, 32)
+size = Vector2(32, 448)
 
 [node name="Floor" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(0, 832)
-size = Vector2(1600, 128)
+position = Vector2(0, 480)
+size = Vector2(960, 60)
 
-[node name="WallA" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(448, 320)
-size = Vector2(64, 512)
+[node name="CeilL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(32, 32)
+size = Vector2(384, 32)
+
+[node name="MidL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(320, 320)
+size = Vector2(128, 32)
 
 [node name="CrackedFloor" parent="Blocks" instance=ExtResource("breakable")]
-position = Vector2(576, 640)
-size = Vector2(256, 32)
+position = Vector2(448, 320)
+size = Vector2(128, 32)
 
-[node name="WallB" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1024, 352)
-size = Vector2(64, 480)
+[node name="MidR" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(576, 320)
+size = Vector2(64, 32)
 
-[node name="Ledge" parent="Blocks" instance=ExtResource("wall")]
-position = Vector2(1088, 320)
-size = Vector2(512, 32)
+[node name="Pillar" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(576, 32)
+size = Vector2(32, 288)
 
-[node name="HeatZone" parent="Zones" instance=ExtResource("heat_zone")]
-position = Vector2(320, 704)
-size = Vector2(128, 128)
+[node name="ShelfL" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(608, 224)
+size = Vector2(96, 32)
 
-[node name="FreezeZone" parent="Zones" instance=ExtResource("freeze_zone")]
-position = Vector2(576, 0)
-size = Vector2(256, 256)
+[node name="ShelfR" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(800, 224)
+size = Vector2(128, 32)
+
+[node name="Plinth" parent="Blocks" instance=ExtResource("wall")]
+position = Vector2(448, 448)
+size = Vector2(128, 32)
+
+[node name="Heat" parent="Zones" instance=ExtResource("heat_zone")]
+position = Vector2(160, 288)
+size = Vector2(96, 192)
+
+[node name="Freeze" parent="Zones" instance=ExtResource("freeze_zone")]
+position = Vector2(480, 32)
+size = Vector2(96, 128)
 
 [node name="Fan" parent="Zones" instance=ExtResource("fan")]
-position = Vector2(896, 320)
-size = Vector2(128, 512)
+position = Vector2(704, 256)
+size = Vector2(96, 224)
+push_direction = Vector2(0, -1)
+push_strength = 1500
 
 [node name="Goal" parent="Zones" instance=ExtResource("goal")]
-position = Vector2(1472, 256)
+position = Vector2(832, 160)
 size = Vector2(64, 64)
 
 [node name="Hint1" type="Label" parent="Hints"]
-offset_left = 40.0
-offset_top = 600.0
-offset_right = 460.0
-offset_bottom = 628.0
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_left = 40
+offset_top = 240
+offset_right = 232
+offset_bottom = 260
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "Hot zones force STEAM"
 
 [node name="Hint2" type="Label" parent="Hints"]
-offset_left = 590.0
-offset_top = 270.0
-offset_right = 1010.0
-offset_bottom = 298.0
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_left = 300
+offset_top = 180
+offset_right = 484
+offset_bottom = 200
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "Cold zones force ICE"
 
 [node name="Hint3" type="Label" parent="Hints"]
-offset_left = 600.0
-offset_top = 760.0
-offset_right = 1020.0
-offset_bottom = 788.0
-theme_override_colors/font_color = Color(0.85, 0.93, 1, 0.8)
-theme_override_font_sizes/font_size = 10
+offset_left = 640
+offset_top = 290
+offset_right = 824
+offset_bottom = 310
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.92)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.85)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
 text = "Fans blow gas upward"
 
 [node name="Player" parent="." instance=ExtResource("player")]
-position = Vector2(96, 810)
+position = Vector2(64, 469)
 state = 1

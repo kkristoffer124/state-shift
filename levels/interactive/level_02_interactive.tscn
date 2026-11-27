@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/interactive/ice_plate.tscn" id="plate"]
 [ext_resource type="PackedScene" path="res://scenes/interactive/gate.tscn" id="gate"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/tracker.tscn" id="tracker"]
 
 [node name="Interactive" type="Node2D"]
 
@@ -10,11 +11,15 @@
 [node name="Ambient" type="Node2D" parent="."]
 
 [node name="IcePlate" parent="Gameplay" instance=ExtResource("plate")]
-position = Vector2(1120, 448)
+position = Vector2(272, 256)
 channel = "exit"
-width = 72.0
+width = 72
 
 [node name="ExitShutter" parent="Gameplay" instance=ExtResource("gate")]
-position = Vector2(1392, 0)
+position = Vector2(192, 32)
 channel = "exit"
-size = Vector2(24, 384)
+size = Vector2(24, 224)
+
+[node name="Camera" parent="Ambient" instance=ExtResource("tracker")]
+position = Vector2(912, 112)
+flip = true
