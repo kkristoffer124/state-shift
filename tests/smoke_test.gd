@@ -36,9 +36,12 @@ func _frames(n: int) -> void:
 func _run() -> void:
 	for path in Game.LEVELS:
 		var level := await _load(path)
-		var p: Player = level.get_node("Player")
+		var pn: Node = level.get_node("Player")
 		await _frames(120)
-		_check(not p.dead and p.is_on_floor(), "%s: player spawns and lands" % path.get_file())
+		if pn is Player:
+			_check(not pn.dead and pn.is_on_floor(), "%s: player spawns and lands" % path.get_file())
+		else: # top-down / 3D chapters have their own tests
+			_check(not pn.dead and "state" in pn and pn.has_signal("state_changed"), "%s: player spawns alive" % path.get_file())
 
 	# Grates: ice stands on them, water drips through.
 	var l1 := await _load("res://levels/level_01.tscn")
@@ -141,6 +144,8 @@ func _hold(action: String, n: int) -> void:
 ## pieces (plate, gate, turbine, basin, lever, drip) behave.
 func _interactive() -> void:
 	for i in Game.LEVELS.size():
+		if not Game.LEVELS[i].get_file().begins_with("level_%02d.tscn" % (i + 1)):
+			continue # top-down / 3D chapters: no 2D interactive layer
 		var lv := await _load(Game.LEVELS[i])
 		var ix := lv.get_node_or_null("Interactive")
 		var amb := ix.get_node_or_null("Ambient") if ix else null

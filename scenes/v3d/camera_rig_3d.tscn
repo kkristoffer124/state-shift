@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/v3d/camera_rig_3d.gd" id="1"]
+[ext_resource type="Shader" path="res://shaders/v3d/screen_fx.gdshader" id="2"]
+
+[sub_resource type="ShaderMaterial" id="Mat_fx"]
+shader = ExtResource("2")
+
+[node name="CameraRig" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+current = true
+fov = 64.0
+near = 0.05
+
+[node name="ScreenFX" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Rect" type="ColorRect" parent="ScreenFX"]
+material = SubResource("Mat_fx")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

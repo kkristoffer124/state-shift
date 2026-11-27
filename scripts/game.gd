@@ -5,15 +5,17 @@ signal state_changed(state: int)
 signal level_changed(level_name: String, index: int, total: int)
 signal deaths_changed(deaths: int)
 
+## Each chapter has its own perspective: side-scroller (level_XX), top-down
+## (level_XX_topdown, scripts/topdown) or 3D (level_XX_3d, scripts/v3d).
 const LEVELS: Array[String] = [
 	"res://levels/level_01.tscn",
-	"res://levels/level_02.tscn",
-	"res://levels/level_03.tscn",
+	"res://levels/level_02_topdown.tscn",
+	"res://levels/level_03_3d.tscn",
 	"res://levels/level_04.tscn",
 	"res://levels/level_05.tscn",
-	"res://levels/level_06.tscn",
-	"res://levels/level_07.tscn",
-	"res://levels/level_08.tscn",
+	"res://levels/level_06_3d.tscn",
+	"res://levels/level_07_topdown.tscn",
+	"res://levels/level_08_3d.tscn",
 	"res://levels/level_09.tscn",
 	"res://levels/level_10.tscn",
 	"res://levels/level_11.tscn",

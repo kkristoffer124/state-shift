@@ -1,0 +1,144 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/topdown/td_player.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/topdown/td_player_visual.gd" id="vis"]
+[ext_resource type="Script" path="res://scripts/topdown/td_wet_trail.gd" id="trail"]
+[ext_resource type="SpriteFrames" path="res://assets/anim/ice_frames.tres" id="ice_frames"]
+[ext_resource type="SpriteFrames" path="res://assets/anim/water_frames.tres" id="water_frames"]
+[ext_resource type="Texture2D" path="res://assets/topdown/td_shadow.png" id="shadow"]
+[ext_resource type="Texture2D" path="res://assets/anim/ice_trails/v12_ice_speed_lines_4f.png" id="speed"]
+[ext_resource type="Texture2D" path="res://assets/topdown/td_puff_s.png" id="puff_s"]
+[ext_resource type="Texture2D" path="res://assets/vfx/v1_sparkle.png" id="t_spark"]
+[ext_resource type="Texture2D" path="res://assets/player/p2e_droplet.png" id="t_drop"]
+
+[sub_resource type="CircleShape2D" id="Shape_body"]
+radius = 10.0
+
+[sub_resource type="CircleShape2D" id="Shape_sensor"]
+radius = 6.0
+
+[sub_resource type="Gradient" id="Gradient_fade"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_wisp"]
+offsets = PackedFloat32Array(0, 0.3, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.7, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_drop"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.55, 0.78, 1, 1, 0.25, 0.55, 1, 0)
+
+[node name="Player" type="CharacterBody2D"]
+z_index = 6
+z_as_relative = false
+collision_layer = 8
+collision_mask = 69
+motion_mode = 1
+script = ExtResource("1")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("vis")
+
+[node name="WetTrail" type="Node2D" parent="Visual"]
+top_level = true
+z_index = 1
+z_as_relative = false
+script = ExtResource("trail")
+
+[node name="Shadow" type="Sprite2D" parent="Visual"]
+z_index = -1
+position = Vector2(0, 9)
+texture = ExtResource("shadow")
+
+[node name="Wisps" type="CPUParticles2D" parent="Visual"]
+z_index = -1
+amount = 10
+lifetime = 0.9
+local_coords = false
+texture = ExtResource("puff_s")
+emission_shape = 1
+emission_sphere_radius = 9.0
+direction = Vector2(0, -1)
+spread = 60.0
+gravity = Vector2(0, -12)
+initial_velocity_min = 4.0
+initial_velocity_max = 14.0
+scale_amount_min = 0.6
+scale_amount_max = 1.0
+color_ramp = SubResource("Gradient_wisp")
+
+[node name="Body" type="Node2D" parent="Visual"]
+
+[node name="SpeedLines" type="Sprite2D" parent="Visual/Body"]
+visible = false
+texture = ExtResource("speed")
+hframes = 4
+
+[node name="Ice" type="AnimatedSprite2D" parent="Visual/Body"]
+position = Vector2(0, -6)
+sprite_frames = ExtResource("ice_frames")
+animation = &"idle"
+
+[node name="Water" type="AnimatedSprite2D" parent="Visual/Body"]
+visible = false
+position = Vector2(0, -19)
+sprite_frames = ExtResource("water_frames")
+animation = &"idle"
+
+[node name="Cloud" type="Node2D" parent="Visual/Body"]
+visible = false
+
+[node name="Face" type="Node2D" parent="Visual/Body"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Shape_body")
+
+[node name="ZoneSensor" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 16
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZoneSensor"]
+shape = SubResource("Shape_sensor")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="ShiftBurst" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 28
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+texture = ExtResource("t_spark")
+emission_shape = 1
+emission_sphere_radius = 10.0
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 80.0
+initial_velocity_max = 200.0
+damping_min = 200.0
+damping_max = 300.0
+scale_amount_min = 0.6
+scale_amount_max = 1.0
+color_ramp = SubResource("Gradient_fade")
+
+[node name="Splash" type="CPUParticles2D" parent="."]
+top_level = true
+z_index = 7
+z_as_relative = false
+emitting = false
+amount = 18
+lifetime = 0.45
+one_shot = true
+explosiveness = 1.0
+texture = ExtResource("t_drop")
+emission_shape = 1
+emission_sphere_radius = 6.0
+spread = 180.0
+gravity = Vector2(0, 260)
+initial_velocity_min = 50.0
+initial_velocity_max = 140.0
+scale_amount_min = 0.5
+scale_amount_max = 0.9
+color_ramp = SubResource("Gradient_drop")

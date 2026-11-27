@@ -1,0 +1,339 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/topdown/td_level.gd" id="r1"]
+[ext_resource type="Script" path="res://scripts/topdown/td_terrain.gd" id="r2"]
+[ext_resource type="PackedScene" path="res://scenes/topdown/td_freeze.tscn" id="r3"]
+[ext_resource type="PackedScene" path="res://scenes/topdown/td_goal.tscn" id="r4"]
+[ext_resource type="PackedScene" path="res://scenes/topdown/td_plate.tscn" id="r5"]
+[ext_resource type="PackedScene" path="res://scenes/topdown/td_gate.tscn" id="r6"]
+[ext_resource type="PackedScene" path="res://scenes/topdown/td_bars.tscn" id="r7"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_pipe_v.png" id="r8"]
+[ext_resource type="Texture2D" path="res://assets/env_lab/e1c_decal_number_plate.png" id="r9"]
+[ext_resource type="Texture2D" path="res://assets/env_lab/e1c_decal_vent_slit.png" id="r10"]
+[ext_resource type="Texture2D" path="res://assets/env_lab/e1c_decal_warning_stripe.png" id="r11"]
+[ext_resource type="Texture2D" path="res://assets/env_lab/e1c_decal_cable_bundle.png" id="r12"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_monitor.png" id="r13"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_flask_1.png" id="r14"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_flask_2.png" id="r15"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_flask_3.png" id="r16"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_paper_1.png" id="r17"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_paper_2.png" id="r18"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_lamp_shade.png" id="r19"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_sign_arrow.png" id="r20"]
+[ext_resource type="Texture2D" path="res://assets/env_lab/e1c_decal_frost_patch.png" id="r21"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_glow.png" id="r22"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_valve_wheel_2f.png" id="r23"]
+[ext_resource type="Texture2D" path="res://assets/interactive/ix_tube_lamp.png" id="r24"]
+[ext_resource type="Texture2D" path="res://assets/topdown/td_vignette.png" id="r25"]
+[ext_resource type="PackedScene" path="res://scenes/topdown/td_player.tscn" id="r26"]
+
+[sub_resource type="CanvasItemMaterial" id="s1"]
+blend_mode = 1
+
+[sub_resource type="CanvasItemMaterial" id="s2"]
+blend_mode = 1
+
+[sub_resource type="CanvasItemMaterial" id="s3"]
+blend_mode = 1
+
+[sub_resource type="CanvasItemMaterial" id="s4"]
+blend_mode = 1
+
+[sub_resource type="CanvasItemMaterial" id="s5"]
+blend_mode = 1
+
+[node name="Level" type="Node2D"]
+script = ExtResource("r1")
+level_name = "2 - Freeze"
+theme = "lab"
+
+[node name="Blocks" type="Node2D" parent="."]
+
+[node name="Terrain" type="Node2D" parent="Blocks"]
+script = ExtResource("r2")
+rows = PackedStringArray("##############################", "##############################", "#.....#^^#.....##......#######", "#.##..#^^#.o.......o...#######", "#.##...^^#.............###...#", "#......^^#..#...o......###...#", "#......^^.........#...##.....#", "#.##...^^#...................#", "#.##...^^#..o..#.......#.....#", "#......^^#.............###...#", "#......^^#...o.........###...#", "#.##...^^#.......#.....#######", "#.##...^^#.............#######", "#......^^#.##.......o..#######", "#.....#^^#.......#.....#######", "##############################", "##############################")
+flow = Vector2(1, 0)
+
+[node name="Zones" type="Node2D" parent="."]
+
+[node name="Props" type="Node2D" parent="."]
+
+[node name="Decor" type="Node2D" parent="."]
+
+[node name="ColdRoom" parent="Zones" instance=ExtResource("r3")]
+position = Vector2(320, 64)
+size = Vector2(416, 416)
+
+[node name="Goal" parent="Zones" instance=ExtResource("r4")]
+position = Vector2(864, 192)
+size = Vector2(64, 64)
+
+[node name="ColdPlate" parent="Props" instance=ExtResource("r5")]
+position = Vector2(704, 320)
+channel = "exit"
+
+[node name="ExitGate" parent="Blocks" instance=ExtResource("r6")]
+position = Vector2(736, 224)
+channel = "exit"
+size = Vector2(32, 32)
+
+[node name="ExitBars" parent="Blocks" instance=ExtResource("r7")]
+position = Vector2(832, 192)
+size = Vector2(32, 96)
+
+[node name="PipeN1" type="Sprite2D" parent="Decor"]
+position = Vector2(920, 14)
+texture = ExtResource("r8")
+rotation = 1.5708
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 8, 880)
+texture_repeat = 2
+z_index = 1
+
+[node name="WallDecal0" type="Sprite2D" parent="Decor"]
+position = Vector2(96, 42)
+texture = ExtResource("r9")
+z_index = 1
+
+[node name="WallDecal1" type="Sprite2D" parent="Decor"]
+position = Vector2(250, 42)
+texture = ExtResource("r10")
+z_index = 1
+
+[node name="WallDecal2" type="Sprite2D" parent="Decor"]
+position = Vector2(470, 42)
+texture = ExtResource("r11")
+z_index = 1
+
+[node name="WallDecal3" type="Sprite2D" parent="Decor"]
+position = Vector2(690, 42)
+texture = ExtResource("r10")
+z_index = 1
+
+[node name="WallDecal4" type="Sprite2D" parent="Decor"]
+position = Vector2(860, 42)
+texture = ExtResource("r9")
+z_index = 1
+
+[node name="PipeS1" type="Sprite2D" parent="Decor"]
+position = Vector2(940, 498)
+texture = ExtResource("r8")
+rotation = 1.5708
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 8, 900)
+texture_repeat = 2
+z_index = 1
+
+[node name="CablesS1" type="Sprite2D" parent="Decor"]
+position = Vector2(130, 520)
+texture = ExtResource("r12")
+z_index = 1
+
+[node name="CablesS2" type="Sprite2D" parent="Decor"]
+position = Vector2(830, 520)
+texture = ExtResource("r12")
+z_index = 1
+
+[node name="Monitor1" type="Sprite2D" parent="Decor"]
+position = Vector2(96, 108)
+texture = ExtResource("r13")
+z_index = 2
+
+[node name="Flask1" type="Sprite2D" parent="Decor"]
+position = Vector2(78, 240)
+texture = ExtResource("r14")
+z_index = 2
+
+[node name="Flask2" type="Sprite2D" parent="Decor"]
+position = Vector2(94, 238)
+texture = ExtResource("r15")
+z_index = 2
+
+[node name="Flask3" type="Sprite2D" parent="Decor"]
+position = Vector2(108, 242)
+texture = ExtResource("r16")
+z_index = 2
+
+[node name="Paper1" type="Sprite2D" parent="Decor"]
+position = Vector2(84, 366)
+texture = ExtResource("r17")
+z_index = 2
+
+[node name="Paper2" type="Sprite2D" parent="Decor"]
+position = Vector2(100, 372)
+texture = ExtResource("r18")
+z_index = 2
+
+[node name="Lamp1" type="Sprite2D" parent="Decor"]
+position = Vector2(110, 364)
+texture = ExtResource("r19")
+z_index = 2
+
+[node name="Arrow" type="Sprite2D" parent="Decor"]
+position = Vector2(214, 208)
+texture = ExtResource("r20")
+z_index = 1
+flip_h = true
+
+[node name="Frost0" type="Sprite2D" parent="Decor"]
+position = Vector2(400, 172)
+texture = ExtResource("r21")
+z_index = 1
+
+[node name="Frost1" type="Sprite2D" parent="Decor"]
+position = Vector2(592, 204)
+texture = ExtResource("r21")
+z_index = 1
+
+[node name="Frost2" type="Sprite2D" parent="Decor"]
+position = Vector2(496, 268)
+texture = ExtResource("r21")
+z_index = 1
+
+[node name="Frost3" type="Sprite2D" parent="Decor"]
+position = Vector2(560, 364)
+texture = ExtResource("r21")
+z_index = 1
+
+[node name="Frost4" type="Sprite2D" parent="Decor"]
+position = Vector2(400, 428)
+texture = ExtResource("r21")
+z_index = 1
+
+[node name="ColdGlow1" type="Sprite2D" parent="Decor"]
+position = Vector2(430, 170)
+texture = ExtResource("r22")
+modulate = Color(0.4, 0.75, 1, 0.35)
+scale = Vector2(3, 3)
+texture_filter = 2
+material = SubResource("s1")
+z_index = 3
+
+[node name="ColdGlow2" type="Sprite2D" parent="Decor"]
+position = Vector2(640, 400)
+texture = ExtResource("r22")
+modulate = Color(0.4, 0.75, 1, 0.3)
+scale = Vector2(3, 3)
+texture_filter = 2
+material = SubResource("s2")
+z_index = 3
+
+[node name="LabGlow" type="Sprite2D" parent="Decor"]
+position = Vector2(110, 300)
+texture = ExtResource("r22")
+modulate = Color(1, 0.9, 0.7, 0.18)
+scale = Vector2(3, 3)
+texture_filter = 2
+material = SubResource("s3")
+z_index = 3
+
+[node name="GoalGlow" type="Sprite2D" parent="Decor"]
+position = Vector2(880, 224)
+texture = ExtResource("r22")
+modulate = Color(0.4, 1, 0.6, 0.35)
+scale = Vector2(2.5, 2.5)
+texture_filter = 2
+material = SubResource("s4")
+z_index = 3
+
+[node name="PlateGlow" type="Sprite2D" parent="Decor"]
+position = Vector2(720, 336)
+texture = ExtResource("r22")
+modulate = Color(0.5, 0.85, 1, 0.3)
+scale = Vector2(1.2, 1.2)
+texture_filter = 2
+material = SubResource("s5")
+z_index = 3
+
+[node name="Monitor2" type="Sprite2D" parent="Decor"]
+position = Vector2(800, 102)
+texture = ExtResource("r13")
+z_index = 2
+
+[node name="Valve" type="Sprite2D" parent="Decor"]
+position = Vector2(880, 400)
+texture = ExtResource("r23")
+z_index = 2
+hframes = 2
+
+[node name="Tube1" type="Sprite2D" parent="Decor"]
+position = Vector2(880, 116)
+texture = ExtResource("r24")
+z_index = 2
+
+[node name="Tube2" type="Sprite2D" parent="Decor"]
+position = Vector2(816, 380)
+texture = ExtResource("r24")
+z_index = 2
+
+[node name="Hints" type="Node2D" parent="."]
+z_index = 30
+
+[node name="Hint1" type="Label" parent="Hints"]
+offset_left = 36
+offset_top = 20
+offset_right = 456
+offset_bottom = 40
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.95)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "Top-down: WASD to move.  ICE slides until it hits something."
+
+[node name="Hint2" type="Label" parent="Hints"]
+offset_left = 36
+offset_top = 66
+offset_right = 236
+offset_bottom = 86
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.95)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "Q / CTRL  cool down"
+
+[node name="Hint3" type="Label" parent="Hints"]
+offset_left = 40
+offset_top = 424
+offset_right = 220
+offset_bottom = 444
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.95)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "ICE doesn't mind spikes"
+
+[node name="Hint4" type="Label" parent="Hints"]
+offset_left = 560
+offset_top = 20
+offset_right = 860
+offset_bottom = 40
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.95)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "Plates need heavy ICE - stop on it"
+
+[node name="Hint5" type="Label" parent="Hints"]
+offset_left = 760
+offset_top = 380
+offset_right = 950
+offset_bottom = 400
+theme_override_colors/font_color = Color(0.88, 0.95, 1, 0.95)
+theme_override_colors/font_outline_color = Color(0.03, 0.05, 0.08, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "E / SHIFT  heat up
+WATER slips through bars"
+
+[node name="Vignette" type="Sprite2D" parent="."]
+z_index = 20
+texture_filter = 2
+position = Vector2(480, 270)
+scale = Vector2(10, 10)
+texture = ExtResource("r25")
+
+[node name="Player" parent="." instance=ExtResource("r26")]
+position = Vector2(112, 208)
+state = 1
