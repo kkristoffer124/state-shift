@@ -24,6 +24,8 @@ func refresh() -> void:
 	locked = not Save.is_unlocked(index)
 	theme_type_variation = &"LockedTile" if locked else &"ChapterTile"
 	num_label.text = "CHAPTER %d" % (index + 1)
+	if not locked and Game.chapter_view(index) != "":
+		num_label.text += "  ·  " + Game.chapter_view(index).to_upper()
 	title_label.text = Game.chapter_name(index)
 	lock.visible = locked
 	var dim := Color(0.55, 0.65, 0.75, 0.55)

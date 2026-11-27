@@ -74,6 +74,8 @@ func _on_scene_changed() -> void:
 ## Fades in "CHAPTER n / Title" over the level; never blocks input. Any jump/accept skips it.
 func show_chapter_card(index: int, title: String, delay := 0.35) -> void:
 	card_num.text = "CHAPTER %d" % (index + 1)
+	if Game.chapter_view(index) != "":
+		card_num.text += "  ·  " + Game.chapter_view(index).to_upper()
 	card_title.text = title
 	# One line of story under the title (Game.CHAPTER_LINES); stays a little longer.
 	card_line.text = Game.chapter_line(index)

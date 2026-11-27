@@ -27,6 +27,11 @@ const CHAPTER_NAMES: Array[String] = [
 	"Drip", "Freeze", "Rise", "Shatter", "Pressure", "Crosswind",
 	"Sieve", "Chain Reaction", "Thermals", "Momentum", "Flue", "Meltdown",
 ]
+## Each chapter's camera perspective (shown on the title card and chapter select).
+const CHAPTER_VIEWS: Array[String] = [
+	"Side-scroller", "Top-down", "Third person", "Side-scroller", "Isometric", "2.5D side view",
+	"Top-down", "First person", "Side-scroller", "Isometric", "Side-scroller", "Third person",
+]
 ## One line of story per chapter, shown under the title card (lab logs, PA, notes).
 const CHAPTER_LINES: Array[String] = [
 	"PA: Containment breach in Lab 3. Please remain calm. And dry.",
@@ -82,6 +87,10 @@ func _process(delta: float) -> void:
 
 func chapter_name(index: int) -> String:
 	return CHAPTER_NAMES[index] if index >= 0 and index < CHAPTER_NAMES.size() else "Chapter %d" % (index + 1)
+
+
+func chapter_view(index: int) -> String:
+	return CHAPTER_VIEWS[index] if index >= 0 and index < CHAPTER_VIEWS.size() else ""
 
 
 func chapter_line(index: int) -> String:
