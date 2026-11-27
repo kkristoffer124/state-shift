@@ -57,6 +57,9 @@ func _ready() -> void:
 			["plate", Vector3(9.0, 0.6, 4.0), 0, null, null, 30],
 			["fan", Vector3(14.0, 2.0, 3.0), 2, null, null, 10],
 			["upper", Vector3(14.0, 9.2, 8.6), 2, null, null, 12],
+			["turn135", Vector3(9.0, 0.6, 4.0), 0, 135.0, null, 60],
+			["turn225", Vector3(3.0, 0.4, 6.0), 1, 225.0, null, 60],
+			["turn315", Vector3(12.5, 5.4, 6.0), 1, 315.0, null, 60],
 		]],
 		[10, -1, [
 			["start", null, 1, null, null, 50],
@@ -64,6 +67,8 @@ func _ready() -> void:
 			["deck", Vector3(2.0, 4.2, 2.5), 0, null, null, 30],
 			["runway", Vector3(10.0, 4.2, 2.5), 0, null, null, 20],
 			["strip", Vector3(16.6, 1.8, 5.0), 0, null, null, 30],
+			["turn135", Vector3(2.0, 4.2, 2.5), 0, 135.0, null, 60],
+			["turn315", Vector3(16.6, 1.8, 3.0), 1, 315.0, null, 60],
 		]],
 		[12, -1, [
 			["start", null, 1, null, null, 60],
@@ -101,6 +106,8 @@ func _shoot_level(n: int, mode_override: int, shots: Array) -> void:
 			rig.yaw = deg_to_rad(s[3])
 		if s[4] != null and rig.mode != M.SIDE_25D and rig.mode != M.ISOMETRIC:
 			rig.pitch = deg_to_rad(s[4])
+		if s[3] != null and rig.mode == M.ISOMETRIC:
+			rig._iso_yaw = deg_to_rad(s[3])  # Z / X view turn
 		rig._snap = true
 		for i in s[5]:
 			if s[1] != null and p.state == Player3D.State.STEAM:

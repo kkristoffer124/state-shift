@@ -322,6 +322,47 @@ func _build_goal() -> void:
 			_goal_light = c
 
 
+## Light pillar rising from the goal so "where next" reads from anywhere in the room
+## (Level3D adds it in the isometric / third-person chapters). `through` draws it over
+## walls (isometric).
+func add_beacon(through: bool) -> void:
+	if _vis == null or kind != Kind.GOAL:
+		return
+	var h := 14.0
+	var mesh := CylinderMesh.new()
+	mesh.top_radius = 0.55
+	mesh.bottom_radius = 0.75
+	mesh.height = h
+	mesh.radial_segments = 16
+	mesh.rings = 1
+	mesh.cap_top = false
+	mesh.cap_bottom = false
+	var grad := Gradient.new()
+	grad.set_color(0, Color(V3D.C_GOAL, 0.0))
+	grad.set_color(1, Color(V3D.C_GOAL, 0.45 if through else 0.35))
+	var tex := GradientTexture2D.new()
+	tex.gradient = grad
+	tex.fill_from = Vector2(0, 0)
+	tex.fill_to = Vector2(0, 1)
+	tex.width = 4
+	tex.height = 64
+	var m := StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	m.no_depth_test = through
+	m.albedo_texture = tex
+	m.disable_receive_shadows = true
+	var beam := MeshInstance3D.new()
+	beam.name = "Beacon"
+	beam.mesh = mesh
+	beam.material_override = m
+	beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	beam.position = Vector3(0, h / 2.0 - size.y * 0.4, 0)
+	_vis.add_child(beam)
+
+
 ## Goal swirl: idle spin + breathing bob; leans its pull toward a nearby blob; when
 ## the blob wins it spins up, flares and swallows it (scale pulse, light flash).
 func _animate_goal(delta: float) -> void:

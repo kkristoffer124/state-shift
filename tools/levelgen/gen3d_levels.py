@@ -137,12 +137,16 @@ def level_03():
     L("LampTank", (11.5, 2.5, 8.5), (1.0, 0.35, 0.25), 1.0, 5.0, fitting=2, flicker=0.25)
 
     H = sc.hint
-    H("Hint0", (2.4, 2.4, 6.2), "Click: mouse look   \u2190 \u2192: turn")
+    H("Hint0", (2.4, 2.4, 6.2), "Mouse: look   ← → / Z X: turn   C: recentre")
     H("Hint1", (3.0, 1.9, 4.9), "SPACE: hop the bench")
     H("Hint2", (6.0, 2.5, 3.6), "Heat up (E): STEAM rises")
     H("Hint3", (3.0, 6.8, 6.5), "Gas slips through grates too")
     H("Hint4", (11.0, 10.4, 5.0), "Steam spins turbines. Cool (Q) to land")
 
+    # Camera hints (pre-shift y): mezzanine room - look from the grate-1 corner toward
+    # grate 2 (shorter arm); top floor - side view along the drift to the roof turbine.
+    sc.camzone("CamMezz", (4.0, 6.0, 5.0), (8.2, 4.0, 10.0), yaw=146.0, dist=0.8)
+    sc.camzone("CamTop", (7.0, 10.75, 5.0), (14.0, 4.5, 10.0), yaw=170.0, dist=0.85)
     player_rig(sc, (1.8, 0.4, 7.4), 1, {"yaw_deg": "8.0"})
     return sc
 

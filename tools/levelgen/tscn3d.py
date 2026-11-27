@@ -13,6 +13,7 @@ EXT = {
     "pipe": ("Script", "res://scripts/v3d/pipe_3d.gd"),
     "jet": ("Script", "res://scripts/v3d/steam_jet_3d.gd"),
     "rain": ("Script", "res://scripts/v3d/rain_3d.gd"),
+    "camzone": ("Script", "res://scripts/v3d/camera_zone_3d.gd"),
     "skyline": ("Script", "res://scripts/v3d/skyline_3d.gd"),
     "player": ("PackedScene", "res://scenes/v3d/player_3d.tscn"),
     "rig": ("PackedScene", "res://scenes/v3d/camera_rig_3d.tscn"),
@@ -94,6 +95,17 @@ class Scene:
             lines.append("%s = %s" % (k, v))
         self.nodes.append("\n".join(lines))
         return name
+
+    def camzone(self, name, center, size, yaw=None, pitch=None, dist=1.0, blend=2.0):
+        """Third-person camera hint box (CameraZone3D) under a CameraZones node."""
+        if "CameraZones" not in [n.split('"')[1] for n in self.nodes]:
+            self.node("CameraZones", "Node3D", ".")
+        props = {"transform": xform(self.ys(center)), "size": v3(size), "distance_scale": f(dist), "blend": f(blend)}
+        if yaw is not None:
+            props.update({"use_yaw": "true", "yaw_deg": f(yaw)})
+        if pitch is not None:
+            props.update({"use_pitch": "true", "pitch_deg": f(pitch)})
+        return self.node(name, "Node3D", "CameraZones", props, script="camzone")
 
     def sub(self, sid, typ, props):
         lines = ['[sub_resource type="%s" id="%s"]' % (typ, sid)]

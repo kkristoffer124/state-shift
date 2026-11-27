@@ -5,6 +5,13 @@
 The .tscn files are normal Godot scenes: once you start editing them in the
 editor, treat them as the source of truth (re-running this overwrites them).
 
+NOTE: the scenes have moved on since this scaffold. Experiment 47 is now an
+instance of scenes/cutscenes/cutscene_blob.tscn (CutsceneBlob: the in-game
+water/ice AnimatedSprite2Ds, steam pixel cloud and player eyes; tracks key
+`Blob:pose` / `Blob:expression` instead of `Blob:frame` / `Blob/Eyes:frame`),
+standalone eyes are CutsceneFace nodes (`expression`), Poof uses the in-game
+shift burst, and P7 has a DrainFront floor patch. Don't re-run this over them.
+
 Coordinates: art space is 480x270 (each panel's Art/Fx nodes are scaled 2x);
 cameras live in screen space (960x540).
 """
@@ -418,7 +425,8 @@ def intro():
     pn.sprite("Liquid", "flask_liquid.png", (200, 102), frames=7)
     pn.sprite("FlaskFront", "flask_front.png", (200, 102), script=False)
     pn.sprite("Drop", "drops.png", (237, 98), frames=2, props={"visible": False})
-    pn.sprite("Hand", "hand_vial.png", (100, -80), frames=2)
+    # offset = make_art.SLEEVE_EXT: the sleeve continues off-screen up-left
+    pn.sprite("Hand", "hand_vial.png", (100, -80), frames=2, offset=(-70, -70))
     pn.particles("Bubbles", "Fx", (240, 168), {
         "amount": 10, "lifetime": 0.9, "texture": sc.tex("bubble.png"), "emission_shape": 3,
         "emission_rect_extents": V(26, 12), "direction": V(0, -1), "spread": 10.0, "gravity": V(0, -30),

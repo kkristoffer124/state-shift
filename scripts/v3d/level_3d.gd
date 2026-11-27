@@ -39,7 +39,12 @@ extends Node3D
 var player: Player3D
 var rig: CameraRig3D
 var _cut := INF
-var _cut_items: Array = []
+var _cut_bottom := {}
+## Isometric: camera-side walls hidden for the current view direction, and blocks
+## hidden while they stand between the camera and the blob (node -> seconds left).
+var _near_hidden := {}
+var _view_items: Array = []
+var _occ_hidden := {}
 
 
 func _ready() -> void:
@@ -60,13 +65,17 @@ func _ready() -> void:
 	if camera_mode == V3D.CameraMode.ISOMETRIC:
 		# Orthographic view shows far more of the room: scale the hints up to match
 		# and keep them readable over walls.
-		var s: float = rig.camera.size / 6.0
+		var s: float = rig.camera.size / 4.8
 		for h in find_children("*", "Label3D", true, false):
 			if h is Hint3D:
 				h.pixel_size *= s
 				h.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 				h.no_depth_test = true
 				h.render_priority = 5
+	if camera_mode == V3D.CameraMode.ISOMETRIC or camera_mode == V3D.CameraMode.THIRD_PERSON:
+		for z in find_children("*", "Area3D", true, false):
+			if z is Zone3D and z.kind == Zone3D.Kind.GOAL:
+				z.add_beacon(camera_mode == V3D.CameraMode.ISOMETRIC)
 	Game.on_level_ready(self, player)
 
 
@@ -89,11 +98,88 @@ func apply_cut(y: float) -> void:
 				if n is Block3D and group == "Blocks" and n.kind != Block3D.Kind.GLASS and n.look < Block3D.Look.METAL:
 					continue
 				if n is Node3D and not n is Light3D:
-					_cut_items.append([n, _bottom_of(n)])
+					_cut_bottom[n] = _bottom_of(n)
 	_cut = y
 	V3D.set_cut(y)
-	for it in _cut_items:
-		it[0].visible = it[1] <= y
+	for n in _cut_bottom:
+		_refresh_vis(n)
+
+
+## Isometric: hides the tall walls (and glass) along the camera side of the room so
+## they never cover the play space, whichever way the view is turned. `fwd` is the
+## camera's horizontal forward. Low walls (< 1.5 m) stay as the room's rim.
+func apply_view(fwd: Vector3) -> void:
+	var b := get_bounds()
+	if _view_items.is_empty():
+		for group in ["Blocks", "Decor"]:
+			var g := get_node_or_null(group)
+			if g == null:
+				continue
+			for n in g.get_children():
+				if n is Block3D and n.kind != Block3D.Kind.DECOR:
+					var bb: AABB = n.get_aabb()
+					if bb.size.y >= 1.5 and minf(bb.size.x, bb.size.z) <= 0.8:
+						_view_items.append([n, bb])
+	var band := 0.9
+	var was := _near_hidden.duplicate()
+	_near_hidden.clear()
+	for it in _view_items:
+		var bb: AABB = it[1]
+		var near := false
+		if bb.size.x <= 0.8:
+			near = (fwd.x < -0.3 and bb.position.x >= b.end.x - band) or (fwd.x > 0.3 and bb.end.x <= b.position.x + band)
+		if bb.size.z <= 0.8 and not near:
+			near = (fwd.z < -0.3 and bb.position.z >= b.end.z - band) or (fwd.z > 0.3 and bb.end.z <= b.position.z + band)
+		if near:
+			_near_hidden[it[0]] = true
+	for n in was:
+		_refresh_vis(n)
+	for n in _near_hidden:
+		_refresh_vis(n)
+
+
+## Isometric: anything standing between the camera and the blob is hidden while it
+## does (and a moment longer, so it doesn't flicker). `back` points at the camera.
+func update_occluders(p: Vector3, back: Vector3, delta: float) -> void:
+	if player == null:
+		return
+	var space := get_world_3d().direct_space_state
+	var mask := V3D.L_WORLD | V3D.L_BREAKABLE | V3D.L_GLASS | V3D.L_GRATE
+	var side := back.cross(Vector3.UP).normalized() * 0.32
+	for off in [Vector3.ZERO, Vector3.UP * 0.35, side, -side]:
+		var excl: Array[RID] = [player.get_rid()]
+		var from: Vector3 = p + off
+		for i in 5:
+			var q := PhysicsRayQueryParameters3D.create(from, from + back * 40.0, mask, excl)
+			var hit := space.intersect_ray(q)
+			if hit.is_empty() or (hit.position as Vector3).y > _cut + 0.02:
+				break
+			excl.append(hit.rid)
+			var c := hit.collider as Node3D
+			while c and not c is Block3D and c.get_parent() != self and c.get_parent() is Node3D:
+				c = c.get_parent()
+			if c is Block3D and (c as Block3D).get_aabb().end.y > p.y - 0.3:
+				if not _occ_hidden.has(c):
+					_occ_hidden[c] = 0.35
+					_refresh_vis(c)
+				else:
+					_occ_hidden[c] = 0.35
+	for c in _occ_hidden.keys():
+		_occ_hidden[c] -= delta
+		if not is_instance_valid(c):
+			_occ_hidden.erase(c)
+		elif _occ_hidden[c] <= 0.0:
+			_occ_hidden.erase(c)
+			_refresh_vis(c)
+
+
+func _refresh_vis(n: Variant) -> void:
+	if not is_instance_valid(n):
+		return
+	var vis := not _near_hidden.has(n) and not _occ_hidden.has(n)
+	if _cut_bottom.has(n):
+		vis = vis and (_cut == INF or _cut_bottom[n] <= _cut)
+	n.visible = vis
 
 
 static func _bottom_of(n: Node3D) -> float:

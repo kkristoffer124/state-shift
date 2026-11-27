@@ -6,6 +6,16 @@
 [sub_resource type="ShaderMaterial" id="Mat_fx"]
 shader = ExtResource("2")
 
+[sub_resource type="PlaneMesh" id="Mesh_disc"]
+size = Vector2(1, 1)
+
+[sub_resource type="CylinderMesh" id="Mesh_line"]
+top_radius = 0.03
+bottom_radius = 0.03
+height = 1.0
+radial_segments = 6
+rings = 1
+
 [node name="CameraRig" type="Node3D"]
 script = ExtResource("1")
 
@@ -25,3 +35,14 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[node name="Marker" type="Node3D" parent="."]
+visible = false
+
+[node name="Disc" type="MeshInstance3D" parent="Marker"]
+cast_shadow = 0
+mesh = SubResource("Mesh_disc")
+
+[node name="Line" type="MeshInstance3D" parent="Marker"]
+cast_shadow = 0
+mesh = SubResource("Mesh_line")

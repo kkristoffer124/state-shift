@@ -25,18 +25,16 @@
 [ext_resource type="Texture2D" path="res://assets/cutscenes/spark.png" id="23"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/scientist_fainted.png" id="24"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/dizzy.png" id="25"]
-[ext_resource type="Texture2D" path="res://assets/cutscenes/eyes_big.png" id="26"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/emotes.png" id="27"]
-[ext_resource type="Texture2D" path="res://assets/cutscenes/blob_big.png" id="28"]
-[ext_resource type="Texture2D" path="res://assets/cutscenes/poof.png" id="29"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/door_panel.png" id="30"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/alarm_lamp.png" id="31"]
-[ext_resource type="Texture2D" path="res://assets/cutscenes/blob_small.png" id="32"]
-[ext_resource type="Texture2D" path="res://assets/cutscenes/eyes_small.png" id="33"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/alarm_beam.png" id="34"]
 [ext_resource type="Texture2D" path="res://assets/ui/u1_logo.png" id="35"]
 [ext_resource type="Theme" path="res://scenes/ui/theme.tres" id="36"]
 [ext_resource type="PackedScene" path="res://scenes/cutscenes/cutscene_ui.tscn" id="37"]
+[ext_resource type="PackedScene" path="res://scenes/cutscenes/cutscene_blob.tscn" id="cs_blob"]
+[ext_resource type="Script" path="res://scripts/cutscenes/cutscene_face.gd" id="cs_face"]
+[ext_resource type="Texture2D" path="res://assets/vfx/v1_shift_burst_5f.png" id="cs_burst"]
 
 [sub_resource type="CanvasItemMaterial" id="add_mat"]
 blend_mode = 1
@@ -680,7 +678,7 @@ tracks/4/keys = {
 tracks/5/type = "value"
 tracks/5/imported = false
 tracks/5/enabled = true
-tracks/5/path = NodePath("Art/Eyes:frame")
+tracks/5/path = NodePath("Art/Eyes:expression")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
@@ -784,7 +782,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Art/FlaskEyes:frame")
+tracks/3/path = NodePath("Art/FlaskEyes:expression")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -832,7 +830,7 @@ tracks/6/keys = {
 tracks/7/type = "value"
 tracks/7/imported = false
 tracks/7/enabled = true
-tracks/7/path = NodePath("Art/Blob:frame")
+tracks/7/path = NodePath("Art/Blob:pose")
 tracks/7/interp = 1
 tracks/7/loop_wrap = true
 tracks/7/keys = {
@@ -844,95 +842,95 @@ tracks/7/keys = {
 tracks/8/type = "value"
 tracks/8/imported = false
 tracks/8/enabled = true
-tracks/8/path = NodePath("Art/Blob/Eyes:position")
+tracks/8/path = NodePath("Art/Blob:expression")
 tracks/8/interp = 1
 tracks/8/loop_wrap = true
 tracks/8/keys = {
-"times": PackedFloat32Array(0.0, 3.25, 5.05, 6.85),
-"transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0),
-"update": 0,
-"values": [Vector2(-11.0, -28.0), Vector2(-11.0, -27.0), Vector2(-12.0, -25.0), Vector2(-11.0, -28.0)]
-}
-tracks/9/type = "value"
-tracks/9/imported = false
-tracks/9/enabled = true
-tracks/9/path = NodePath("Art/Blob/Eyes:frame")
-tracks/9/interp = 1
-tracks/9/loop_wrap = true
-tracks/9/keys = {
 "times": PackedFloat32Array(0.0, 1.5, 1.65, 2.0, 2.4, 2.8, 3.25, 3.9, 5.05, 5.6, 7.05, 7.25, 7.8),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
 "update": 1,
 "values": [7, 2, 0, 3, 4, 5, 7, 0, 8, 5, 2, 6, 5]
 }
-tracks/10/type = "value"
-tracks/10/imported = false
-tracks/10/enabled = true
-tracks/10/path = NodePath("Art/Blob:scale")
-tracks/10/interp = 1
-tracks/10/loop_wrap = true
-tracks/10/keys = {
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Art/Blob:scale")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
 "times": PackedFloat32Array(0.0, 1.35, 1.6),
 "transitions": PackedFloat32Array(1.0, 0.5, 1.0),
 "update": 0,
 "values": [Vector2(1.0, 1.0), Vector2(1.15, 0.85), Vector2(1.0, 1.0)]
 }
-tracks/11/type = "value"
-tracks/11/imported = false
-tracks/11/enabled = true
-tracks/11/path = NodePath("Art/Blob:offset")
-tracks/11/interp = 1
-tracks/11/loop_wrap = true
-tracks/11/keys = {
-"times": PackedFloat32Array(0.0),
-"transitions": PackedFloat32Array(1.0),
-"update": 0,
-"values": [Vector2(-24.0, -40.0)]
-}
-tracks/12/type = "value"
-tracks/12/imported = false
-tracks/12/enabled = true
-tracks/12/path = NodePath("Fx/Poof:visible")
-tracks/12/interp = 1
-tracks/12/loop_wrap = true
-tracks/12/keys = {
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Fx/Poof:visible")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
 "times": PackedFloat32Array(0.0, 3.2, 3.5, 5.0, 5.3, 6.8, 7.1),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
 "update": 1,
 "values": [false, true, false, true, false, true, false]
 }
-tracks/13/type = "value"
-tracks/13/imported = false
-tracks/13/enabled = true
-tracks/13/path = NodePath("Fx/Poof:frame")
-tracks/13/interp = 1
-tracks/13/loop_wrap = true
-tracks/13/keys = {
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Fx/Poof:frame")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
 "times": PackedFloat32Array(0.0, 3.2, 3.27, 3.34, 3.41, 5.0, 5.07, 5.14, 5.21, 6.8, 6.87, 6.94, 7.01),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
 "update": 1,
 "values": [0, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]
 }
-tracks/14/type = "value"
-tracks/14/imported = false
-tracks/14/enabled = true
-tracks/14/path = NodePath("Fx/Poof:position")
-tracks/14/interp = 1
-tracks/14/loop_wrap = true
-tracks/14/keys = {
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("Fx/Poof:position")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
 "times": PackedFloat32Array(0.0, 5.0, 6.8),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0),
 "update": 0,
 "values": [Vector2(330.0, 186.0), Vector2(330.0, 186.0), Vector2(330.0, 164.0)]
 }
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("Fx/Emote:visible")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0.0, 2.85, 3.85),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("Fx/Emote:scale")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0.0, 2.85, 3.0),
+"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
+"update": 0,
+"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
+}
 tracks/15/type = "value"
 tracks/15/imported = false
 tracks/15/enabled = true
-tracks/15/path = NodePath("Fx/Emote:visible")
+tracks/15/path = NodePath("Fx/Emote2:visible")
 tracks/15/interp = 1
 tracks/15/loop_wrap = true
 tracks/15/keys = {
-"times": PackedFloat32Array(0.0, 2.85, 3.85),
+"times": PackedFloat32Array(0.0, 3.5, 4.4),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0),
 "update": 1,
 "values": [false, true, false]
@@ -940,11 +938,11 @@ tracks/15/keys = {
 tracks/16/type = "value"
 tracks/16/imported = false
 tracks/16/enabled = true
-tracks/16/path = NodePath("Fx/Emote:scale")
+tracks/16/path = NodePath("Fx/Emote2:scale")
 tracks/16/interp = 1
 tracks/16/loop_wrap = true
 tracks/16/keys = {
-"times": PackedFloat32Array(0.0, 2.85, 3.0),
+"times": PackedFloat32Array(0.0, 3.5, 3.65),
 "transitions": PackedFloat32Array(1.0, 0.5, 1.0),
 "update": 0,
 "values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
@@ -952,11 +950,11 @@ tracks/16/keys = {
 tracks/17/type = "value"
 tracks/17/imported = false
 tracks/17/enabled = true
-tracks/17/path = NodePath("Fx/Emote2:visible")
+tracks/17/path = NodePath("Fx/Emote3:visible")
 tracks/17/interp = 1
 tracks/17/loop_wrap = true
 tracks/17/keys = {
-"times": PackedFloat32Array(0.0, 3.5, 4.4),
+"times": PackedFloat32Array(0.0, 7.85, 8.6),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0),
 "update": 1,
 "values": [false, true, false]
@@ -964,46 +962,22 @@ tracks/17/keys = {
 tracks/18/type = "value"
 tracks/18/imported = false
 tracks/18/enabled = true
-tracks/18/path = NodePath("Fx/Emote2:scale")
+tracks/18/path = NodePath("Fx/Emote3:scale")
 tracks/18/interp = 1
 tracks/18/loop_wrap = true
 tracks/18/keys = {
-"times": PackedFloat32Array(0.0, 3.5, 3.65),
-"transitions": PackedFloat32Array(1.0, 0.5, 1.0),
-"update": 0,
-"values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
-}
-tracks/19/type = "value"
-tracks/19/imported = false
-tracks/19/enabled = true
-tracks/19/path = NodePath("Fx/Emote3:visible")
-tracks/19/interp = 1
-tracks/19/loop_wrap = true
-tracks/19/keys = {
-"times": PackedFloat32Array(0.0, 7.85, 8.6),
-"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
-"update": 1,
-"values": [false, true, false]
-}
-tracks/20/type = "value"
-tracks/20/imported = false
-tracks/20/enabled = true
-tracks/20/path = NodePath("Fx/Emote3:scale")
-tracks/20/interp = 1
-tracks/20/loop_wrap = true
-tracks/20/keys = {
 "times": PackedFloat32Array(0.0, 7.85, 8.0),
 "transitions": PackedFloat32Array(1.0, 0.5, 1.0),
 "update": 0,
 "values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
 }
-tracks/21/type = "method"
-tracks/21/imported = false
-tracks/21/enabled = true
-tracks/21/path = NodePath(".")
-tracks/21/interp = 1
-tracks/21/loop_wrap = true
-tracks/21/keys = {
+tracks/19/type = "method"
+tracks/19/imported = false
+tracks/19/enabled = true
+tracks/19/path = NodePath(".")
+tracks/19/interp = 1
+tracks/19/loop_wrap = true
+tracks/19/keys = {
 "times": PackedFloat32Array(0.55, 1.35, 1.6, 3.2, 3.3, 3.31, 5.0, 5.1, 6.8, 7.0, 7.05),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
 "values": [{
@@ -1149,7 +1123,7 @@ tracks/7/keys = {
 tracks/8/type = "value"
 tracks/8/imported = false
 tracks/8/enabled = true
-tracks/8/path = NodePath("Art/Blob/Eyes:frame")
+tracks/8/path = NodePath("Art/Blob:expression")
 tracks/8/interp = 1
 tracks/8/loop_wrap = true
 tracks/8/keys = {
@@ -1197,14 +1171,14 @@ tracks/11/keys = {
 tracks/12/type = "value"
 tracks/12/imported = false
 tracks/12/enabled = true
-tracks/12/path = NodePath("Art/Blob:frame")
+tracks/12/path = NodePath("Art/Blob:pose")
 tracks/12/interp = 1
 tracks/12/loop_wrap = true
 tracks/12/keys = {
 "times": PackedFloat32Array(0.0, 6.0, 6.05, 6.5, 6.55, 7.0, 7.2),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
 "update": 1,
-"values": [0, 1, 2, 1, 2, 1, 0]
+"values": [0, 1, 2, 1, 2, 1, 8]
 }
 tracks/13/type = "value"
 tracks/13/imported = false
@@ -1216,7 +1190,7 @@ tracks/13/keys = {
 "times": PackedFloat32Array(0.0, 7.0, 7.2, 7.7),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0),
 "update": 0,
-"values": [Vector2(1.0, 1.0), Vector2(1.0, 1.0), Vector2(1.3, 0.7), Vector2(1.5, 0.05)]
+"values": [Vector2(1.0, 1.0), Vector2(1.0, 1.0), Vector2(1.0, 1.0), Vector2(1.0, 1.0)]
 }
 tracks/14/type = "value"
 tracks/14/imported = false
@@ -1225,7 +1199,7 @@ tracks/14/path = NodePath("Art/Blob:modulate")
 tracks/14/interp = 1
 tracks/14/loop_wrap = true
 tracks/14/keys = {
-"times": PackedFloat32Array(0.0, 7.4, 7.75),
+"times": PackedFloat32Array(0.0, 7.75, 8.1),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0),
 "update": 0,
 "values": [Color(1.0, 1.0, 1.0, 1.0), Color(1.0, 1.0, 1.0, 1.0), Color(1.0, 1.0, 1.0, 0.0)]
@@ -1524,6 +1498,7 @@ script = ExtResource("6")
 texture = ExtResource("20")
 position = Vector2(100.0, -80.0)
 centered = false
+offset = Vector2(-70.0, -70.0)
 hframes = 2
 script = ExtResource("6")
 
@@ -1808,14 +1783,11 @@ hframes = 7
 frame = 4
 script = ExtResource("6")
 
-[node name="Eyes" type="Sprite2D" parent="Panels/P5_Awake/Art"]
-texture = ExtResource("26")
-position = Vector2(229.0, 160.0)
-centered = false
-hframes = 9
-frame = 2
+[node name="Eyes" type="Node2D" parent="Panels/P5_Awake/Art"]
+position = Vector2(240, 167)
 visible = false
-script = ExtResource("6")
+script = ExtResource("cs_face")
+expression = 2
 
 [node name="FlaskFront" type="Sprite2D" parent="Panels/P5_Awake/Art"]
 texture = ExtResource("18")
@@ -1901,40 +1873,27 @@ hframes = 7
 frame = 5
 script = ExtResource("6")
 
-[node name="FlaskEyes" type="Sprite2D" parent="Panels/P6_Shift/Art"]
-texture = ExtResource("26")
-position = Vector2(229.0, 160.0)
-centered = false
-hframes = 9
-script = ExtResource("6")
+[node name="FlaskEyes" type="Node2D" parent="Panels/P6_Shift/Art"]
+position = Vector2(240, 167)
+script = ExtResource("cs_face")
+expression = 0
 
 [node name="FlaskFront" type="Sprite2D" parent="Panels/P6_Shift/Art"]
 texture = ExtResource("18")
 position = Vector2(200.0, 102.0)
 centered = false
 
-[node name="Blob" type="Sprite2D" parent="Panels/P6_Shift/Art"]
-texture = ExtResource("28")
+[node name="Blob" parent="Panels/P6_Shift/Art" instance=ExtResource("cs_blob")]
 position = Vector2(240.0, 110.0)
-centered = false
-offset = Vector2(-24.0, -40.0)
-hframes = 5
-frame = 2
 visible = false
 z_index = 1
-script = ExtResource("6")
-
-[node name="Eyes" type="Sprite2D" parent="Panels/P6_Shift/Art/Blob"]
-texture = ExtResource("26")
-position = Vector2(-11.0, -28.0)
-centered = false
-hframes = 9
-script = ExtResource("6")
+pose = 2
+expression = 0
 
 [node name="Poof" type="Sprite2D" parent="Panels/P6_Shift/Fx"]
-texture = ExtResource("29")
+texture = ExtResource("cs_burst")
 position = Vector2(330.0, 186.0)
-hframes = 4
+hframes = 5
 visible = false
 script = ExtResource("6")
 
@@ -2059,22 +2018,17 @@ centered = false
 hframes = 2
 script = ExtResource("6")
 
-[node name="Blob" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
-texture = ExtResource("32")
+[node name="Blob" parent="Panels/P7_Alarm/Art" instance=ExtResource("cs_blob")]
 position = Vector2(318.0, 238.0)
-centered = false
-offset = Vector2(-12.0, -20.0)
-hframes = 5
 visible = true
-script = ExtResource("6")
+expression = 7
 
-[node name="Eyes" type="Sprite2D" parent="Panels/P7_Alarm/Art/Blob"]
-texture = ExtResource("33")
-position = Vector2(-6.0, -14.0)
+[node name="DrainFront" type="Sprite2D" parent="Panels/P7_Alarm/Art"]
+texture = ExtResource("3")
+position = Vector2(222.0, 244.0)
 centered = false
-hframes = 9
-frame = 7
-script = ExtResource("6")
+region_enabled = true
+region_rect = Rect2(222, 244, 40, 26)
 
 [node name="RedWash" type="ColorRect" parent="Panels/P7_Alarm/Fx"]
 offset_left = 0.0

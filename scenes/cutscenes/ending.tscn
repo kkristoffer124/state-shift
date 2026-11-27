@@ -10,13 +10,9 @@
 [ext_resource type="Texture2D" path="res://assets/cutscenes/cloud_4.png" id="8"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/cloud_2.png" id="9"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/rooftop.png" id="10"]
-[ext_resource type="Texture2D" path="res://assets/cutscenes/blob_small.png" id="11"]
-[ext_resource type="Texture2D" path="res://assets/cutscenes/eyes_small.png" id="12"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/spark.png" id="13"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/emotes.png" id="14"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/cloud_big.png" id="15"]
-[ext_resource type="Texture2D" path="res://assets/cutscenes/eyes_big.png" id="16"]
-[ext_resource type="Texture2D" path="res://assets/cutscenes/poof.png" id="17"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/steam_puff.png" id="18"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/landscape.png" id="19"]
 [ext_resource type="Texture2D" path="res://assets/cutscenes/raindrop.png" id="20"]
@@ -37,6 +33,9 @@
 [ext_resource type="Texture2D" path="res://assets/cutscenes/doodle.png" id="35"]
 [ext_resource type="Theme" path="res://scenes/ui/theme.tres" id="36"]
 [ext_resource type="PackedScene" path="res://scenes/cutscenes/cutscene_ui.tscn" id="37"]
+[ext_resource type="PackedScene" path="res://scenes/cutscenes/cutscene_blob.tscn" id="cs_blob"]
+[ext_resource type="Script" path="res://scripts/cutscenes/cutscene_face.gd" id="cs_face"]
+[ext_resource type="Texture2D" path="res://assets/vfx/v1_shift_burst_5f.png" id="cs_burst"]
 
 [sub_resource type="CanvasItemMaterial" id="add_mat"]
 blend_mode = 1
@@ -119,7 +118,7 @@ tracks/5/keys = {
 tracks/6/type = "value"
 tracks/6/imported = false
 tracks/6/enabled = true
-tracks/6/path = NodePath("Art/Blob:frame")
+tracks/6/path = NodePath("Art/Blob:pose")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/keys = {
@@ -143,7 +142,7 @@ tracks/7/keys = {
 tracks/8/type = "value"
 tracks/8/imported = false
 tracks/8/enabled = true
-tracks/8/path = NodePath("Art/Blob/Eyes:frame")
+tracks/8/path = NodePath("Art/Blob:expression")
 tracks/8/interp = 1
 tracks/8/loop_wrap = true
 tracks/8/keys = {
@@ -281,7 +280,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Art/Blob:frame")
+tracks/2/path = NodePath("Art/Blob:pose")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -293,7 +292,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Art/Blob/Eyes:frame")
+tracks/3/path = NodePath("Art/Blob:expression")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -305,59 +304,59 @@ tracks/3/keys = {
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("Art/Blob/Eyes:position")
+tracks/4/path = NodePath("Art/Blob:position")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
-"times": PackedFloat32Array(0.0, 1.35),
-"transitions": PackedFloat32Array(1.0, 1.0),
-"update": 0,
-"values": [Vector2(-6.0, -14.0), Vector2(-6.0, -12.0)]
-}
-tracks/5/type = "value"
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/path = NodePath("Art/Blob:position")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/keys = {
 "times": PackedFloat32Array(0.0, 1.6, 2.8, 4.0, 5.2, 6.1),
 "transitions": PackedFloat32Array(1.0, -2.0, -2.0, -2.0, -2.0, 1.0),
 "update": 0,
 "values": [Vector2(196.0, 204.0), Vector2(196.0, 204.0), Vector2(214.0, 120.0), Vector2(196.0, 20.0), Vector2(236.0, -110.0), Vector2(240.0, -196.0)]
 }
-tracks/6/type = "value"
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/path = NodePath("Art/Blob:visible")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/keys = {
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Art/Blob:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
 "times": PackedFloat32Array(0.0, 6.1),
 "transitions": PackedFloat32Array(1.0, 1.0),
 "update": 1,
 "values": [true, false]
 }
-tracks/7/type = "value"
-tracks/7/imported = false
-tracks/7/enabled = true
-tracks/7/path = NodePath("Art/Trail:position")
-tracks/7/interp = 1
-tracks/7/loop_wrap = true
-tracks/7/keys = {
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Art/Trail:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
 "times": PackedFloat32Array(0.0, 1.6, 2.8, 4.0, 5.2, 6.1),
 "transitions": PackedFloat32Array(1.0, -2.0, -2.0, -2.0, -2.0, 1.0),
 "update": 0,
 "values": [Vector2(196.0, 200.0), Vector2(196.0, 200.0), Vector2(214.0, 116.0), Vector2(196.0, 16.0), Vector2(236.0, -114.0), Vector2(240.0, -200.0)]
 }
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Art/Trail:emitting")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.0, 1.6, 6.1),
+"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
+"update": 1,
+"values": [false, true, false]
+}
 tracks/8/type = "value"
 tracks/8/imported = false
 tracks/8/enabled = true
-tracks/8/path = NodePath("Art/Trail:emitting")
+tracks/8/path = NodePath("Fx/Poof:visible")
 tracks/8/interp = 1
 tracks/8/loop_wrap = true
 tracks/8/keys = {
-"times": PackedFloat32Array(0.0, 1.6, 6.1),
+"times": PackedFloat32Array(0.0, 1.3, 1.6),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0),
 "update": 1,
 "values": [false, true, false]
@@ -365,94 +364,82 @@ tracks/8/keys = {
 tracks/9/type = "value"
 tracks/9/imported = false
 tracks/9/enabled = true
-tracks/9/path = NodePath("Fx/Poof:visible")
+tracks/9/path = NodePath("Fx/Poof:frame")
 tracks/9/interp = 1
 tracks/9/loop_wrap = true
 tracks/9/keys = {
-"times": PackedFloat32Array(0.0, 1.3, 1.6),
-"transitions": PackedFloat32Array(1.0, 1.0, 1.0),
-"update": 1,
-"values": [false, true, false]
-}
-tracks/10/type = "value"
-tracks/10/imported = false
-tracks/10/enabled = true
-tracks/10/path = NodePath("Fx/Poof:frame")
-tracks/10/interp = 1
-tracks/10/loop_wrap = true
-tracks/10/keys = {
 "times": PackedFloat32Array(0.0, 1.3, 1.37, 1.44, 1.51),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0),
 "update": 1,
 "values": [0, 0, 1, 2, 3]
 }
-tracks/11/type = "value"
-tracks/11/imported = false
-tracks/11/enabled = true
-tracks/11/path = NodePath("Art/CloudBig/Eyes:visible")
-tracks/11/interp = 1
-tracks/11/loop_wrap = true
-tracks/11/keys = {
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Art/CloudBig/Eyes:visible")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
 "times": PackedFloat32Array(0.0, 6.4),
 "transitions": PackedFloat32Array(1.0, 1.0),
 "update": 1,
 "values": [false, true]
 }
-tracks/12/type = "value"
-tracks/12/imported = false
-tracks/12/enabled = true
-tracks/12/path = NodePath("Art/CloudBig/Eyes:frame")
-tracks/12/interp = 1
-tracks/12/loop_wrap = true
-tracks/12/keys = {
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Art/CloudBig/Eyes:expression")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
 "times": PackedFloat32Array(0.0, 6.4, 6.7, 7.2),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0),
 "update": 1,
 "values": [2, 2, 0, 5]
 }
-tracks/13/type = "value"
-tracks/13/imported = false
-tracks/13/enabled = true
-tracks/13/path = NodePath("Art/CloudBig:scale")
-tracks/13/interp = 1
-tracks/13/loop_wrap = true
-tracks/13/keys = {
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("Art/CloudBig:scale")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
 "times": PackedFloat32Array(0.0, 6.1, 6.25, 6.5),
 "transitions": PackedFloat32Array(1.0, 0.5, 1.0, 1.0),
 "update": 0,
 "values": [Vector2(1.0, 1.0), Vector2(1.0, 1.0), Vector2(1.06, 0.94), Vector2(1.0, 1.0)]
 }
-tracks/14/type = "value"
-tracks/14/imported = false
-tracks/14/enabled = true
-tracks/14/path = NodePath("Fx/Emote:visible")
-tracks/14/interp = 1
-tracks/14/loop_wrap = true
-tracks/14/keys = {
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("Fx/Emote:visible")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
 "times": PackedFloat32Array(0.0, 7.2, 8.0),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0),
 "update": 1,
 "values": [false, true, false]
 }
-tracks/15/type = "value"
-tracks/15/imported = false
-tracks/15/enabled = true
-tracks/15/path = NodePath("Fx/Emote:scale")
-tracks/15/interp = 1
-tracks/15/loop_wrap = true
-tracks/15/keys = {
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("Fx/Emote:scale")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
 "times": PackedFloat32Array(0.0, 7.2, 7.35),
 "transitions": PackedFloat32Array(1.0, 0.5, 1.0),
 "update": 0,
 "values": [Vector2(0.2, 0.2), Vector2(0.2, 0.2), Vector2(1.0, 1.0)]
 }
-tracks/16/type = "method"
-tracks/16/imported = false
-tracks/16/enabled = true
-tracks/16/path = NodePath(".")
-tracks/16/interp = 1
-tracks/16/loop_wrap = true
-tracks/16/keys = {
+tracks/15/type = "method"
+tracks/15/imported = false
+tracks/15/enabled = true
+tracks/15/path = NodePath(".")
+tracks/15/interp = 1
+tracks/15/loop_wrap = true
+tracks/15/keys = {
 "times": PackedFloat32Array(0.3, 1.3, 3.4, 6.1, 7.2),
 "transitions": PackedFloat32Array(1.0, 1.0, 1.0, 1.0, 1.0),
 "values": [{
@@ -540,7 +527,7 @@ tracks/3/keys = {
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("Art/CloudBig/Eyes:frame")
+tracks/4/path = NodePath("Art/CloudBig/Eyes:expression")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
@@ -1094,22 +1081,11 @@ texture = ExtResource("10")
 position = Vector2(0.0, 0.0)
 centered = false
 
-[node name="Blob" type="Sprite2D" parent="Panels/E1_Roof/Art"]
-texture = ExtResource("11")
+[node name="Blob" parent="Panels/E1_Roof/Art" instance=ExtResource("cs_blob")]
 position = Vector2(124.0, 112.0)
-centered = false
-offset = Vector2(-12.0, -20.0)
-hframes = 5
-frame = 2
 visible = false
-script = ExtResource("5")
-
-[node name="Eyes" type="Sprite2D" parent="Panels/E1_Roof/Art/Blob"]
-texture = ExtResource("12")
-position = Vector2(-6.0, -14.0)
-centered = false
-hframes = 9
-script = ExtResource("5")
+pose = 2
+expression = 0
 
 [node name="FlueCap" type="Sprite2D" parent="Panels/E1_Roof/Art"]
 texture = ExtResource("10")
@@ -1235,36 +1211,21 @@ bob_hz = 0.3
 z_index = 1
 script = ExtResource("5")
 
-[node name="Eyes" type="Sprite2D" parent="Panels/E2_Rise/Art/CloudBig"]
-texture = ExtResource("16")
-position = Vector2(64.0, 24.0)
-centered = false
-hframes = 9
-frame = 2
+[node name="Eyes" type="Node2D" parent="Panels/E2_Rise/Art/CloudBig"]
+position = Vector2(76, 31)
 visible = false
-script = ExtResource("5")
+script = ExtResource("cs_face")
+expression = 2
 
-[node name="Blob" type="Sprite2D" parent="Panels/E2_Rise/Art"]
-texture = ExtResource("11")
+[node name="Blob" parent="Panels/E2_Rise/Art" instance=ExtResource("cs_blob")]
 position = Vector2(196.0, 204.0)
-centered = false
-offset = Vector2(-12.0, -20.0)
-hframes = 5
 visible = true
-script = ExtResource("5")
-
-[node name="Eyes" type="Sprite2D" parent="Panels/E2_Rise/Art/Blob"]
-texture = ExtResource("12")
-position = Vector2(-6.0, -14.0)
-centered = false
-hframes = 9
-frame = 8
-script = ExtResource("5")
+expression = 8
 
 [node name="Poof" type="Sprite2D" parent="Panels/E2_Rise/Fx"]
-texture = ExtResource("17")
+texture = ExtResource("cs_burst")
 position = Vector2(196.0, 194.0)
-hframes = 4
+hframes = 5
 visible = false
 script = ExtResource("5")
 
@@ -1344,13 +1305,10 @@ bob_px = 1.0
 bob_hz = 0.3
 script = ExtResource("5")
 
-[node name="Eyes" type="Sprite2D" parent="Panels/E3_Rain/Art/CloudBig"]
-texture = ExtResource("16")
-position = Vector2(64.0, 24.0)
-centered = false
-hframes = 9
-frame = 5
-script = ExtResource("5")
+[node name="Eyes" type="Node2D" parent="Panels/E3_Rain/Art/CloudBig"]
+position = Vector2(76, 31)
+script = ExtResource("cs_face")
+expression = 5
 
 [node name="Rain" type="CPUParticles2D" parent="Panels/E3_Rain/Art/CloudBig"]
 position = Vector2(75.0, 60.0)

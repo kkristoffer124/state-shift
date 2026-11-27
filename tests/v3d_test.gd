@@ -114,7 +114,7 @@ func _steer(target: Vector3) -> float:
 	_release_moves()
 	if dist < 0.12:
 		return dist
-	var local := Basis(Vector3.UP, p.rig.yaw).inverse() * (d / dist)
+	var local := Basis(Vector3.UP, p.rig.input_yaw()).inverse() * (d / dist)
 	var x := local.x
 	var fwd := -local.z
 	if p.side_mode:

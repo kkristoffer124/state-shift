@@ -379,6 +379,11 @@ omni_attenuation = 1.4
 fitting = 1
 tube_length = 2
 
+[node name="Hint0" type="Label3D" parent="Hints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.2, 10)
+script = ExtResource("hint")
+text = "Z / X: turn the view"
+
 [node name="Hint1" type="Label3D" parent="Hints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 3.6, 8.5)
 script = ExtResource("hint")
@@ -404,4 +409,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.4, 10)
 state = 1
 
 [node name="CameraRig" parent="." instance=ExtResource("rig")]
-iso_size = 13.0
+iso_size = 10.5

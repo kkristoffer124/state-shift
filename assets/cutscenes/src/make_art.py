@@ -985,6 +985,34 @@ def coil_machine(charged):
     return outline(img)
 
 
+## Extra sleeve length (px, up-left) on the pouring hand, so the arm always runs off
+## the top of the shot instead of ending in mid-air. The Hand node in intro.tscn
+## (P2_Mix) uses offset = (-SLEEVE_EXT, -SLEEVE_EXT) so the hand/vial stay put.
+SLEEVE_EXT = 70
+
+
+def extend_sleeve(sheet, frames, ext):
+    """Continues each frame's sleeve along its 45 degree axis by `ext` px (the
+    frame grows by ext on the left and top): the top two rows are stamped
+    diagonally up-left underneath the existing pixels."""
+    fw, fh = sheet.width // frames, sheet.height
+    out = new((fw + ext) * frames, fh + ext)
+    for i in range(frames):
+        fr = sheet.crop((i * fw, 0, i * fw + fw, fh))
+        nf = new(fw + ext, fh + ext)
+        nf.alpha_composite(fr, (ext, ext))
+        sp, px = fr.load(), nf.load()
+        for k in range(1, ext + 1):
+            for y in range(2):
+                for x in range(fw):
+                    c = sp[x, y]
+                    tx, ty = ext + x - k, ext + y - k
+                    if c[3] and 0 <= tx < nf.width and 0 <= ty < nf.height and px[tx, ty][3] == 0:
+                        px[tx, ty] = c
+        out.alpha_composite(nf, (i * (fw + ext), 0))
+    return out
+
+
 def hand_vial():
     fw, fh = 90, 70
     sheet = new(fw * 2, fh)
@@ -1005,7 +1033,7 @@ def hand_vial():
         d.line((48, 36, 56, 36), fill=SKIN_D)
         f = outline(f)
         sheet.alpha_composite(f, (i * fw, 0))
-    save(sheet, "hand_vial.png")
+    save(extend_sleeve(sheet, 2, SLEEVE_EXT), "hand_vial.png")
     drops = new(16, 7)
     d = ImageDraw.Draw(drops)
     for i, col in enumerate((ICE_D, HEAT)):

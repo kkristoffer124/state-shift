@@ -103,12 +103,13 @@ def level_05():
     L("LampUnder", (13.5, 4.1, 7.5), (0.8, 0.9, 1.0), 1.1, 7.0, fitting=1, tube=2.0)
 
     H = sc.hint
+    H("Hint0", (2, 2.2, 10), "Z / X: turn the view")
     H("Hint1", (5, 3.6, 8.5), "Hot zones force STEAM")
     H("Hint2", (9, 6.0, 5.6), "Cold zones force ICE")
     H("Hint3", (9, 1.6, 6.0), "Ice is heavy: press the plate")
     H("Hint4", (14, 1.9, 5.0), "Fans blow gas upward")
 
-    _player_rig(sc, (2, 0.4, 10), 1, {"iso_size": "13.0"})
+    _player_rig(sc, (2, 0.4, 10), 1, {"iso_size": "10.5"})
     return sc
 
 
@@ -166,7 +167,7 @@ def level_10():
     H("Hint3", (16.6, 4.4, 5.2), "Fast ICE smashes cracked walls")
     H("Hint4", (10.5, 1.8, 10.5), "Fell short? R restarts")
 
-    _player_rig(sc, (2, 0.4, 12.5), 1, {"iso_size": "13.5"})
+    _player_rig(sc, (2, 0.4, 12.5), 1, {"iso_size": "10.5"})
     return sc
 
 

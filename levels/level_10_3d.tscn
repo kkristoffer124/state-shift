@@ -333,4 +333,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.4, 12.5)
 state = 1
 
 [node name="CameraRig" parent="." instance=ExtResource("rig")]
-iso_size = 13.5
+iso_size = 10.5
