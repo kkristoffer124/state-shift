@@ -22,6 +22,7 @@ const RADIUS := 10.0
 
 var _t := 0.0
 var _gulp := 0.0
+var _spin := 0.0
 
 
 func _ready() -> void:
@@ -48,6 +49,7 @@ func gulp() -> void:
 func _process(delta: float) -> void:
 	_t += delta
 	_gulp = maxf(_gulp - delta * 2.0, 0.0)
+	_spin += delta * (2.2 + _gulp * 16.0)
 	queue_redraw()
 
 
@@ -60,6 +62,16 @@ func _draw() -> void:
 		draw_circle(Vector2(16, 16), 17.0, Color(ring, a * 0.35))
 	draw_texture(TEX, Vector2.ZERO)
 	if linked:
+		# whirlpool: three spiral arms turning in the grate (spin up when gulping)
+		var hi := ring.lightened(0.45)
+		for arm in 3:
+			for j in 7:
+				var rr := 2.0 + j * 1.5
+				var ang := arm * TAU / 3.0 + _spin + j * 0.55
+				var sp := (Vector2(16, 16) + Vector2(cos(ang), sin(ang)) * rr).floor()
+				var dsz := Vector2(2, 2) if j < 3 else Vector2.ONE
+				draw_rect(Rect2(sp, dsz), Color(hi, (0.95 - j * 0.1) * (0.7 + _gulp * 0.3)))
+		draw_rect(Rect2(15, 15, 2, 2), Color(0, 0, 0, 0.6))
 		for i in 12:
 			var ang := TAU * i / 12.0 + _t * 0.6
 			var p := (Vector2(16, 16) + Vector2(cos(ang), sin(ang)) * 13.5).floor()

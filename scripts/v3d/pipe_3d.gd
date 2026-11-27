@@ -1,8 +1,8 @@
 @tool
 class_name Pipe3D
 extends MeshInstance3D
-## Decorative pipe run (no collision): a cylinder of `length` along `axis`,
-## centred on the origin, with flange rings every `flange_every` metres.
+## Pipe run: a cylinder of `length` along `axis`, centred on the origin, with flange
+## rings every `flange_every` metres. Solid (world layer) unless `solid` is off.
 ## Colour from the theme palette unless `color` is set (alpha > 0).
 
 enum Axis { X, Y, Z }
@@ -28,7 +28,15 @@ enum Axis { X, Y, Z }
 		color = v
 		_refresh()
 
+## Collides like a wall (world layer). Turn off only for pipes the blob can't reach.
+@export var solid := true:
+	set(v):
+		solid = v
+		_refresh()
+
 var _flanges: MultiMeshInstance3D
+var _body: StaticBody3D
+var _shape: CollisionShape3D
 
 
 func _ready() -> void:
@@ -47,7 +55,7 @@ func _refresh() -> void:
 	cm.radial_segments = 8
 	cm.rings = 1
 	mesh = cm
-	material_override = V3D.flat_material(c, 0.6, 0.45)
+	material_override = V3D.metal_material(c, 0.6)
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	match axis:
 		Axis.X: rotation = Vector3(0, 0, PI / 2.0)
@@ -61,7 +69,7 @@ func _refresh() -> void:
 	fm.height = 0.12
 	fm.radial_segments = 8
 	fm.rings = 1
-	fm.material = V3D.flat_material(c * 0.75, 0.6, 0.5)
+	fm.material = V3D.metal_material(c * 0.72, 0.6)
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.mesh = fm
@@ -72,3 +80,13 @@ func _refresh() -> void:
 		mm.set_instance_transform(i, Transform3D(Basis(), Vector3(0, y, 0)))
 	_flanges.multimesh = mm
 	_flanges.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	if _body == null:
+		_body = V3D.add_internal(self, StaticBody3D.new())
+		_shape = V3D.add_internal(_body, CollisionShape3D.new())
+	var cs := CylinderShape3D.new()
+	cs.radius = radius * 1.08
+	cs.height = length
+	_shape.shape = cs
+	_body.collision_mask = 0
+	_body.collision_layer = V3D.L_WORLD if solid else 0
+	_shape.disabled = not solid

@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/ui/overlay.gd" id="1"]
 [ext_resource type="Theme" path="res://scenes/ui/theme.tres" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings_panel.tscn" id="3"]
+[ext_resource type="Material" path="res://assets/ui/fx/water_wipe.tres" id="wipe"]
 
 [sub_resource type="Gradient" id="band_grad"]
 offsets = PackedFloat32Array(0, 0.22, 0.78, 1)
@@ -272,6 +273,8 @@ layout_mode = 1
 
 [node name="Fade" type="ColorRect" parent="."]
 visible = false
+material = ExtResource("wipe")
+z_index = 300
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

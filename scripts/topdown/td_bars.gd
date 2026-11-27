@@ -22,10 +22,24 @@ const POST_H := 16.0
 		_refresh()
 
 var _theme := "lab"
+var _t := 0.0
+## Optional overlay child (td_bars.tscn / td_mesh.tscn -> Shimmer): a glint that sweeps
+## along the metal now and then. Redrawn per frame; the heavy grille art is not.
+@onready var _shimmer: Node2D = get_node_or_null("Shimmer") as Node2D
 
 
 func _ready() -> void:
 	_refresh()
+	if _shimmer:
+		_shimmer.draw.connect(_draw_shimmer)
+	_t = fmod(global_position.x * 0.013 + global_position.y * 0.007, 4.0)
+
+
+func _process(delta: float) -> void:
+	if Engine.is_editor_hint() or _shimmer == null:
+		return
+	_t += delta
+	_shimmer.queue_redraw()
 
 
 func _refresh() -> void:
@@ -112,3 +126,62 @@ func _draw_mesh(m: Array[Color], vertical: bool) -> void:
 			draw_rect(Rect2(x, panel.position.y + 5, 6, 1), Color("dff2ff", 0.8))
 			draw_rect(Rect2(x + 1, panel.position.y + 4, 4, 1), Color("dff2ff", 0.8))
 			draw_rect(Rect2(x + 2, panel.position.y + 3, 2, 1), Color("dff2ff", 0.8))
+
+
+## Sweep position 0..1 along the long side (or < 0 while resting between sweeps).
+func _sweep() -> float:
+	var period := 3.6
+	var u := fmod(_t, period) / 1.1
+	return u if u <= 1.0 else -1.0
+
+
+func _draw_shimmer() -> void:
+	var vertical := size.y > size.x
+	var length := size.y if vertical else size.x
+	var u := _sweep()
+	var m := _metal()
+	if kind == Kind.BARS:
+		var n := maxi(2, int(length / 8.0))
+		var step := length / n
+		for i in n:
+			var base: Vector2
+			if vertical:
+				base = Vector2(size.x / 2.0, (i + 0.5) * step)
+			else:
+				base = Vector2((i + 0.5) * step, size.y / 2.0)
+			base = base.round()
+			var d := absf((i + 0.5) / n - u) * n
+			if u < 0.0 or d > 1.5:
+				continue
+			var a := 0.75 * (1.0 - d / 1.5)
+			# glint runs down the lit edge of the post
+			var y0 := -POST_H + roundf(fmod(_t * 40.0 + i * 3.0, POST_H - 3.0))
+			_shimmer.draw_rect(Rect2(base + Vector2(-1, y0), Vector2(2, 3)), Color(1, 1, 1, a))
+			_shimmer.draw_rect(Rect2(base + Vector2(-2, -POST_H - 1), Vector2(4, 1)), Color(m[2].lightened(0.5), a))
+	else:
+		var panel: Rect2
+		if vertical:
+			panel = Rect2(size.x / 2.0 - 6.0, -POST_H * 0.5, 12, size.y + POST_H * 0.5)
+		else:
+			panel = Rect2(0, size.y / 2.0 - POST_H, size.x, POST_H + 2.0)
+		# faint heat-haze flicker of air leaking through the vent
+		for i in 3:
+			var ph := fmod(_t * 0.7 + i * 0.33, 1.0)
+			var along := ph * (panel.size.y if vertical else panel.size.x)
+			var a := 0.12 * sin(ph * PI)
+			if vertical:
+				_shimmer.draw_rect(Rect2(panel.position.x + 1, panel.position.y + along, panel.size.x - 2, 1), Color(0.85, 0.95, 1.0, a))
+			else:
+				_shimmer.draw_rect(Rect2(panel.position.x + along, panel.position.y + 2, 1, panel.size.y - 3), Color(0.85, 0.95, 1.0, a))
+		if u < 0.0:
+			return
+		# diagonal glint band sweeping along the grille
+		var span := panel.size.y if vertical else panel.size.x
+		var head := u * (span + 16.0) - 8.0
+		var across := int(panel.size.x if vertical else panel.size.y)
+		for j in across:
+			for w in 3:
+				var q := Vector2(j, head + j * 0.6 + w) if vertical else Vector2(head + j * 0.6 + w, j)
+				if q.x < 0.0 or q.x >= panel.size.x or q.y < 0.0 or q.y >= panel.size.y:
+					continue
+				_shimmer.draw_rect(Rect2(panel.position + q.floor(), Vector2.ONE), Color(1, 1, 1, 0.35 - w * 0.1))

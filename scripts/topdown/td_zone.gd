@@ -22,6 +22,7 @@ const TEX_FAN_HOUSING := preload("res://assets/interactive/ix_turbine_housing.pn
 const TEX_FAN_ROTOR := preload("res://assets/interactive/ix_turbine_rotor_4f.png")  # 4 x 32x32
 const TEX_GOAL_SWIRL := preload("res://assets/env/e8a_goal_swirl.png")
 const TEX_GOAL_GLOW := preload("res://assets/env/e8b_goal_glow.png")
+const TEX_MIST := preload("res://assets/topdown/td_puff_m.png")
 const TEX_SPARKLES: Array[Texture2D] = [
 	preload("res://assets/env/e8c_sparkle_1.png"),
 	preload("res://assets/env/e8c_sparkle_2.png"),
@@ -115,6 +116,26 @@ func _draw_heat() -> void:
 		var py := fmod(i * 23.3, size.y) - travel * 0.6
 		var a := clampf(1.0 - travel / 40.0, 0.0, 1.0)
 		draw_texture(TEX_EMBER, Vector2(px + sin(_t * 3.0 + i) * 2.0, py).round() - Vector2(2, 2), Color(1, 1, 1, a))
+	# heat shimmer: wavy pale dashes drifting up across the grill
+	var rows := int(size.y / 6.0)
+	for j in rows:
+		var yy := fmod(j * 6.0 - _t * 14.0, size.y)
+		if yy < 0.0:
+			yy += size.y
+		var wob := sin(_t * 5.0 + j * 1.7) * 3.0
+		var x0 := fmod(j * 19.0 + wob + _t * 3.0, size.x * 0.5)
+		var ha := 0.07 + 0.05 * sin(_t * 4.0 + j)
+		draw_rect(Rect2(Vector2(x0 + 2.0, yy).round(), Vector2(size.x * 0.35, 1)), Color(1.0, 0.85, 0.6, ha))
+	# quick bright sparks that flick upward
+	for i in int(size.x * size.y / 900.0) + 2:
+		var life := 0.7 + float(i % 3) * 0.2
+		var ph := fmod(_t + i * 0.37, life) / life
+		var sx := fmod(i * 29.0 + floorf((_t + i * 0.37) / life) * 13.0, size.x - 4.0) + 2.0
+		var sy := size.y - 4.0 - ph * (size.y * 0.8 + 10.0)
+		if sy < -6.0:
+			continue
+		var flick := 1.0 if int(_t * 30.0 + i) % 4 != 0 else 0.5
+		draw_rect(Rect2(Vector2(sx + sin(ph * 9.0 + i) * 2.0, sy).round(), Vector2(1, 2)), Color(1.0, 0.92, 0.5, (1.0 - ph) * flick))
 
 
 func _draw_freeze() -> void:
@@ -126,6 +147,24 @@ func _draw_freeze() -> void:
 		draw_rect(Rect2(p, Vector2(1, 1)), Color(0.85, 0.96, 1.0, 0.35))
 	if _frost_box:
 		draw_style_box(_frost_box, r)
+	# low cold mist rolling across the floor
+	for i in int(size.x * size.y / 3000.0) + 2:
+		var mx := fmod(i * 47.0 + _t * (5.0 + i % 3 * 2.0), size.x + 24.0) - 12.0
+		var my := fmod(i * 31.0, maxf(size.y - 16.0, 1.0)) + 8.0 + sin(_t * 0.8 + i) * 3.0
+		var ma := 0.18 * sin(clampf(mx / size.x, 0.0, 1.0) * PI)
+		var ms := TEX_MIST.get_size() * (1.6 + 0.3 * sin(_t * 0.6 + i))
+		var mr := Rect2((Vector2(mx, my) - ms * 0.5).round(), ms.round()).intersection(r)
+		if mr.has_area():
+			draw_texture_rect(TEX_MIST, Rect2((Vector2(mx, my) - ms * 0.5).round(), ms.round()), false, Color(0.75, 0.92, 1.0, ma))
+	# twinkling frost glints
+	for i in int(size.x * size.y / 700.0) + 2:
+		var tw := fmod(_t * 0.9 + i * 0.61, 2.0)
+		if tw > 0.35:
+			continue
+		var gp := Vector2(fmod(i * 71.3, size.x - 4.0) + 2.0, fmod(i * 43.9 + i * i * 0.21, size.y - 4.0) + 2.0).floor()
+		var ga := sin(tw / 0.35 * PI)
+		draw_rect(Rect2(gp - Vector2(1, 0), Vector2(3, 1)), Color(1, 1, 1, ga * 0.8))
+		draw_rect(Rect2(gp - Vector2(0, 1), Vector2(1, 3)), Color(1, 1, 1, ga * 0.8))
 	# drifting snow
 	for i in int(size.x * size.y / 2200.0) + 4:
 		var px := fmod(i * 41.3 + _t * (6.0 + i % 3 * 3.0), size.x)
@@ -148,17 +187,22 @@ func _draw_fan() -> void:
 		var speed := 160.0 + float((i * 37) % 70)
 		var pos := fmod(_t * speed + i * 57.0, along_len + 32.0) - 32.0
 		var a := 0.35 + 0.35 * clampf(pos / along_len, 0.0, 1.0)
-		var seg := Rect2()
-		var src := Rect2(0, 0, 4, 32)
-		if absf(d.x) > absf(d.y):
-			var x := pos if d.x > 0.0 else along_len - pos - 32.0
-			seg = Rect2(x, across, 32, 2)
-		else:
-			var y := pos if d.y > 0.0 else along_len - pos - 32.0
-			seg = Rect2(across, y, 2, 32)
-		seg = seg.intersection(r)
-		if seg.has_area():
-			draw_rect(seg, Color(0.85, 0.95, 1.0, a * 0.55))
+		across += roundf(sin(_t * 6.0 + i * 1.3 + pos * 0.05) * 1.5)
+		# tapered streak: bright head, fading tail (tail = upwind)
+		for k in 3:
+			var seg_len: float = [12.0, 10.0, 10.0][k]
+			var start: float = pos + 32.0 - float([12.0, 22.0, 32.0][k])
+			var ka: float = [1.0, 0.55, 0.25][k]
+			var seg := Rect2()
+			if absf(d.x) > absf(d.y):
+				var x := start if d.x > 0.0 else along_len - start - seg_len
+				seg = Rect2(x, across, seg_len, 1 if k == 2 else 2)
+			else:
+				var y := start if d.y > 0.0 else along_len - start - seg_len
+				seg = Rect2(across, y, 1 if k == 2 else 2, seg_len)
+			seg = seg.intersection(r)
+			if seg.has_area():
+				draw_rect(seg, Color(0.85, 0.95, 1.0, a * 0.6 * ka))
 	if not show_unit:
 		return
 	# fan unit at the upwind edge, centred across
@@ -170,15 +214,27 @@ func _draw_fan() -> void:
 	c = c.round()
 	draw_texture(TEX_FAN_HOUSING, c - Vector2(20, 20))
 	var frame := int(_t * 24.0) % 4
-	draw_texture_rect_region(TEX_FAN_ROTOR, Rect2(c - Vector2(16, 16), Vector2(32, 32)), Rect2(frame * 32, 0, 32, 32))
+	# motion blur: faint spinning disc + the previous frame ghosted under the current one
+	draw_circle(c, 13.0, Color(0.8, 0.9, 1.0, 0.12))
+	draw_texture_rect_region(TEX_FAN_ROTOR, Rect2(c - Vector2(16, 16), Vector2(32, 32)), Rect2(((frame + 3) % 4) * 32, 0, 32, 32), Color(1, 1, 1, 0.45))
+	draw_texture_rect_region(TEX_FAN_ROTOR, Rect2(c - Vector2(16, 16), Vector2(32, 32)), Rect2(frame * 32, 0, 32, 32), Color(1, 1, 1, 0.85))
+	draw_arc(c, 13.0, _t * 14.0, _t * 14.0 + 1.2, 6, Color(1, 1, 1, 0.35), 1.0)
+	draw_arc(c, 13.0, _t * 14.0 + PI, _t * 14.0 + PI + 1.2, 6, Color(1, 1, 1, 0.35), 1.0)
 
 
 func _draw_goal() -> void:
 	var c := (size / 2.0).round()
 	var glow_a := 0.7 + sin(_t * 3.0) * 0.25
 	draw_texture(TEX_GOAL_GLOW, c - TEX_GOAL_GLOW.get_size() / 2.0, Color(1, 1, 1, glow_a))
-	draw_set_transform(c, -_t * 2.5)
+	# pulse rings breathing outward
+	for j in 2:
+		var u := fmod(_t * 0.8 + j * 0.5, 1.0)
+		draw_arc(c, 14.0 + u * 22.0, 0.0, TAU, 32, Color(0.6, 1.0, 0.7, 0.35 * (1.0 - u)), 1.0)
+	draw_set_transform(c, -_t * 2.5, Vector2.ONE * (1.0 + sin(_t * 2.0) * 0.04))
 	draw_texture(TEX_GOAL_SWIRL, -TEX_GOAL_SWIRL.get_size() / 2.0)
+	# counter-rotating inner swirl for depth
+	draw_set_transform(c, _t * 4.0, Vector2(0.55, 0.55))
+	draw_texture(TEX_GOAL_SWIRL, -TEX_GOAL_SWIRL.get_size() / 2.0, Color(1, 1, 1, 0.45))
 	draw_set_transform(Vector2.ZERO)
 	for i in 4:
 		var a := _t * 2.0 + i * TAU / 4.0

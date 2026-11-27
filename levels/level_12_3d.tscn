@@ -33,6 +33,7 @@ camera_mode = 0
 kill_y = -8.0
 max_y = 9.4
 fog_scale = 0.6
+metadata/open_sky = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Env")
@@ -112,39 +113,39 @@ size = Vector3(3.5, 0.6, 0.3)
 look = 3
 
 [node name="ShedN" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 5, 0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 4.75, 0.2)
 script = ExtResource("block")
-size = Vector3(8, 10, 0.4)
+size = Vector3(8, 9.5, 0.4)
 
 [node name="ShedS" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 5, 9.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 4.75, 9.8)
 script = ExtResource("block")
-size = Vector3(8, 10, 0.4)
+size = Vector3(8, 9.5, 0.4)
 
 [node name="ShedE1" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.8, 5, 2.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.8, 4.75, 2.2)
 script = ExtResource("block")
-size = Vector3(0.4, 10, 3.6)
+size = Vector3(0.4, 9.5, 3.6)
 
 [node name="ShedE2" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.8, 5, 7.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.8, 4.75, 7.8)
 script = ExtResource("block")
-size = Vector3(0.4, 10, 3.6)
+size = Vector3(0.4, 9.5, 3.6)
 
 [node name="ShedE3" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.8, 6.25, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.8, 6, 5)
 script = ExtResource("block")
-size = Vector3(0.4, 7.5, 2)
+size = Vector3(0.4, 7, 2)
 
 [node name="ShedW1" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.2, 5, 1.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.2, 4.75, 1.7)
 script = ExtResource("block")
-size = Vector3(0.4, 10, 2.6)
+size = Vector3(0.4, 9.5, 2.6)
 
 [node name="ShedW2" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.2, 5, 8.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.2, 4.75, 8.3)
 script = ExtResource("block")
-size = Vector3(0.4, 10, 2.6)
+size = Vector3(0.4, 9.5, 2.6)
 
 [node name="ShedW3" type="StaticBody3D" parent="Blocks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.2, 2.5, 5)
@@ -185,9 +186,9 @@ look = 4
 tint = Color(0.55, 0.6, 0.7, 1)
 
 [node name="Awning" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7, 9.65, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.6, 9.65, 5)
 script = ExtResource("block")
-size = Vector3(2.6, 0.3, 5)
+size = Vector3(2.4, 0.3, 5)
 look = 4
 tint = Color(0.6, 0.45, 0.35, 1)
 
@@ -197,14 +198,14 @@ script = ExtResource("block")
 size = Vector3(3.4, 1, 2.8)
 
 [node name="CorridorN" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.7, 1.45, 3.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.7, 1.25, 3.8)
 script = ExtResource("block")
-size = Vector3(3.4, 2.9, 0.4)
+size = Vector3(3.4, 2.5, 0.4)
 
 [node name="CorridorS" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.7, 1.45, 6.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.7, 1.25, 6.2)
 script = ExtResource("block")
-size = Vector3(3.4, 2.9, 0.4)
+size = Vector3(3.4, 2.5, 0.4)
 
 [node name="CorridorRoof" type="StaticBody3D" parent="Blocks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.7, 2.7, 5)
@@ -249,15 +250,15 @@ script = ExtResource("block")
 size = Vector3(8, 21.5, 10)
 
 [node name="ParapetDN" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, 1.8, -0.15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.7, 1.8, -0.15)
 script = ExtResource("block")
-size = Vector3(8, 0.6, 0.3)
+size = Vector3(7.4, 0.6, 0.3)
 look = 3
 
 [node name="ParapetDS" type="StaticBody3D" parent="Blocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, 1.8, 10.15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.7, 1.8, 10.15)
 script = ExtResource("block")
-size = Vector3(8, 0.6, 0.3)
+size = Vector3(7.4, 0.6, 0.3)
 look = 3
 
 [node name="Billboard" type="StaticBody3D" parent="Blocks"]
@@ -346,7 +347,6 @@ tint = Color(0.25, 0.28, 0.35, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.35, 2, 1.35)
 script = ExtResource("block")
 size = Vector3(0.3, 4, 0.3)
-kind = 4
 look = 4
 tint = Color(0.3, 0.3, 0.38, 1)
 
@@ -354,7 +354,6 @@ tint = Color(0.3, 0.3, 0.38, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 2, 1.35)
 script = ExtResource("block")
 size = Vector3(0.3, 4, 0.3)
-kind = 4
 look = 4
 tint = Color(0.3, 0.3, 0.38, 1)
 
@@ -362,7 +361,6 @@ tint = Color(0.3, 0.3, 0.38, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.35, 2, 3.65)
 script = ExtResource("block")
 size = Vector3(0.3, 4, 0.3)
-kind = 4
 look = 4
 tint = Color(0.3, 0.3, 0.38, 1)
 
@@ -370,7 +368,6 @@ tint = Color(0.3, 0.3, 0.38, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 2, 3.65)
 script = ExtResource("block")
 size = Vector3(0.3, 4, 0.3)
-kind = 4
 look = 4
 tint = Color(0.3, 0.3, 0.38, 1)
 
@@ -378,7 +375,6 @@ tint = Color(0.3, 0.3, 0.38, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 5.4, 2.5)
 script = ExtResource("block")
 size = Vector3(3.2, 2.8, 3.2)
-kind = 4
 look = 2
 tint = Color(0.8, 0.7, 0.65, 1)
 
@@ -386,7 +382,6 @@ tint = Color(0.8, 0.7, 0.65, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 7.05, 2.5)
 script = ExtResource("block")
 size = Vector3(2.4, 0.5, 2.4)
-kind = 4
 look = 4
 tint = Color(0.4, 0.35, 0.35, 1)
 
@@ -397,14 +392,16 @@ size = Vector3(2.5, 0.1, 10)
 kind = 4
 look = 5
 tint = Color(0.25, 0.2, 0.45, 1)
+metadata/passable = true
 
 [node name="VentBox" type="StaticBody3D" parent="Decor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.5, 0.175, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.5, 0.05, 5)
 script = ExtResource("block")
-size = Vector3(1.8, 0.35, 2.8)
+size = Vector3(1.8, 0.1, 2.8)
 kind = 4
 look = 4
 tint = Color(0.6, 0.35, 0.25, 1)
+metadata/passable = true
 
 [node name="ShedSign" type="StaticBody3D" parent="Decor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.85, 8.1, -0.025)
@@ -437,19 +434,18 @@ size = Vector3(3.4, 0.1, 10)
 kind = 4
 look = 5
 tint = Color(0.25, 0.2, 0.45, 1)
+metadata/passable = true
 
 [node name="ACHousing" type="StaticBody3D" parent="Decor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.5, 2.9, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.5, 2.5, 5)
 script = ExtResource("block")
-size = Vector3(0.4, 4.2, 6.8)
-kind = 4
-look = 3
+size = Vector3(0.4, 5, 6.8)
+kind = 1
 
 [node name="GantryPostA" type="StaticBody3D" parent="Decor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.15, 3.75, 1.65)
 script = ExtResource("block")
 size = Vector3(0.3, 7.5, 0.3)
-kind = 4
 look = 4
 tint = Color(0.35, 0.36, 0.45, 1)
 
@@ -457,7 +453,6 @@ tint = Color(0.35, 0.36, 0.45, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.15, 3.75, 8.35)
 script = ExtResource("block")
 size = Vector3(0.3, 7.5, 0.3)
-kind = 4
 look = 4
 tint = Color(0.35, 0.36, 0.45, 1)
 
@@ -465,7 +460,6 @@ tint = Color(0.35, 0.36, 0.45, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.85, 4.5, 1.65)
 script = ExtResource("block")
 size = Vector3(0.3, 6, 0.3)
-kind = 4
 look = 4
 tint = Color(0.35, 0.36, 0.45, 1)
 
@@ -473,7 +467,6 @@ tint = Color(0.35, 0.36, 0.45, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.85, 4.5, 8.35)
 script = ExtResource("block")
 size = Vector3(0.3, 6, 0.3)
-kind = 4
 look = 4
 tint = Color(0.35, 0.36, 0.45, 1)
 
@@ -492,6 +485,7 @@ size = Vector3(6, 0.1, 10)
 kind = 4
 look = 5
 tint = Color(0.25, 0.2, 0.45, 1)
+metadata/passable = true
 
 [node name="Helipad" type="StaticBody3D" parent="Decor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.5, 1.515, 5)

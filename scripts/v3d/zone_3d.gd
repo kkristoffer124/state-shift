@@ -37,10 +37,15 @@ const SH_HAZE := preload("res://shaders/v3d/haze_column.gdshader")
 		_refresh()
 
 var _t := 0.0
+var _spin_goal := 0.0
 var _vis: Node3D
 var _shape: CollisionShape3D
 var _blades: Node3D
 var _swirl: Sprite3D
+var _glow: Sprite3D
+var _goal_light: OmniLight3D
+var _absorb := 0.0
+var _player: Node3D
 
 
 func _ready() -> void:
@@ -60,8 +65,7 @@ func _process(delta: float) -> void:
 	if _blades:
 		_blades.rotate_y(delta * 14.0)
 	if _swirl:
-		_swirl.rotation.z = -_t * 2.5
-		_swirl.modulate.a = 0.85 + sin(_t * 3.0) * 0.15
+		_animate_goal(delta)
 
 
 func _refresh() -> void:
@@ -84,6 +88,8 @@ func _refresh() -> void:
 		_vis.queue_free()
 	_blades = null
 	_swirl = null
+	_glow = null
+	_goal_light = null
 	_vis = V3D.add_internal(self, Node3D.new())
 	var theme := EnvTheme.find_theme(self)
 	match kind:
@@ -96,9 +102,7 @@ func _refresh() -> void:
 
 func _box(sz: Vector3, pos: Vector3, mat: Material, shadow := true) -> MeshInstance3D:
 	var mi := MeshInstance3D.new()
-	var bm := BoxMesh.new()
-	bm.size = sz
-	mi.mesh = bm
+	mi.mesh = V3D.box_mesh(sz)
 	mi.material_override = mat
 	mi.position = pos
 	if not shadow:
@@ -159,7 +163,7 @@ func _particles(tex: Texture2D, amount: int, life: float, vel: Vector3, grav: Ve
 func _build_spikes(theme: String) -> void:
 	var pal := V3D.palette(theme)
 	var plate_h := 0.12
-	_box(Vector3(size.x, plate_h, size.z), Vector3(0, -size.y / 2.0 + plate_h / 2.0, 0), V3D.flat_material(Color(pal.metal) * 0.7, 0.6, 0.5))
+	_box(Vector3(size.x, plate_h, size.z), Vector3(0, -size.y / 2.0 + plate_h / 2.0, 0), V3D.metal_material(Color(pal.metal) * 0.7, 0.6))
 	var h := clampf(size.y - plate_h, 0.2, 0.75)
 	var cone := CylinderMesh.new()
 	cone.top_radius = 0.0
@@ -167,7 +171,7 @@ func _build_spikes(theme: String) -> void:
 	cone.height = h
 	cone.radial_segments = 4
 	cone.rings = 1
-	cone.material = V3D.flat_material(Color("c9d3dc"), 0.85, 0.3)
+	cone.material = V3D.metal_material(Color("c9d3dc"), 0.85)
 	var nx := maxi(1, int(round(size.x / 0.5)))
 	var nz := maxi(1, int(round(size.z / 0.5)))
 	var mm := MultiMesh.new()
@@ -229,7 +233,7 @@ func _build_fan(theme: String) -> void:
 	var pal := V3D.palette(theme)
 	var base_y := -size.y / 2.0
 	var hous := V3D.world_material(theme, "dark")
-	var rim := V3D.flat_material(Color(pal.metal), 0.6, 0.4)
+	var rim := V3D.metal_material(Color(pal.metal), 0.6)
 	# Housing ring (4 bars) around the fan opening.
 	var t := 0.18
 	var hh := 0.5
@@ -237,18 +241,16 @@ func _build_fan(theme: String) -> void:
 	_box(Vector3(size.x, hh, t), Vector3(0, base_y + hh / 2.0, size.z / 2.0 - t / 2.0), hous)
 	_box(Vector3(t, hh, size.z), Vector3(-size.x / 2.0 + t / 2.0, base_y + hh / 2.0, 0), hous)
 	_box(Vector3(t, hh, size.z), Vector3(size.x / 2.0 - t / 2.0, base_y + hh / 2.0, 0), hous)
-	_box(Vector3(size.x - 2 * t, 0.06, size.z - 2 * t), Vector3(0, base_y + 0.03, 0), V3D.flat_material(Color(0.05, 0.06, 0.07), 0.2, 0.9), false)
+	_box(Vector3(size.x - 2 * t, 0.06, size.z - 2 * t), Vector3(0, base_y + 0.03, 0), V3D.metal_material(Color(0.12, 0.13, 0.15), 0.2), false)
 	# Spinning blades.
 	_blades = Node3D.new()
 	_blades.position = Vector3(0, base_y + 0.25, 0)
 	_vis.add_child(_blades)
 	var r := minf(size.x, size.z) / 2.0 - t - 0.05
-	var blade_mat := V3D.flat_material(Color(pal.metal) * 1.25, 0.7, 0.35)
+	var blade_mat := V3D.metal_material(Color(pal.metal) * 1.25, 0.7)
 	for i in 4:
 		var b := MeshInstance3D.new()
-		var bm := BoxMesh.new()
-		bm.size = Vector3(r, 0.04, 0.32)
-		b.mesh = bm
+		b.mesh = V3D.box_mesh(Vector3(r, 0.04, 0.32))
 		b.material_override = blade_mat
 		b.position = Vector3(cos(i * PI / 2.0), 0, sin(i * PI / 2.0)) * r / 2.0
 		b.rotation = Vector3(0.35, -i * PI / 2.0, 0)
@@ -300,6 +302,7 @@ func _build_goal() -> void:
 	glow.modulate = Color(1, 1, 1, 0.8)
 	glow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_vis.add_child(glow)
+	_glow = glow
 	_swirl = Sprite3D.new()
 	_swirl.texture = TEX_GOAL_SWIRL
 	_swirl.pixel_size = V3D.PX * 1.1
@@ -314,3 +317,33 @@ func _build_goal() -> void:
 	p.emission_sphere_radius = minf(size.x, size.y) * 0.55
 	p.spread = 180.0
 	_light(V3D.C_GOAL, 1.6, 5.0, Vector3.ZERO)
+	for c in _vis.get_children():
+		if c is OmniLight3D:
+			_goal_light = c
+
+
+## Goal swirl: idle spin + breathing bob; leans its pull toward a nearby blob; when
+## the blob wins it spins up, flares and swallows it (scale pulse, light flash).
+func _animate_goal(delta: float) -> void:
+	if _player == null and not Engine.is_editor_hint():
+		var lv := V3D.level_of(self)
+		if lv:
+			_player = lv.get_node_or_null("Player")
+	var won: bool = _player != null and _player.get("won") == true
+	_absorb = move_toward(_absorb, 1.0 if won else 0.0, delta * 1.6)
+	var a := _absorb
+	var near := 0.0
+	if _player and not won:
+		near = clampf(1.0 - global_position.distance_to(_player.global_position) / 4.0, 0.0, 1.0)
+	_spin_goal += delta * (2.5 + near * 2.0 + a * 14.0)
+	_swirl.rotation.z = -_spin_goal
+	var breathe := 1.0 + sin(_t * 2.2) * 0.06
+	var pulse := 1.0 + a * 0.6 * sin(minf(a, 1.0) * PI) + a * 0.25
+	_swirl.scale = Vector3.ONE * breathe * pulse * (1.0 + near * 0.12)
+	_swirl.position.y = sin(_t * 1.6) * 0.08
+	_swirl.modulate.a = clampf(0.85 + sin(_t * 3.0) * 0.15 - maxf(a - 0.7, 0.0) * 2.0, 0.0, 1.0)
+	if _glow:
+		_glow.scale = Vector3.ONE * (1.0 + sin(_t * 2.2 + 0.6) * 0.08 + a * 0.9)
+		_glow.modulate.a = clampf(0.8 + near * 0.2 - maxf(a - 0.75, 0.0) * 3.0, 0.0, 1.0)
+	if _goal_light:
+		_goal_light.light_energy = 1.6 + sin(_t * 2.2) * 0.25 + near * 0.6 + sin(minf(a, 1.0) * PI) * 3.0

@@ -19,6 +19,18 @@ func _ready() -> void:
 	UiUtil.chain([menu_btn, chapters_btn], false)
 	UiUtil.wire(self)
 	UiUtil.focus_quiet(menu_btn)
+	_animate_in()
+
+
+## The results panel condenses out of steam, the title drips in, then the stat rows
+## and buttons rise one by one.
+func _animate_in() -> void:
+	UiFx.panel_in($Panel)
+	UiFx.drip_text($Panel/VBox/Title, 0.2, 0.05)
+	var rows: Array = [$Panel/VBox/Sub]
+	rows.append_array($Panel/VBox/Stats.get_children())
+	UiFx.stagger_in(rows, 0.06, 6.0, 0.55)
+	UiFx.stagger_in([menu_btn, chapters_btn], 0.08, 12.0, 1.1)
 
 
 func _leave(chapter_select: bool) -> void:

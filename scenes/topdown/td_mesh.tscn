@@ -16,3 +16,5 @@ size = Vector2(96, 32)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(48, 16)
 shape = SubResource("Shape")
+
+[node name="Shimmer" type="Node2D" parent="."]

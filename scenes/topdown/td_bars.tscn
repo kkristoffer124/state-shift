@@ -14,3 +14,5 @@ collision_mask = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(16, 48)
 shape = SubResource("Shape")
+
+[node name="Shimmer" type="Node2D" parent="."]

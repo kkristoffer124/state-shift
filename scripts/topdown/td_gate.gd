@@ -27,6 +27,9 @@ var is_open := false
 var _open := 0.0
 var _sources := {}
 var _t := 0.0
+## Cosmetic dust puffs kicked up along the slot while the shutter moves: [pos, vel, age].
+var _dust: Array = []
+var _moving_prev := false
 
 
 func _ready() -> void:
@@ -83,14 +86,46 @@ func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 	_t += delta
+	_update_dust(delta)
 	var target := 1.0 if is_open else 0.0
 	if not is_equal_approx(_open, target):
 		if target < _open and _player_inside():
 			return # hold open: never squash the player
 		_open = move_toward(_open, target, delta / maxf(duration, 0.05))
 		_apply()
-	elif is_open:
-		queue_redraw() # lamp blink
+		_kick_dust(1 if randf() < 0.5 else 0)
+		_moving_prev = true
+		if is_equal_approx(_open, target):
+			_kick_dust(6) # thunk at the end of travel
+	else:
+		_moving_prev = false
+		if is_open or not _dust.is_empty():
+			queue_redraw() # lamp blink / settling dust
+
+
+func _kick_dust(n: int) -> void:
+	if _dust.size() > 40:
+		return
+	for i in n:
+		var along := randf() * maxf(size.x, size.y)
+		var p := Vector2(along, size.y) if size.x >= size.y else Vector2(size.x * (0.0 if randf() < 0.5 else 1.0), along)
+		var v := Vector2(randf_range(-14, 14), randf_range(-16, -4))
+		if size.x < size.y:
+			v.x = (randf_range(6, 16) if p.x > 0.0 else -randf_range(6, 16))
+		_dust.append([p, v, 0.0])
+
+
+func _update_dust(delta: float) -> void:
+	var i := 0
+	while i < _dust.size():
+		var d: Array = _dust[i]
+		d[2] += delta
+		if d[2] > 0.5:
+			_dust.remove_at(i)
+			continue
+		d[0] += d[1] * delta
+		d[1] *= exp(-5.0 * delta)
+		i += 1
 
 
 func _draw() -> void:
@@ -99,7 +134,8 @@ func _draw() -> void:
 	draw_rect(r, Color("0b1016"))
 	draw_rect(Rect2(0, 0, size.x, 2), Color("26323f"))
 	draw_rect(Rect2(0, size.y - 1, size.x, 1), Color("4a5a6c"))
-	var h := RISE * (1.0 - _open)
+	var eo := _open * _open * (3.0 - 2.0 * _open) # smoothstep: eases in and out of travel
+	var h := roundf(RISE * (1.0 - eo))
 	var lamp := Ix.C_GOAL if is_open else Color("ff4a5a")
 	if h > 0.5:
 		var top := Rect2(0, -h, size.x, size.y)
@@ -142,3 +178,7 @@ func _draw() -> void:
 		for i in range(4, int(maxf(size.x, size.y)), 10):
 			var p := Vector2(i, size.y / 2.0 - 1.0) if size.x >= size.y else Vector2(size.x / 2.0 - 1.0, i)
 			draw_rect(Rect2(p, Vector2(2, 2)), Color(lamp, blink))
+	for d in _dust:
+		var k: float = d[2] / 0.5
+		var sz := 1.0 if k > 0.6 else 2.0
+		draw_rect(Rect2((d[0] as Vector2).round(), Vector2(sz, sz)), Color(0.75, 0.72, 0.65, 0.6 * (1.0 - k)))

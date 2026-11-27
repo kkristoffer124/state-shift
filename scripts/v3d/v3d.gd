@@ -85,8 +85,11 @@ const PALETTES := {
 
 const SH_WORLD := preload("res://shaders/v3d/pixel_world.gdshader")
 const SH_GRATE := preload("res://shaders/v3d/pixel_grate.gdshader")
+const SH_GLOW := preload("res://shaders/v3d/pixel_glow.gdshader")
 
 static var _mat_cache := {}
+static var _mesh_cache := {}
+static var _metal_tex: Texture2D
 
 
 static func palette(theme: String) -> Dictionary:
@@ -132,6 +135,124 @@ static func world_material(theme: String, look: String, tint := Color.WHITE) -> 
 	m.set_shader_parameter("tint", tint_side)
 	m.set_shader_parameter("top_tint", tint_top)
 	_mat_cache[key] = m
+	return m
+
+
+## Pixel-art metal (brushed plate, seams, rivets; 32 px = 1 m) tinted `tint`.
+## Used for trims, rails, pipes, plates, turbines: no more flat-colour props.
+static func metal_material(tint: Color, shine := 0.55) -> Material:
+	var key := "metal/%s/%.2f" % [tint.to_html(), shine]
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+	var m := ShaderMaterial.new()
+	m.shader = SH_WORLD
+	var tex := metal_texture()
+	m.set_shader_parameter("side_tex", tex)
+	m.set_shader_parameter("top_tex", tex)
+	m.set_shader_parameter("tint", tint * 1.25)
+	m.set_shader_parameter("top_tint", tint * 1.38)
+	m.set_shader_parameter("metal", shine)
+	m.set_shader_parameter("rough", 0.5)
+	_mat_cache[key] = m
+	return m
+
+
+## Emissive panel / screen / sign (pixel scanlines + dark bezel on box faces).
+static func glow_material(color: Color, energy := 2.0, scanlines := 1.0) -> Material:
+	var key := "glow/%s/%.2f/%.2f" % [color.to_html(), energy, scanlines]
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+	var m := ShaderMaterial.new()
+	m.shader = SH_GLOW
+	m.set_shader_parameter("glow_color", color)
+	m.set_shader_parameter("energy", energy)
+	m.set_shader_parameter("scanlines", scanlines)
+	_mat_cache[key] = m
+	return m
+
+
+## 32x32 grey metal plate texture generated once (tinted by the material).
+static func metal_texture() -> Texture2D:
+	if _metal_tex:
+		return _metal_tex
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7311
+	var rows := []
+	for y in 32:
+		rows.append(rng.randf_range(-0.035, 0.035))
+	for y in 32:
+		for x in 32:
+			var v: float = 0.78 + rows[y] + rng.randf_range(-0.02, 0.02)
+			if x == 0 or y == 0:
+				v = 0.5
+			elif x == 31 or y == 31:
+				v = 0.62
+			elif x == 1 or y == 1:
+				v = 0.9
+			img.set_pixel(x, y, Color(v, v, v))
+	for c in [Vector2i(4, 4), Vector2i(26, 4), Vector2i(4, 26), Vector2i(26, 26)]:
+		img.set_pixel(c.x, c.y, Color(0.97, 0.97, 0.97))
+		img.set_pixel(c.x + 1, c.y, Color(0.84, 0.84, 0.84))
+		img.set_pixel(c.x, c.y + 1, Color(0.84, 0.84, 0.84))
+		img.set_pixel(c.x + 1, c.y + 1, Color(0.6, 0.6, 0.6))
+		img.set_pixel(c.x + 2, c.y + 2, Color(0.5, 0.5, 0.5))
+	# A couple of faint scratches.
+	for i in 3:
+		var sx := rng.randi_range(6, 22)
+		var sy := rng.randi_range(8, 24)
+		for k in rng.randi_range(4, 8):
+			var px := clampi(sx + k, 2, 29)
+			var col := img.get_pixel(px, sy)
+			img.set_pixel(px, sy, col.lightened(0.12))
+	_metal_tex = ImageTexture.create_from_image(img)
+	return _metal_tex
+
+
+## Box mesh of `size` centred on the origin whose UV is the face position in metres
+## from the face's top-left and UV2 the face size: pixel_world / pixel_glow draw a
+## texel-snapped bevel along the edges from it. Shared per size.
+static func box_mesh(size: Vector3) -> Mesh:
+	var key := "%.3f/%.3f/%.3f" % [size.x, size.y, size.z]
+	if _mesh_cache.has(key):
+		return _mesh_cache[key]
+	var h := size / 2.0
+	var faces := [
+		[Vector3.RIGHT, Vector3.FORWARD, Vector3.DOWN],
+		[Vector3.LEFT, Vector3.BACK, Vector3.DOWN],
+		[Vector3.BACK, Vector3.RIGHT, Vector3.DOWN],
+		[Vector3.FORWARD, Vector3.LEFT, Vector3.DOWN],
+		[Vector3.UP, Vector3.RIGHT, Vector3.BACK],
+		[Vector3.DOWN, Vector3.RIGHT, Vector3.FORWARD],
+	]
+	var verts := PackedVector3Array()
+	var norms := PackedVector3Array()
+	var uvs := PackedVector2Array()
+	var uv2s := PackedVector2Array()
+	var idx := PackedInt32Array()
+	for f in faces:
+		var n: Vector3 = f[0]
+		var u: Vector3 = f[1]
+		var v: Vector3 = f[2]
+		var w := absf(u.dot(size))
+		var hh := absf(v.dot(size))
+		var base := verts.size()
+		for c in [Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]:
+			verts.append(n * absf(n.dot(h)) + u * (c.x - 0.5) * w + v * (c.y - 0.5) * hh)
+			norms.append(n)
+			uvs.append(Vector2(c.x * w, c.y * hh))
+			uv2s.append(Vector2(w, hh))
+		idx.append_array([base, base + 1, base + 2, base, base + 2, base + 3])
+	var arr := []
+	arr.resize(Mesh.ARRAY_MAX)
+	arr[Mesh.ARRAY_VERTEX] = verts
+	arr[Mesh.ARRAY_NORMAL] = norms
+	arr[Mesh.ARRAY_TEX_UV] = uvs
+	arr[Mesh.ARRAY_TEX_UV2] = uv2s
+	arr[Mesh.ARRAY_INDEX] = idx
+	var m := ArrayMesh.new()
+	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+	_mesh_cache[key] = m
 	return m
 
 

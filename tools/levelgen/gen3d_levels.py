@@ -20,6 +20,20 @@ def decor(sc):
     return lambda *a, **k: sc.block(*a, parent="Decor", kind="decor", **k)
 
 
+def prop(sc):
+    """Solid furniture/props (collide like walls) kept under Decor."""
+    return lambda *a, **k: sc.block(*a, parent="Decor", **k)
+
+
+def flask(sc, name, a, b, fluid, fill=0.6):
+    """Glass vessel (solid lab glass) with a glowing liquid inside."""
+    sc.block(name, a, b, kind="glass", parent="Decor")
+    i = 0.03
+    top = a[1] + (b[1] - a[1]) * fill
+    sc.block(name + "Fluid", (a[0] + i, a[1] + 0.01, a[2] + i), (b[0] - i, top, b[2] - i),
+             parent="Decor", kind="decor", look="glow", tint=fluid, shadow=False)
+
+
 # =============================================================================
 # Chapter 3 - Rise (lab, third person)
 # =============================================================================
@@ -56,7 +70,7 @@ def level_03():
     B("Bench", (0, 0, 4.6), (8, 0.9, 5.4), look="fill", tint=(0.85, 0.9, 1.0))
     B("BenchTop", (0, 0.9, 4.5), (8, 1.0, 5.5), look="metal", tint=(0.55, 0.62, 0.7), shadow=False)
     # Goal tank in the atrium: pedestal + glass walls + lid (gate)
-    B("Pedestal", (10, 0, 3.5), (13, 4, 6.5), look="fill", tint=(0.9, 0.95, 1.0))
+    B("Pedestal", (10, 0, 3.5), (13, 3.8, 6.5), look="fill", tint=(0.9, 0.95, 1.0))
     B("PedestalRim", (9.8, 3.8, 3.3), (13.2, 4.0, 6.7), look="metal", tint=(0.45, 0.55, 0.65))
     B("TankW", (9.8, 4, 3.3), (10, 6, 6.7), kind="glass")
     B("TankE", (13, 4, 3.3), (13.2, 6, 6.7), kind="glass")
@@ -79,29 +93,32 @@ def level_03():
 
     # --- Decor ---------------------------------------------------------------
     D = decor(sc)
-    D("CabinetW", (0, 0, 0.4), (0.8, 2.6, 3.6), look="dark")
-    D("CabinetW2", (0, 0, 6.2), (0.8, 2.6, 9.6), look="dark")
-    sc.block("SpecimenTank", (1.3, 0, 0.6), (2.7, 2.0, 2.0), kind="glass")
-    D("SpecimenFluid", (1.4, 0, 0.7), (2.6, 1.35, 1.9), look="glow", tint=(0.25, 0.95, 0.85))
-    D("SpecimenBase", (1.2, 0, 0.5), (2.8, 0.2, 2.1), look="metal", tint=(0.35, 0.42, 0.5))
-    sc.block("SpecimenTank2", (3.2, 0, 0.6), (4.4, 1.6, 1.8), kind="glass")
-    D("SpecimenFluid2", (3.3, 0, 0.7), (4.3, 0.9, 1.7), look="glow", tint=(0.5, 0.75, 1.0))
-    D("Monitor", (2.0, 1.0, 4.75), (3.0, 1.65, 4.85), look="glow", tint=(0.35, 0.85, 1.0))
-    D("MonitorStand", (2.4, 0.95, 4.8), (2.6, 1.1, 5.0), look="metal", tint=(0.3, 0.35, 0.4))
-    D("Flask1", (5.0, 1.0, 4.9), (5.25, 1.35, 5.15), look="glow", tint=(0.4, 1.0, 0.5))
-    D("Flask2", (5.5, 1.0, 4.8), (5.7, 1.25, 5.0), look="glow", tint=(1.0, 0.5, 0.9))
-    D("Flask3", (6.3, 1.0, 5.0), (6.55, 1.45, 5.25), look="glow", tint=(0.4, 0.8, 1.0))
-    D("Shelf", (0.05, 1.6, 6.3), (0.75, 1.7, 9.5), look="metal", tint=(0.6, 0.65, 0.7), shadow=False)
+    S = prop(sc)
+    S("CabinetW", (0, 0, 0.4), (0.8, 2.6, 3.6), look="dark")
+    S("CabinetW2", (0, 0, 6.2), (0.8, 2.6, 9.6), look="dark")
+    sc.block("SpecimenTank", (1.3, 0.2, 0.6), (2.7, 2.0, 2.0), kind="glass", parent="Decor")
+    D("SpecimenFluid", (1.4, 0.2, 0.7), (2.6, 1.35, 1.9), look="glow", tint=(0.25, 0.95, 0.85))
+    S("SpecimenBase", (1.2, 0, 0.5), (2.8, 0.2, 2.1), look="metal", tint=(0.35, 0.42, 0.5))
+    S("SpecimenCap", (1.25, 2.0, 0.55), (2.75, 2.12, 2.05), look="metal", tint=(0.35, 0.42, 0.5))
+    sc.block("SpecimenTank2", (3.2, 0.2, 0.6), (4.4, 1.6, 1.8), kind="glass", parent="Decor")
+    D("SpecimenFluid2", (3.3, 0.2, 0.7), (4.3, 0.9, 1.7), look="glow", tint=(0.5, 0.75, 1.0))
+    S("SpecimenBase2", (3.1, 0, 0.5), (4.5, 0.2, 1.9), look="metal", tint=(0.35, 0.42, 0.5))
+    S("SpecimenCap2", (3.15, 1.6, 0.55), (4.45, 1.72, 1.85), look="metal", tint=(0.35, 0.42, 0.5))
+    S("Monitor", (2.0, 1.12, 4.75), (3.0, 1.72, 4.87), look="glow", tint=(0.35, 0.85, 1.0))
+    S("MonitorStand", (2.4, 1.0, 4.74), (2.6, 1.12, 4.9), look="metal", tint=(0.3, 0.35, 0.4))
+    flask(sc, "Flask1", (4.45, 1.0, 4.85), (4.7, 1.36, 5.1), (0.4, 1.0, 0.5))
+    flask(sc, "Flask2", (4.9, 1.0, 4.75), (5.1, 1.26, 4.95), (1.0, 0.5, 0.9), 0.5)
+    flask(sc, "Flask3", (7.0, 1.0, 4.85), (7.25, 1.46, 5.1), (0.4, 0.8, 1.0), 0.7)
     D("WarnStripe", (4.9, 0.0, 0.9), (7.1, 0.02, 3.1), look="glow", tint=(0.9, 0.7, 0.15))
-    D("ConsoleE", (7.2, 0, 6.5), (8.0, 1.1, 9.5), look="dark")
+    S("ConsoleE", (7.2, 0, 6.5), (8.0, 1.1, 9.5), look="dark")
     D("ConsoleScreen", (7.15, 0.75, 6.8), (7.2, 1.05, 9.2), look="glow", tint=(0.3, 0.9, 0.7))
-    D("CrateM1", (6.6, 4, 7.6), (7.9, 5.2, 9.9), look="dark")
-    D("CrateM2", (6.9, 5.2, 8.0), (7.8, 6.0, 9.4), look="dark")
-    D("CableTray", (0.05, 7.4, 0.2), (0.4, 7.6, 9.8), look="metal", tint=(0.5, 0.45, 0.2), shadow=False)
-    D("CatwalkRail", (8.5, 8.5, 0.05), (14, 8.6, 0.2), look="metal", tint=(0.5, 0.58, 0.66), shadow=False)
-    D("TopConsole", (0.2, 8.5, 0.2), (2.5, 9.6, 1.4), look="dark")
+    S("CrateM1", (6.6, 4, 7.6), (7.9, 5.2, 9.9), look="dark")
+    S("CrateM2", (6.9, 5.2, 8.0), (7.8, 6.0, 9.4), look="dark")
+    S("CableTray", (0, 7.4, 0.2), (0.4, 7.6, 9.8), look="metal", tint=(0.5, 0.45, 0.2), shadow=False)
+    S("CatwalkLedge", (8.5, 8.35, 0), (14, 8.55, 0.4), look="metal", tint=(0.5, 0.58, 0.66), shadow=False)
+    S("TopConsole", (0.2, 8.5, 0.2), (2.5, 9.6, 1.4), look="dark")
     D("TopScreen", (0.4, 9.1, 1.4), (2.3, 9.5, 1.45), look="glow", tint=(1.0, 0.45, 0.3))
-    D("TankSign", (10.6, 6.4, 3.25), (12.4, 6.9, 3.3), look="glow", tint=(0.4, 1.0, 0.6))
+    D("TankSign", (10.6, 5.3, 3.24), (12.4, 5.8, 3.29), look="glow", tint=(0.4, 1.0, 0.6))
 
     sc.pipe("PipeA1", (4.0, 3.15, 9.6), 7.6, "x", 0.15)
     sc.pipe("PipeA2", (4.0, 3.2, 0.35), 7.6, "x", 0.12, color=(0.75, 0.45, 0.2))
@@ -160,16 +177,18 @@ def level_06():
     Z("Goal", (34.4, 5.1, 0), (2, 2, 2), "goal")
 
     D = decor(sc)
-    D("Sludge", (16.3, 0, zb), (30, 0.12, zf), look="glow", tint=(0.25, 0.55, 0.2))
-    D("SludgeGap", (6, 0, zb), (8, 0.12, zf), look="glow", tint=(0.25, 0.55, 0.2))
+    S = prop(sc)
+    # Liquid layers: the blob sinks into them on purpose (the pit spikes do the killing).
+    D("Sludge", (16.3, 0, zb), (30, 0.12, zf), look="glow", tint=(0.25, 0.55, 0.2), passable=True)
+    D("SludgeGap", (6, 0, zb), (8, 0.12, zf), look="glow", tint=(0.25, 0.55, 0.2), passable=True)
     for i, x in enumerate((6, 16.3, 24, 30)):
-        D("Arch%d" % i, (x - 0.35, 0, -2.0), (x + 0.35, 11, -1.6), look="wall")
-    D("ArchBeam", (0, 9.6, -2.0), (36, 10.0, -1.6), look="dark")
-    D("FanMount", (12.6, 2.6, -2.0), (13.2, 7.0, -1.6), look="dark")
+        S("Arch%d" % i, (x - 0.35, 0, -2.0), (x + 0.35, 9.6, -1.6), look="wall")
+    S("ArchBeam", (0, 9.6, -2.0), (36, 10.0, -1.6), look="dark")
+    S("FanMount", (12.6, 2.6, -2.0), (13.2, 7.0, -1.6), look="dark")
     D("Walkway", (30, 4, -2.0), (36, 4.08, 1.6), look="metal", tint=(0.4, 0.45, 0.4), shadow=False)
-    D("OutfallL", (25.5, 2.4, -2.0), (27.0, 3.6, -1.6), look="dark")
-    D("OutfallR", (3.0, 3.2, -2.0), (4.4, 4.4, -1.6), look="dark")
-    D("FrontPipeBase", (0, 0, 2.2), (36, 0.3, 2.6), look="dark")
+    S("OutfallL", (25.5, 2.4, -2.0), (27.0, 3.6, -1.6), look="dark")
+    S("OutfallR", (3.0, 3.2, -2.0), (4.4, 4.4, -1.6), look="dark")
+    S("FrontPipeBase", (0, 0, 2.2), (36, 0.3, 2.6), look="dark")
     sc.pipe("PipeBackHi", (18, 8.6, -1.75), 36, "x", 0.25, flange=2.0)
     sc.pipe("PipeBackLo", (18, 1.0, -1.8), 36, "x", 0.16, color=(0.55, 0.42, 0.25), flange=2.0)
     sc.pipe("PipeV1", (9.0, 6.5, -1.75), 9, "y", 0.18)
@@ -210,10 +229,10 @@ def level_08():
     B("WallN", (0, 0, -1), (11.6, 12.5, 0))
     B("WallS", (0, 0, 9), (12.4, 5, 10))
     B("RoomWallE", (11.6, 0, 3.4), (12.4, 5, 9))
-    B("RoomCeil", (3.4, 4.5, 0), (12.4, 5, 9))
+    B("RoomCeil", (3.4, 4.5, 0), (11.6, 5, 9))
     B("RoomCeilW", (0, 4.5, 3.4), (3.4, 5, 9))
     # Shaft (x0..3, z0..3) up to the duct
-    B("ShaftE", (3, 2.2, 0), (3.4, 9.5, 3.4))
+    B("ShaftE", (3, 2.2, 0), (3.4, 9.5, 3))
     B("ShaftS", (0, 0, 3), (3.4, 12.5, 3.4))
     B("ShaftCeil", (0, 12, 0), (3.4, 12.5, 3))
     # Duct (x3.4..12, z0..3, y9.5..12)
@@ -221,10 +240,10 @@ def level_08():
     B("DuctCeil", (3.4, 12, 0), (11.6, 12.5, 3))
     B("DuctS", (3.4, 5, 3), (11.6, 12.5, 3.4))
     # Well (x12..15, z0..3) down to the basement
-    B("WellW", (11.6, -5, -0.4), (12, 9, 3.4))
-    B("WellE", (15, -5, -0.4), (15.4, 12.5, 3.4))
-    B("WellN", (11.6, -5, -0.4), (15.4, 12.5, 0))
-    B("WellS", (12, -5, 3), (15.4, 12.5, 3.4))
+    B("WellW", (11.6, -5, 0), (12, 9, 3.4))
+    B("WellE", (15, -5, 0), (15.4, 12, 3.4))
+    B("WellN", (11.6, -5, -0.4), (15.4, 12, 0))
+    B("WellS", (12, -5, 3), (15, 12, 3.4))
     B("WellCeil", (11.6, 12, -0.4), (15.4, 12.5, 3.4))
     B("WellFloor", (12, -5.5, 0), (15, -4.5, 3))
     B("Cracked1", (12, 4, 0), (15, 4.5, 3), kind="breakable")
@@ -254,12 +273,13 @@ def level_08():
     D("Gauge2", (9.6, 2.4, 6.74), (10.0, 2.8, 6.8), look="glow", tint=(0.6, 1.0, 0.6))
     D("BoilerBand1", (6.95, 1.6, 6.75), (10.45, 1.75, 8.95), look="metal", tint=(0.75, 0.55, 0.3), shadow=False)
     D("BoilerBand2", (0.15, 1.6, 5.35), (2.45, 1.75, 8.65), look="metal", tint=(0.75, 0.55, 0.3), shadow=False)
-    D("ShaftLip", (2.95, 2.1, -0.05), (3.45, 2.3, 3.45), look="metal", tint=(0.8, 0.5, 0.25))
+    S = prop(sc)
+    S("ShaftLip", (2.95, 2.1, 0), (3.45, 2.3, 3.0), look="metal", tint=(0.8, 0.5, 0.25))
     D("SpikeWarn", (4.8, 0.0, 0.0), (5.0, 0.02, 9.0), look="glow", tint=(1.0, 0.75, 0.1))
     D("SpikeWarn2", (6.2, 0.0, 0.0), (6.4, 0.02, 9.0), look="glow", tint=(1.0, 0.75, 0.1))
-    D("DuctRib1", (5.0, 9.5, 0.0), (5.2, 12.0, 0.15), look="metal", tint=(0.6, 0.45, 0.3))
-    D("DuctRib2", (8.5, 9.5, 0.0), (8.7, 12.0, 0.15), look="metal", tint=(0.6, 0.45, 0.3))
-    D("DuctRib3", (8.5, 9.5, 2.85), (8.7, 12.0, 3.0), look="metal", tint=(0.6, 0.45, 0.3))
+    S("DuctRib1", (5.0, 9.5, 0.0), (5.2, 12.0, 0.15), look="metal", tint=(0.6, 0.45, 0.3))
+    S("DuctRib2", (8.5, 9.5, 0.0), (8.7, 12.0, 0.15), look="metal", tint=(0.6, 0.45, 0.3))
+    S("DuctRib3", (8.5, 9.5, 2.85), (8.7, 12.0, 3.0), look="metal", tint=(0.6, 0.45, 0.3))
     D("WellSign", (12.9, 9.6, 2.95), (14.1, 10.0, 3.0), look="glow", tint=(1.0, 0.3, 0.15))
     D("BasementGlow", (12.2, -4.5, 0.2), (14.8, -4.45, 2.8), look="glow", tint=(0.3, 0.9, 0.5))
 

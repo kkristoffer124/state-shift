@@ -16,6 +16,9 @@ const TEX := preload("res://assets/topdown/td_plate.png") # 2 frames: up, down
 var pressed := false
 var _flash := 0.0
 var _t := 0.0
+## Visual press depth (spring, 0 up .. 1 down; overshoots a little) - drawing only.
+var _press := 0.0
+var _press_v := 0.0
 
 
 func _ready() -> void:
@@ -46,11 +49,28 @@ func _physics_process(delta: float) -> void:
 		if has_node("/root/Sfx"):
 			get_node("/root/Sfx").play("land_ice" if pressed else "cool")
 	_flash = maxf(_flash - delta, 0.0)
+	# eased press / spring-back (cosmetic)
+	_press_v += ((1.0 if pressed else 0.0) - _press) * 420.0 * delta
+	_press_v *= exp(-16.0 * delta)
+	_press += _press_v * delta
 	queue_redraw()
 
 
 func _draw() -> void:
-	draw_texture_rect_region(TEX, Rect2(0, 0, 32, 32), Rect2(32 if pressed else 0, 0, 32, 32))
+	var k := clampf(_press, 0.0, 1.0)
+	# cross-fade the up / down art while the plate sinks; the top dips a pixel
+	draw_texture_rect_region(TEX, Rect2(0, 0, 32, 32), Rect2(0, 0, 32, 32))
+	if k > 0.02:
+		draw_texture_rect_region(TEX, Rect2(0, 0, 32, 32), Rect2(32, 0, 32, 32), Color(1, 1, 1, k))
+	var dip := roundf(clampf(_press, -0.4, 1.3) * 1.5)
+	if absf(dip) >= 1.0:
+		draw_rect(Rect2(6, 6, 20, 20), Color(0, 0, 0, 0.12 * signf(dip)) if dip > 0.0 else Color(1, 1, 1, 0.08))
+		draw_rect(Rect2(6, 5 + dip, 20, 1), Color(0, 0, 0, 0.25))
+	# press ring: a pulse that runs out to the rim
+	if _flash > 0.0 and pressed:
+		var u := 1.0 - _flash / 0.5
+		var r := 6.0 + u * 14.0
+		draw_rect(Rect2(Vector2(16, 16) - Vector2(r, r), Vector2(r, r) * 2.0), Color(Ix.C_GOAL, 0.5 * (1.0 - u)), false, 1.0)
 	# status lamps in the corners
 	var c := Ix.C_GOAL if pressed else Ix.C_FROST.darkened(0.2 + 0.2 * sin(_t * 4.0))
 	if _flash > 0.0 and int(_flash * 20.0) % 2 == 0:

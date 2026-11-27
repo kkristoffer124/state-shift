@@ -40,12 +40,45 @@ func _ready() -> void:
 	UiUtil.chain([confirm_yes, confirm_no], false)
 	UiUtil.wire(main_ui)
 	UiUtil.wire(confirm)
+	# Sub-screens condense out of steam when shown and evaporate when closed (UiFx).
+	UiFx.register_panel(chapter_select)
+	UiFx.register_panel(settings_panel)
+	UiFx.register_panel(confirm)
+	main_ui.visibility_changed.connect(func() -> void:
+		if main_ui.visible:
+			UiFx.stagger_in(buttons.get_children(), 0.04, 12.0))
 	_refresh()
 	if Game.open_chapter_select:
 		Game.open_chapter_select = false
 		_on_load()
 	else:
 		_show_main()
+		_intro()
+
+
+## Title intro: the logo drops in like a jelly, the tagline drips in letter by letter,
+## then the buttons rise one after another.
+func _intro() -> void:
+	var logo: Control = $Main/Logo
+	var sub: Label = $Main/Subtitle
+	UiFx.stagger_in(buttons.get_children(), 0.05, 16.0, 0.55)
+	if UiFx.motion() == 0:
+		return
+	hint.modulate.a = 0.0
+	var th := UiFx.tw(hint, "intro")
+	th.tween_interval(0.8)
+	th.tween_property(hint, "modulate:a", 1.0, UiFx.dur(0.3))
+	logo.modulate.a = 0.0
+	var t := UiFx.tw(logo, "intro")
+	t.tween_property(logo, "modulate:a", 1.0, UiFx.dur(0.25))
+	if UiFx.full():
+		var base_y := logo.position.y
+		logo.position.y = base_y - 28.0
+		logo.pivot_offset = Vector2(logo.size.x / 2.0, logo.size.y).round()
+		t.parallel().tween_property(logo, "position:y", base_y, 0.5).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+		t.tween_property(logo, "scale", Vector2(1.04, 0.95), 0.08).set_trans(Tween.TRANS_SINE)
+		t.tween_property(logo, "scale", Vector2.ONE, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	UiFx.drip_text(sub, 0.4, 0.028, false)
 
 
 func _refresh() -> void:

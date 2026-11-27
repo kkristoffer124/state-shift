@@ -7,7 +7,9 @@ void fragment() {
 		discard;
 	}
 	vec4 c = pixel_sample(true);
-	ALBEDO = c.rgb;
-	ROUGHNESS = 0.85;
-	SPECULAR = 0.2;
+	bool top = v_nrm.y > 0.7;
+	ALBEDO = c.rgb * bevel_shade(UV, UV2, top);
+	ROUGHNESS = rough;
+	METALLIC = metal;
+	SPECULAR = mix(0.2, 0.5, metal);
 }

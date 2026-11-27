@@ -186,12 +186,8 @@ func _smooth(rate: float, delta: float) -> float:
 func _update(delta: float) -> void:
 	if target == null:
 		return
-	var p := target.global_position
-	var shake_on := true
-	var settings := get_node_or_null("/root/Settings")
-	if settings and settings.get("screen_shake") != null:
-		shake_on = settings.get("screen_shake")
-	var sh := target.shake * (0.012 if shake_on else 0.0)
+	var p := target.render_position()  # interpolated between physics ticks (no 60 Hz judder)
+	var sh := target.shake * 0.012 * Settings.shake_scale()
 	camera.h_offset = randf_range(-1, 1) * sh
 	camera.v_offset = randf_range(-1, 1) * sh
 	match mode:

@@ -128,7 +128,10 @@ class Scene:
             "transform": xform(self.ys(center)), "channel": '"%s"' % channel, "size": v3(size),
             "open_offset": v3(open_offset), "duration": f(duration)}, script="gate")
 
-    def block(self, name, a, b, kind="wall", look="auto", tint=None, parent="Blocks", shadow=True, rot=(0, 0, 0), break_speed=None):
+    def block(self, name, a, b, kind="wall", look="auto", tint=None, parent="Blocks", shadow=True, rot=(0, 0, 0), break_speed=None,
+              passable=False):
+        """passable: decor the blob may pass through on purpose (liquids, hanging bits);
+        tests/v3d_test.gd flags any other solid-looking DECOR without a collider."""
         a, b = self.ys(a), self.ys(b)
         c = [(a[i] + b[i]) / 2.0 for i in range(3)]
         s = [abs(b[i] - a[i]) for i in range(3)]
@@ -144,6 +147,8 @@ class Scene:
             props["cast_shadow"] = "false"
         if break_speed is not None:
             props["break_speed"] = f(break_speed)
+        if passable:
+            props["metadata/passable"] = "true"
         return self.node(name, "StaticBody3D", parent, props, script="block")
 
     def zone(self, name, center, size, kind, rot=(0, 0, 0), extra=None, parent="Zones"):
@@ -171,12 +176,14 @@ class Scene:
             props["flicker"] = f(flicker)
         return self.node(name, "OmniLight3D", parent, props, script="lamp")
 
-    def pipe(self, name, pos, length, axis="x", radius=0.18, parent="Decor", color=None, flange=1.5):
+    def pipe(self, name, pos, length, axis="x", radius=0.18, parent="Decor", color=None, flange=1.5, solid=True):
         pos = self.ys(pos)
         props = {"transform": xform(pos), "length": f(length), "radius": f(radius),
                  "axis": str({"x": 0, "y": 1, "z": 2}[axis]), "flange_every": f(flange)}
         if color:
             props["color"] = col(color)
+        if not solid:
+            props["solid"] = "false"
         return self.node(name, "MeshInstance3D", parent, props, script="pipe")
 
     def jet(self, name, pos, height=2.0, period=3.0, burst=1.0, phase=0.0, parent="Decor", rot=(0, 0, 0)):

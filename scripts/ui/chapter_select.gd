@@ -44,6 +44,7 @@ func refresh() -> void:
 func open() -> void:
 	refresh()
 	show()
+	UiFx.stagger_in(tiles, 0.018, 8.0, 0.06)
 	var focus_i := clampi(Save.continue_index(), 0, tiles.size() - 1)
 	back_btn.focus_neighbor_top = back_btn.get_path_to(tiles[mini(tiles.size() - 1, tiles.size() - grid.columns + focus_i % grid.columns)])
 	UiUtil.focus_quiet(tiles[focus_i])

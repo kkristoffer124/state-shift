@@ -42,6 +42,23 @@ func _ready() -> void:
 	_streams["poof"] = _sweep([[1600.0, 500.0, 0.16]], "noise", 0.18)
 
 
+## Sound -> bus (the volume groups in Settings; all send to SFX). Unlisted sounds use SFX.
+const BUSES := {
+	"select": &"UI", "ui_move": &"UI",
+	"blip": &"Cutscene", "blip_low": &"Cutscene", "pop": &"Cutscene", "bubble": &"Cutscene",
+	"hum": &"Cutscene", "zap": &"Cutscene", "thud": &"Cutscene", "alarm": &"Cutscene",
+	"door": &"Cutscene", "rain": &"Cutscene", "poof": &"Cutscene",
+	"jump": &"Movement", "land": &"Movement", "land_ice": &"Movement", "die": &"Movement",
+	"heat": &"Shift", "cool": &"Shift", "blocked": &"Shift",
+	"win": &"Jingles", "chime": &"Jingles", "shatter": &"Jingles",
+}
+
+
+static func bus_for(sound: String) -> StringName:
+	var b: StringName = BUSES.get(sound, &"SFX")
+	return b if AudioServer.get_bus_index(b) != -1 else &"SFX"
+
+
 func play(sound: String, pitch_variation := 0.08) -> void:
 	var stream: AudioStream = overrides.get(sound, _streams.get(sound))
 	if stream == null:
@@ -49,7 +66,10 @@ func play(sound: String, pitch_variation := 0.08) -> void:
 	for p in _players:
 		if not p.playing:
 			p.stream = stream
-			p.pitch_scale = randf_range(1.0 - pitch_variation, 1.0 + pitch_variation)
+			p.bus = bus_for(sound)
+			# Settings.pitch_variation scales the per-call variation (0 = always exact pitch).
+			var pv := pitch_variation * Settings.pitch_variation
+			p.pitch_scale = clampf(randf_range(1.0 - pv, 1.0 + pv), 0.25, 4.0)
 			p.play()
 			return
 

@@ -1,5 +1,7 @@
 [gd_resource type="Theme" format=3]
 
+[ext_resource type="FontVariation" path="res://assets/fonts/pixelify.tres" id="font_main"]
+
 [ext_resource type="Texture2D" path="res://assets/ui/menu/btn_normal.png" id="t_btn_normal"]
 [ext_resource type="Texture2D" path="res://assets/ui/menu/btn_focus.png" id="t_btn_focus"]
 [ext_resource type="Texture2D" path="res://assets/ui/menu/btn_pressed.png" id="t_btn_pressed"]
@@ -152,6 +154,7 @@ texture_margin_right = 12.0
 texture_margin_bottom = 16.0
 
 [resource]
+default_font = ExtResource("font_main")
 default_font_size = 18
 Button/colors/font_color = Color(0.851, 0.9333, 1, 1)
 Button/colors/font_hover_color = Color(1, 1, 1, 1)

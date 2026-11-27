@@ -11,6 +11,7 @@ var p: Player3D
 var level: Level3D
 var _frame := 0
 var _trace := false
+var _geo_only := false
 
 
 func _ready() -> void:
@@ -21,12 +22,17 @@ func _ready() -> void:
 			only = a.substr(7)
 		elif a == "--trace":
 			_trace = true
+		elif a == "--geo":
+			_geo_only = true
 	var solutions := { 3: _solve_03, 5: _solve_05, 6: _solve_06, 8: _solve_08, 10: _solve_10, 12: _solve_12 }
 	for n in solutions:
 		if only != "" and str(n) != only:
 			continue
-		await _play(n, solutions[n])
-	await _check_rules()
+		if not _geo_only:
+			await _play(n, solutions[n])
+		await _check_level_geometry(n)
+	if not _geo_only:
+		await _check_rules()
 	print("V3D TEST %s (%d failures)" % ["PASSED" if _fails == 0 else "FAILED", _fails])
 	get_tree().quit(1 if _fails else 0)
 
@@ -377,3 +383,155 @@ func _check_rules() -> void:
 		% [pressed_ice, pressed_steam, blocked])
 	if not ok:
 		_fails += 1
+
+
+# --- Geometry audit -------------------------------------------------------------------
+
+const SOLID_MASK := V3D.L_WORLD | V3D.L_GRATE | V3D.L_BREAKABLE | V3D.L_GLASS
+## A visual counts as a "solid-looking prop" when its two smaller extents are at least
+## these (m). Thinner things are trims, decals, screens and strips flush on a surface.
+const PROP_MIN_THICK := 0.08
+const PROP_MIN_MID := 0.15
+
+
+## Every solid-looking decor/level visual must be covered by colliders (sample points
+## inside it are inside some solid body), unless it carries meta "passable". Also:
+## no coplanar overlapping faces (z-fighting) between boxes, every room is closed
+## (rays from the start hit a collider or the level's max_y cap; meta open_sky skips it).
+func _check_level_geometry(n: int) -> void:
+	for c in get_children():
+		c.queue_free()
+	await get_tree().physics_frame
+	level = load("res://levels/level_%02d_3d.tscn" % n).instantiate()
+	add_child(level)
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	var space := level.get_world_3d().direct_space_state
+	var bad: Array[String] = []
+	var boxes: Array = []   # [name, aabb] of visible box props for the z-fight check
+	for group in ["Blocks", "Decor"]:
+		var g := level.get_node_or_null(group)
+		if g == null:
+			continue
+		for node in _all_nodes(g):
+			var samples: Array[Vector3] = []
+			var box := AABB()
+			if node is Block3D:
+				box = node.get_aabb()
+				if node.kind != Block3D.Kind.GLASS:
+					boxes.append([node.name, box, node])
+				if node.kind != Block3D.Kind.DECOR:
+					continue
+				samples = _box_samples(box)
+			elif node is Pipe3D:
+				box = node.global_transform * node.get_aabb()
+				var ax: Vector3 = node.global_basis.y.normalized()
+				for i in 5:
+					samples.append(node.global_position + ax * node.length * (i / 4.0 - 0.5) * 0.9)
+			else:
+				continue
+			var e := _sorted_extents(box.size)
+			if e[0] < PROP_MIN_THICK or e[1] < PROP_MIN_MID:
+				continue
+			if node.has_meta("passable") and node.get_meta("passable"):
+				continue
+			var missing := 0
+			for s in samples:
+				var q := PhysicsPointQueryParameters3D.new()
+				q.position = s
+				q.collision_mask = SOLID_MASK
+				q.collide_with_areas = false
+				if space.intersect_point(q, 1).is_empty():
+					missing += 1
+			if missing > 0:
+				bad.append("%s/%s (%d/%d pts open, size %s)" % [group, node.name, missing, samples.size(), _r(box.size)])
+	# z-fighting: two visible boxes sharing a face plane with the same normal and overlapping area.
+	var zf: Array[String] = []
+	for i in boxes.size():
+		for j in range(i + 1, boxes.size()):
+			var f := _shared_face(boxes[i][1], boxes[j][1], space, level.get_bounds())
+			if f != "":
+				zf.append("%s~%s %s" % [boxes[i][0], boxes[j][0], f])
+	# Closed room: rays from the start position (26 directions) must hit a solid within
+	# 80 m, or (up) the max_y cap, or be a level with open sky by design (meta open_sky).
+	var leaks: Array[String] = []
+	var start: Vector3 = level.get_node("Player").global_position
+	if not level.has_meta("open_sky"):
+		for dx in [-1, 0, 1]:
+			for dy in [-1, 0, 1]:
+				for dz in [-1, 0, 1]:
+					var d := Vector3(dx, dy, dz)
+					if d == Vector3.ZERO or (level.camera_mode == V3D.CameraMode.SIDE_25D and dz != 0):
+						continue
+					var q := PhysicsRayQueryParameters3D.create(start, start + d.normalized() * 80.0, SOLID_MASK)
+					var hit := space.intersect_ray(q)
+					if hit.is_empty() and not (dy > 0 and level.max_y < 100.0):
+						leaks.append(_r(d))
+	var ok := bad.is_empty() and zf.is_empty() and leaks.is_empty()
+	print(("  ok   " if ok else "  FAIL ") + "geometry ch%02d: uncovered props=%d z-fight=%d leaks=%d" % [n, bad.size(), zf.size(), leaks.size()])
+	for b in bad:
+		print("         no collider: " + b)
+	for z in zf:
+		print("         z-fight: " + z)
+	for l in leaks:
+		print("         leak toward " + l)
+	if not ok:
+		_fails += 1
+
+
+func _all_nodes(n: Node) -> Array[Node]:
+	var out: Array[Node] = []
+	for c in n.get_children():
+		out.append(c)
+		out.append_array(_all_nodes(c))
+	return out
+
+
+func _sorted_extents(s: Vector3) -> Array:
+	var a := [s.x, s.y, s.z]
+	a.sort()
+	return a
+
+
+## 3x3x3 points spread through the box (inset 15% so touching neighbours don't count).
+func _box_samples(b: AABB) -> Array[Vector3]:
+	var out: Array[Vector3] = []
+	for ix in 3:
+		for iy in 3:
+			for iz in 3:
+				var t := Vector3(ix, iy, iz) * 0.35 + Vector3.ONE * 0.15
+				out.append(b.position + b.size * t)
+	return out
+
+
+## "" or a description of a coplanar same-facing overlap between the faces of a and b
+## that can actually be seen (the spot just in front of it is not inside a solid wall
+## and is inside the level bounds).
+func _shared_face(a: AABB, b: AABB, space: PhysicsDirectSpaceState3D, bounds: AABB) -> String:
+	const EPS := 0.004
+	for ax in 3:
+		for side in [0, 1]:
+			var pa: float = a.position[ax] + (a.size[ax] if side == 1 else 0.0)
+			var pb: float = b.position[ax] + (b.size[ax] if side == 1 else 0.0)
+			if absf(pa - pb) > EPS:
+				continue
+			var area := 1.0
+			var probe := Vector3.ZERO
+			probe[ax] = pa + (0.02 if side == 1 else -0.02)
+			for o in 3:
+				if o == ax:
+					continue
+				var lo := maxf(a.position[o], b.position[o])
+				var hi := minf(a.end[o], b.end[o])
+				area *= maxf(hi - lo, 0.0)
+				probe[o] = (lo + hi) / 2.0
+			if area <= 0.01 or not bounds.grow(0.01).has_point(probe):
+				continue
+			var q := PhysicsPointQueryParameters3D.new()
+			q.position = probe
+			q.collision_mask = V3D.L_WORLD | V3D.L_BREAKABLE
+			if not space.intersect_point(q, 1).is_empty():
+				continue
+			if true:
+				return "%s%s @%.2f (%.2f m2)" % ["-+"[side], "xyz"[ax], pa, area]
+	return ""

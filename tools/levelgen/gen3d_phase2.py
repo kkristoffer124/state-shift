@@ -15,6 +15,11 @@ def _decor(sc):
     return lambda *a, **k: sc.block(*a, parent="Decor", kind="decor", **k)
 
 
+def _prop(sc):
+    """Solid furniture/props (collide like walls) kept under Decor."""
+    return lambda *a, **k: sc.block(*a, parent="Decor", **k)
+
+
 def _shell(sc, x1, z1, h, floor=True, ceiling=None, near_low=None):
     """Room shell. near_low: the camera-side walls (S and E, isometric) are only this
     tall in solid wall, with lab glass above so they never hide the room."""
@@ -72,15 +77,16 @@ def level_05():
     sc.gate("FanHatch", (14, 4.75, 3), (2, 0.5, 2), (0, 0, 2.4), "hatch", 0.7)
 
     D = _decor(sc)
-    D("PodGlass1", (0.6, 0.3, 2.2), (2.0, 2.3, 2.3), look="glow", tint=(0.45, 0.85, 1.0))
-    D("PodGlass2", (2.8, 0.3, 2.2), (4.2, 2.3, 2.3), look="glow", tint=(0.45, 0.85, 1.0))
+    S = _prop(sc)
+    S("PodGlass1", (0.6, 0.3, 2.2), (2.0, 2.3, 2.3), look="glow", tint=(0.45, 0.85, 1.0))
+    S("PodGlass2", (2.8, 0.3, 2.2), (4.2, 2.3, 2.3), look="glow", tint=(0.45, 0.85, 1.0))
     D("FrostRug", (6.8, 0, 2.8), (11.2, 0.02, 5.2), look="glow", tint=(0.35, 0.6, 0.8))
     D("WarnHatch", (12.8, 5.0, 1.8), (15.2, 5.02, 4.2), look="glow", tint=(0.9, 0.7, 0.15))
-    D("Console", (0.2, 0, 5.0), (0.9, 1.2, 7.5), look="dark")
+    S("Console", (0, 0, 5.0), (0.9, 1.2, 7.5), look="dark")
     D("ConsoleScr", (0.9, 0.7, 5.2), (0.95, 1.1, 7.3), look="glow", tint=(0.4, 0.9, 1.0))
-    D("Bench", (12.0, 5.0, 10.6), (15.8, 5.9, 11.6), look="dark")
-    D("ShelfTop", (6.2, 3.5, 6.0), (7.4, 4.4, 6.9), look="dark")
-    D("Icicle1", (7.6, 9.6, 0.1), (7.8, 10, 0.3), look="glow", tint=(0.7, 0.9, 1.0))
+    S("Bench", (12.0, 5.0, 10.6), (15.8, 5.9, 11.6), look="dark")
+    S("ShelfTop", (6.2, 3.5, 6.0), (7.4, 4.4, 6.9), look="dark")
+    D("Icicle1", (7.6, 9.6, 0.1), (7.8, 10, 0.3), look="glow", tint=(0.7, 0.9, 1.0), passable=True)
     sc.pipe("PipeCold", (5.5, 9.6, 0.35), 11, "x", 0.18, color=(0.6, 0.75, 0.9))
     sc.pipe("PipeFreeze", (9, 9.6, 4), 0.8, "y", 0.3, color=(0.6, 0.75, 0.9))
     sc.pipe("PipeUp", (0.35, 5, 11.6), 10, "y", 0.16)
@@ -109,13 +115,13 @@ def level_05():
 # =============================================================================
 def level_10():
     sc = Scene()
-    level_header(sc, "10 - Momentum", "boiler", 3, {"kill_y": "-6.0", "fog_scale": "0.12", "ambient_boost": "1.7"}, sun_rot=(-1.0, 0.8, 0))
+    level_header(sc, "10 - Momentum", "boiler", 3, {"kill_y": "-6.0", "max_y": "5.6", "fog_scale": "0.12", "ambient_boost": "1.7"}, sun_rot=(-1.0, 0.8, 0))
     B = sc.block
     _shell(sc, 18, 14, 6, near_low=1.2)
     B("Step1", (0.5, 0, 8.5), (3.5, 1.2, 10.5))
     B("Step2", (0.5, 0, 6.5), (3.5, 2.4, 8.5))
     B("Deck", (0, 0, 0), (6, 3.6, 6.5))
-    B("Runway", (6, 0, 1), (13, 3.6, 4))
+    B("Runway", (6, 0, 0.5), (13, 3.6, 4.5))
     B("Strip", (15.2, 0, 0), (18, 1.2, 14))
     B("CrackedWall", (15.2, 1.2, 7), (18, 3.6, 7.4), kind="breakable", break_speed=8.0)
     B("Boiler", (4.0, 0, 11.0), (5.8, 3.0, 13.8))
@@ -129,18 +135,19 @@ def level_10():
     sc.gate("ExitShutter", (16.6, 2.4, 10.6), (2.8, 2.4, 0.3), (0, -2.45, 0), "exit", 0.35)
 
     D = _decor(sc)
+    S = _prop(sc)
     D("Firebox", (3.95, 0.4, 11.6), (4.0, 1.4, 13.2), look="glow", tint=(1.0, 0.45, 0.12))
     D("Gauge", (3.95, 2.0, 12.2), (4.0, 2.4, 12.6), look="glow", tint=(1.0, 0.85, 0.5))
-    D("RailN", (6, 3.6, 0.95), (13, 3.9, 1.05), look="metal", tint=(0.75, 0.55, 0.3), shadow=False)
-    D("RailS", (6, 3.6, 3.95), (13, 3.9, 4.05), look="metal", tint=(0.75, 0.55, 0.3), shadow=False)
+    S("RailN", (6, 3.6, 0.5), (13, 3.9, 0.62), look="metal", tint=(0.75, 0.55, 0.3), shadow=False)
+    S("RailS", (6, 3.6, 4.38), (13, 3.9, 4.5), look="metal", tint=(0.75, 0.55, 0.3), shadow=False)
     D("RunStripe", (0.5, 3.6, 2.4), (13, 3.62, 2.6), look="glow", tint=(1.0, 0.75, 0.15))
     D("PitGlow", (6, 0, 4.2), (15.2, 0.05, 14), look="glow", tint=(0.5, 0.12, 0.03))
-    D("Chute", (13.0, 3.3, 1.0), (13.3, 3.6, 4.0), look="metal", tint=(0.8, 0.5, 0.25))
-    D("CrateA", (15.4, 1.2, 0.2), (16.4, 2.2, 1.2), look="dark")
-    D("CrateB", (17.0, 1.2, 4.6), (17.9, 2.0, 5.6), look="dark")
+    S("Chute", (13.0, 3.3, 0.5), (13.3, 3.6, 4.5), look="metal", tint=(0.8, 0.5, 0.25))
+    S("CrateA", (15.4, 1.2, 0.2), (16.4, 2.2, 1.2), look="dark")
+    S("CrateB", (15.25, 1.2, 4.8), (16.05, 2.0, 5.7), look="dark")
     sc.pipe("PipeN", (9, 5.4, 0.35), 18, "x", 0.22)
-    sc.pipe("PipeUp1", (6.3, 3.0, 0.35), 6, "y", 0.2, color=(0.7, 0.5, 0.25))
-    sc.pipe("PipeUp2", (13.3, 3.0, 0.35), 6, "y", 0.2, color=(0.7, 0.5, 0.25))
+    sc.pipe("PipeUp1", (6.3, 3.0, 0.25), 6, "y", 0.2, color=(0.7, 0.5, 0.25))
+    sc.pipe("PipeUp2", (13.3, 3.0, 0.25), 6, "y", 0.2, color=(0.7, 0.5, 0.25))
     sc.jet("PitSteam1", (9, 0.1, 8), height=2.5, period=2.5, burst=1.0)
     sc.jet("PitSteam2", (12.5, 0.1, 11), height=2.5, period=3.1, burst=1.0, phase=1.2)
     sc.jet("BoilerValve", (4.9, 3.0, 12.4), height=1.6, period=3.5, burst=1.0)
@@ -166,7 +173,7 @@ def level_10():
 # =============================================================================
 def level_12():
     sc = Scene()
-    level_header(sc, "12 - Meltdown", "rooftop", 0, {"kill_y": "-8.0", "max_y": "9.4", "fog_scale": "0.6"},
+    level_header(sc, "12 - Meltdown", "rooftop", 0, {"kill_y": "-8.0", "max_y": "9.4", "fog_scale": "0.6", "metadata/open_sky": "true"},
                  sun_rot=(-0.75, 0.75, 0), shadows=True)
     B = sc.block
     P = (0.55, 0.6, 0.7)
@@ -182,13 +189,13 @@ def level_12():
     B("RoofB", (12.5, -20, 0), (24, 0, 10))
     B("ParapetBN", (12.5, 0, -0.3), (16, 0.6, 0), look="dark")
     B("ParapetBS", (12.5, 0, 10), (16, 0.6, 10.3), look="dark")
-    B("ShedN", (16, 0, 0), (24, 10, 0.4))
-    B("ShedS", (16, 0, 9.6), (24, 10, 10))
-    B("ShedE1", (23.6, 0, 0.4), (24, 10, 4))
-    B("ShedE2", (23.6, 0, 6), (24, 10, 9.6))
-    B("ShedE3", (23.6, 2.5, 4), (24, 10, 6))
-    B("ShedW1", (16, 0, 0.4), (16.4, 10, 3))
-    B("ShedW2", (16, 0, 7), (16.4, 10, 9.6))
+    B("ShedN", (16, 0, 0), (24, 9.5, 0.4))
+    B("ShedS", (16, 0, 9.6), (24, 9.5, 10))
+    B("ShedE1", (23.6, 0, 0.4), (24, 9.5, 4))
+    B("ShedE2", (23.6, 0, 6), (24, 9.5, 9.6))
+    B("ShedE3", (23.6, 2.5, 4), (24, 9.5, 6))
+    B("ShedW1", (16, 0, 0.4), (16.4, 9.5, 3))
+    B("ShedW2", (16, 0, 7), (16.4, 9.5, 9.6))
     B("ShedW3", (16, 0, 3), (16.4, 5, 7))
     B("ShedMidW", (16.4, 3, 0.4), (17.5, 3.5, 9.6))
     B("ShedMidE", (20.5, 3, 0.4), (23.6, 3.5, 9.6))
@@ -196,11 +203,11 @@ def level_12():
     B("ShedMidS", (17.5, 3, 6.5), (20.5, 3.5, 9.6))
     B("CrackedFloor", (17.5, 3, 3.5), (20.5, 3.5, 6.5), kind="breakable")
     B("ShedRoof", (15.8, 9.5, -0.2), (24.2, 10, 10.2), look="metal", tint=P)
-    B("Awning", (13.4, 9.5, 2.5), (16, 9.8, 7.5), look="metal", tint=(0.6, 0.45, 0.35))
+    B("Awning", (13.4, 9.5, 2.5), (15.8, 9.8, 7.5), look="metal", tint=(0.6, 0.45, 0.35))
     # --- Corridor bridge to roof C ---------------------------------------------
     B("CorridorFloor", (24, -1, 3.6), (27.4, 0, 6.4))
-    B("CorridorN", (24, 0, 3.6), (27.4, 2.9, 4))
-    B("CorridorS", (24, 0, 6), (27.4, 2.9, 6.4))
+    B("CorridorN", (24, 0, 3.6), (27.4, 2.5, 4))
+    B("CorridorS", (24, 0, 6), (27.4, 2.5, 6.4))
     B("CorridorRoof", (24, 2.5, 3.6), (27.4, 2.9, 6.4), look="metal", tint=P)
     B("GrateWall", (26.9, 0, 4), (27.3, 2.5, 6), kind="grate")
     # --- Roof C, gantry, roof D ------------------------------------------------
@@ -209,8 +216,8 @@ def level_12():
     B("ParapetCS", (27.4, 0, 10), (36, 0.6, 10.3), look="dark")
     B("Gantry", (31, 7.5, 1.5), (44, 8, 8.5), look="metal", tint=(0.4, 0.42, 0.5))
     B("RoofD", (42, -20, 0), (50, 1.5, 10))
-    B("ParapetDN", (42, 1.5, -0.3), (50, 2.1, 0), look="dark")
-    B("ParapetDS", (42, 1.5, 10), (50, 2.1, 10.3), look="dark")
+    B("ParapetDN", (42, 1.5, -0.3), (49.4, 2.1, 0), look="dark")
+    B("ParapetDS", (42, 1.5, 10), (49.4, 2.1, 10.3), look="dark")
     B("Billboard", (49.4, 1.5, -0.3), (50, 9.6, 10.3), look="dark")
 
     Z = sc.zone
@@ -225,31 +232,34 @@ def level_12():
     sc.gate("CorridorShutter", (23.8, 1.25, 5), (0.3, 2.5, 2), (0, 2.6, 0), "corridor", 0.6)
 
     D = _decor(sc)
+    S = _prop(sc)
     # Roof A props
     D("HutDoor", (3.4, 0, 1.2), (3.45, 2.2, 2.4), look="metal", tint=(0.35, 0.4, 0.5))
     D("HutSign", (3.45, 2.3, 1.4), (3.5, 2.7, 2.2), look="glow", tint=(0.4, 1.0, 0.5))
     D("ACFan", (6.6, 1.3, 8.0), (7.8, 1.35, 9.0), look="metal", tint=(0.25, 0.28, 0.35))
-    D("TowerLegs", (5.2, 0, 1.2), (5.5, 4.0, 1.5), look="metal", tint=(0.3, 0.3, 0.38))
-    D("TowerLegs2", (7.5, 0, 1.2), (7.8, 4.0, 1.5), look="metal", tint=(0.3, 0.3, 0.38))
-    D("TowerLegs3", (5.2, 0, 3.5), (5.5, 4.0, 3.8), look="metal", tint=(0.3, 0.3, 0.38))
-    D("TowerLegs4", (7.5, 0, 3.5), (7.8, 4.0, 3.8), look="metal", tint=(0.3, 0.3, 0.38))
-    D("WaterTank", (4.9, 4.0, 0.9), (8.1, 6.8, 4.1), look="fill", tint=(0.8, 0.7, 0.65))
-    D("WaterTankCap", (5.3, 6.8, 1.3), (7.7, 7.3, 3.7), look="metal", tint=(0.4, 0.35, 0.35))
-    D("AlleyGlow1", (10, -8, 0), (12.5, -7.9, 10), look="glow", tint=(0.25, 0.2, 0.45))
+    S("TowerLegs", (5.2, 0, 1.2), (5.5, 4.0, 1.5), look="metal", tint=(0.3, 0.3, 0.38))
+    S("TowerLegs2", (7.5, 0, 1.2), (7.8, 4.0, 1.5), look="metal", tint=(0.3, 0.3, 0.38))
+    S("TowerLegs3", (5.2, 0, 3.5), (5.5, 4.0, 3.8), look="metal", tint=(0.3, 0.3, 0.38))
+    S("TowerLegs4", (7.5, 0, 3.5), (7.8, 4.0, 3.8), look="metal", tint=(0.3, 0.3, 0.38))
+    S("WaterTank", (4.9, 4.0, 0.9), (8.1, 6.8, 4.1), look="fill", tint=(0.8, 0.7, 0.65))
+    S("WaterTankCap", (5.3, 6.8, 1.3), (7.7, 7.3, 3.7), look="metal", tint=(0.4, 0.35, 0.35))
+    D("AlleyGlow1", (10, -8, 0), (12.5, -7.9, 10), look="glow", tint=(0.25, 0.2, 0.45), passable=True)
     # Shed + roof B
-    D("VentBox", (13.6, 0, 3.6), (15.4, 0.35, 6.4), look="metal", tint=(0.6, 0.35, 0.25))
+    # Exhaust vent grille, flush enough to roll onto (the heat zone draws the grill).
+    D("VentBox", (13.6, 0, 3.6), (15.4, 0.1, 6.4), look="metal", tint=(0.6, 0.35, 0.25), passable=True)
     D("ShedSign", (20.5, 7.6, -0.05), (23.2, 8.6, 0.0), look="glow", tint=(1.0, 0.3, 0.45))
     D("ShedSign2", (16.8, 7.6, 10.0), (19.5, 8.6, 10.05), look="glow", tint=(0.4, 0.8, 1.0))
     D("ChamberGlow", (16.5, 0, 0.5), (23.5, 0.03, 9.5), look="glow", tint=(0.35, 0.1, 0.12))
-    D("AlleyGlow2", (24, -8, 0), (27.4, -7.9, 10), look="glow", tint=(0.25, 0.2, 0.45))
+    D("AlleyGlow2", (24, -8, 0), (27.4, -7.9, 10), look="glow", tint=(0.25, 0.2, 0.45), passable=True)
     # Roof C + gantry
-    D("ACHousing", (30.3, 0.8, 1.6), (30.7, 5.0, 8.4), look="dark")
-    D("GantryPostA", (31, 0, 1.5), (31.3, 7.5, 1.8), look="metal", tint=(0.35, 0.36, 0.45))
-    D("GantryPostB", (31, 0, 8.2), (31.3, 7.5, 8.5), look="metal", tint=(0.35, 0.36, 0.45))
-    D("GantryPostC", (43.7, 1.5, 1.5), (44, 7.5, 1.8), look="metal", tint=(0.35, 0.36, 0.45))
-    D("GantryPostD", (43.7, 1.5, 8.2), (44, 7.5, 8.5), look="metal", tint=(0.35, 0.36, 0.45))
+    # Crosswind fan intake: a grate (steam blows through it, ICE can't).
+    sc.block("ACHousing", (30.3, 0, 1.6), (30.7, 5.0, 8.4), kind="grate", parent="Decor")
+    S("GantryPostA", (31, 0, 1.5), (31.3, 7.5, 1.8), look="metal", tint=(0.35, 0.36, 0.45))
+    S("GantryPostB", (31, 0, 8.2), (31.3, 7.5, 8.5), look="metal", tint=(0.35, 0.36, 0.45))
+    S("GantryPostC", (43.7, 1.5, 1.5), (44, 7.5, 1.8), look="metal", tint=(0.35, 0.36, 0.45))
+    S("GantryPostD", (43.7, 1.5, 8.2), (44, 7.5, 8.5), look="metal", tint=(0.35, 0.36, 0.45))
     D("GantryLights", (31.5, 7.45, 4.9), (43.5, 7.5, 5.1), look="glow", tint=(1.0, 0.4, 0.3))
-    D("AlleyGlow3", (36, -8, 0), (42, -7.9, 10), look="glow", tint=(0.25, 0.2, 0.45))
+    D("AlleyGlow3", (36, -8, 0), (42, -7.9, 10), look="glow", tint=(0.25, 0.2, 0.45), passable=True)
     # Roof D: helipad + billboard art
     D("Helipad", (44.6, 1.5, 3.1), (48.4, 1.53, 6.9), look="glow", tint=(0.3, 0.9, 0.5))
     D("HelipadInner", (45.1, 1.53, 3.6), (47.9, 1.55, 6.4), look="metal", tint=(0.15, 0.16, 0.2))

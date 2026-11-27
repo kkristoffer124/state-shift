@@ -18,6 +18,8 @@ var pressed := false
 var _pad: MeshInstance3D
 var _base: MeshInstance3D
 var _shape: CollisionShape3D
+var _pad_y := 0.1
+var _pad_v := 0.0
 
 
 func _ready() -> void:
@@ -39,21 +41,27 @@ func _refresh() -> void:
 	bs.size = Vector3(size.x, 0.6, size.y)
 	_shape.shape = bs
 	_shape.position.y = 0.3
-	var bm := BoxMesh.new()
-	bm.size = Vector3(size.x + 0.2, 0.06, size.y + 0.2)
-	_base.mesh = bm
+	_base.mesh = V3D.box_mesh(Vector3(size.x + 0.2, 0.06, size.y + 0.2))
 	_base.position.y = 0.03
-	_base.material_override = V3D.flat_material(Color("2a3440"), 0.6, 0.5)
-	var pm := BoxMesh.new()
-	pm.size = Vector3(size.x, 0.1, size.y)
-	_pad.mesh = pm
+	_base.material_override = V3D.metal_material(Color("3a4656"), 0.5)
+	_pad.mesh = V3D.box_mesh(Vector3(size.x, 0.1, size.y))
 	_paint()
+	_pad.position.y = _pad_y
 
 
 func _paint() -> void:
 	var c := V3D.C_GOAL if pressed else Color("d9a43a")
-	_pad.material_override = V3D.flat_material(c, 0.3, 0.5, c, 0.8 if pressed else 0.3)
-	_pad.position.y = 0.04 if pressed else 0.1
+	_pad.material_override = V3D.glow_material(c, 0.9 if pressed else 0.35, 0.0)
+
+
+## Pad eases down when pressed (with a little give) and springs back up when released.
+func _process(delta: float) -> void:
+	if _pad == null:
+		return
+	var want := 0.035 if pressed else 0.1
+	_pad_v += ((want - _pad_y) * 900.0 - _pad_v * 38.0) * minf(delta, 0.05)
+	_pad_y = clampf(_pad_y + _pad_v * minf(delta, 0.05), 0.02, 0.12)
+	_pad.position.y = _pad_y
 
 
 func _physics_process(_delta: float) -> void:

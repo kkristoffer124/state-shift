@@ -4,6 +4,8 @@
 [ext_resource type="Theme" path="res://scenes/ui/theme.tres" id="2"]
 [ext_resource type="Script" path="res://scripts/ui/anim_backdrop.gd" id="3"]
 [ext_resource type="Texture2D" path="res://assets/ui/u1_logo.png" id="logo"]
+[ext_resource type="Script" path="res://scripts/ui/logo_drips.gd" id="logo_drips"]
+[ext_resource type="Script" path="res://scripts/ui/mascot_spot.gd" id="mascot"]
 [ext_resource type="PackedScene" path="res://scenes/ui/chapter_select.tscn" id="cs"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings_panel.tscn" id="sp"]
 [ext_resource type="Texture2D" path="res://assets/ui/menu_backdrop/u6_menu_backdrop_f01.png" id="f1"]
@@ -81,6 +83,49 @@ mouse_filter = 2
 texture = ExtResource("logo")
 expand_mode = 1
 stretch_mode = 5
+script = ExtResource("logo_drips")
+
+[node name="Mascots" type="Control" parent="Main"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Ice" type="Control" parent="Main/Mascots"]
+layout_mode = 1
+offset_left = 276.0
+offset_top = 311.0
+offset_right = 360.0
+offset_bottom = 397.0
+mouse_default_cursor_shape = 2
+script = ExtResource("mascot")
+kind = 0
+tex_rect = Rect2(276, 311, 84, 86)
+
+[node name="Water" type="Control" parent="Main/Mascots"]
+layout_mode = 1
+offset_left = 429.0
+offset_top = 317.0
+offset_right = 531.0
+offset_bottom = 397.0
+mouse_default_cursor_shape = 2
+script = ExtResource("mascot")
+kind = 1
+tex_rect = Rect2(429, 317, 102, 80)
+
+[node name="Steam" type="Control" parent="Main/Mascots"]
+layout_mode = 1
+offset_left = 593.0
+offset_top = 300.0
+offset_right = 691.0
+offset_bottom = 378.0
+mouse_default_cursor_shape = 2
+script = ExtResource("mascot")
+kind = 2
+tex_rect = Rect2(593, 300, 98, 78)
 
 [node name="Subtitle" type="Label" parent="Main"]
 layout_mode = 1

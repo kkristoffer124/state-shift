@@ -184,18 +184,18 @@ func _run() -> void:
 	await get_tree().process_frame
 	var sp: SettingsPanel = menu.settings_panel
 	_check(sp.visible, "settings panel opens")
-	sp.zoom.step(1)  # 2x -> 3x
+	sp.zoom.step(1)  # room zoom 1x -> 1.25x
 	sp.master.value = 50.0
 	sp.shake.button_pressed = false
-	_check(Settings.camera_zoom == 3.0 and Settings.master_volume == 0.5 and not Settings.screen_shake, "panel edits Settings")
+	_check(Settings.room_zoom == 1.25 and Settings.master_volume == 0.5 and not Settings.screen_shake, "panel edits Settings")
 	var db := AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master"))
 	_check(absf(db - linear_to_db(0.5)) < 0.1, "master bus volume applied (%.1f dB)" % db)
-	Settings.camera_zoom = 2.0
+	Settings.room_zoom = 1.0
 	Settings.master_volume = 1.0
 	Settings.screen_shake = true
 	Save.load_file()
 	Settings.load_settings()
-	_check(Settings.camera_zoom == 3.0 and Settings.master_volume == 0.5 and not Settings.screen_shake,
+	_check(Settings.room_zoom == 1.25 and Settings.master_volume == 0.5 and not Settings.screen_shake,
 		"settings persist after reload")
 	sp.close()
 
@@ -207,7 +207,7 @@ func _run() -> void:
 	await _skip_cutscene()
 	_check(await _wait_scene(Game.LEVELS[0]), "confirmed New game starts chapter 1")
 	_check(Save.unlocked_count() == 1 and Save.best_time(0) < 0.0, "progress wiped")
-	_check(Settings.camera_zoom == 3.0, "settings kept after New game")
+	_check(Settings.room_zoom == 1.25, "settings kept after New game")
 
 	# --- End screen after the last chapter ---
 	Game.level_index = Game.LEVELS.size() - 1

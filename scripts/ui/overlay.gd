@@ -60,6 +60,14 @@ func _ready() -> void:
 	UiUtil.chain([resume_btn, restart_btn, settings_btn, menu_btn], true)
 	UiUtil.wire(pause_menu)
 	get_tree().scene_changed.connect(_on_scene_changed)
+	_register_fx.call_deferred()
+
+
+## UiFx is the next autoload, so hook the panels once everything is ready.
+func _register_fx() -> void:
+	UiFx.register_panel(pause_menu, pause_buttons)
+	UiFx.register_panel(pause_buttons, pause_buttons)
+	UiFx.register_panel(settings_panel)
 
 
 func _on_scene_changed() -> void:
@@ -91,7 +99,12 @@ func show_chapter_card(index: int, title: String, delay := 0.35) -> void:
 	_card_tween = create_tween().set_parallel()
 	_card_tween.tween_property(chapter_card, "modulate:a", 1.0, CARD_IN).set_delay(delay)
 	_card_tween.tween_property(box, "position:y", base_y, CARD_IN).set_delay(delay).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# Mist band condenses, water lines run out, the title drips in letter by letter.
+	UiFx.card_in(chapter_card, delay)
+	UiFx.drip_text(card_title, delay + 0.12, 0.05)
+	UiFx.type_in(card_line, delay + 0.5, 70.0)
 	_card_tween.chain().tween_interval(hold)
+	_card_tween.chain().tween_callback(UiFx.card_out.bind(chapter_card))
 	_card_tween.chain().tween_property(chapter_card, "modulate:a", 0.0, CARD_OUT)
 	_card_tween.chain().tween_callback(chapter_card.hide)
 
@@ -101,6 +114,7 @@ func skip_chapter_card() -> void:
 		return
 	if _card_tween:
 		_card_tween.kill()
+	UiFx.card_out(chapter_card)
 	_card_tween = create_tween()
 	_card_tween.tween_property(chapter_card, "modulate:a", 0.0, 0.2)
 	_card_tween.tween_callback(chapter_card.hide)
@@ -134,17 +148,38 @@ func show_complete_card(index: int, title: String, time: float, deaths: int, rec
 	complete_card.show()
 	complete_card.modulate.a = 0.0
 	create_tween().tween_property(complete_card, "modulate:a", 1.0, 0.3)
+	_animate_complete()
 	_complete_waiting = true
 	_complete_t = 0.0
 	await card_finished
+	UiFx.card_out(complete_card)
 	var t := create_tween()
 	t.tween_property(complete_card, "modulate:a", 0.0, 0.25)
 	t.tween_callback(complete_card.hide)
 
 
+## Results card: title drips in with a splash, stats rise, the best-time line glitters
+## with frost, and the hint breathes like a bubble while waiting.
+func _animate_complete() -> void:
+	UiFx.card_in(complete_card)
+	UiFx.drip_text(done_title, 0.05, 0.03)
+	UiFx.stagger_in([done_stats, done_best, done_hint], 0.12, 8.0, 0.45)
+	if UiFx.full():
+		var ctr := complete_card.get_global_rect().get_center()
+		UiFx.ripple(complete_card, ctr + Vector2(0, 60), 150.0)
+		if done_best.visible:
+			get_tree().create_timer(0.75, true, false, true).timeout.connect(func() -> void:
+				if done_best.is_visible_in_tree():
+					var r := done_best.get_global_rect()
+					for i in 4:
+						UiFx.glint(done_best, Vector2(r.get_center().x + randf_range(-130, 130), r.get_center().y + randf_range(-6, 6)).round(), 3.0, 0.5 + i * 0.1))
+
+
 func _process(delta: float) -> void:
 	if _complete_waiting:
 		_complete_t += delta
+		if UiFx.motion() > 0 and _complete_t > 0.9:
+			done_hint.modulate.a = 0.65 + 0.35 * cos((_complete_t - 0.9) * 4.0)
 		if _complete_t >= COMPLETE_HOLD:
 			_finish_complete()
 
@@ -181,8 +216,7 @@ func open_pause() -> void:
 	pause_menu.show()
 	pause_buttons.show()
 	settings_panel.hide()
-	pause_menu.modulate.a = 0.0
-	create_tween().tween_property(pause_menu, "modulate:a", 1.0, 0.12)
+	UiFx.stagger_in([resume_btn, restart_btn, settings_btn, menu_btn], 0.035, 8.0, 0.04)
 	Sfx.play("select", 0.0)
 	UiUtil.focus_quiet(resume_btn)
 
@@ -204,18 +238,33 @@ func _unhandled_input(event: InputEvent) -> void:
 
 # --- Fades ---------------------------------------------------------------------
 
+## Scene transitions are a water wipe (assets/ui/fx/water_wipe.gdshader): the Fade
+## colour's alpha is the water level. Plain fade with reduced motion.
+func _setup_wipe() -> void:
+	var m := fade.material as ShaderMaterial
+	if m:
+		m.set_shader_parameter("plain", not UiFx.full())
+		m.set_shader_parameter("res", fade.size.round())
+
+
 func fade_out(time := 0.2) -> void:
+	_setup_wipe()
+	if UiFx.full():
+		time = maxf(time, 0.32)
 	fade.show()
 	fade.mouse_filter = Control.MOUSE_FILTER_STOP
 	var t := create_tween()
-	t.tween_property(fade, "color:a", 1.0, time)
+	t.tween_property(fade, "color:a", 1.0, time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	await t.finished
 
 
 func fade_in(time := 0.3) -> void:
+	_setup_wipe()
+	if UiFx.full():
+		time = maxf(time, 0.4)
 	fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var t := create_tween()
-	t.tween_property(fade, "color:a", 0.0, time)
+	t.tween_property(fade, "color:a", 0.0, time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	await t.finished
 	if fade.color.a <= 0.01:
 		fade.hide()

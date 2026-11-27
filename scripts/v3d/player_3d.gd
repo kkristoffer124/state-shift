@@ -59,7 +59,13 @@ var _jump_buffer := 0.0
 var _was_on_floor := false
 var _locked := false
 var _look := Vector3.FORWARD
+## Body scale (1 = rest). Kicked by jumps / landings / shifts, then a damped spring
+## (`_squash_v`) brings it back with a jelly overshoot. The FP camera reads squash.y.
 var squash := Vector3.ONE
+var _squash_v := Vector3.ZERO
+## Position at the start of the last physics tick (for render_position()).
+var _prev_phys_pos := Vector3.ZERO
+var _prev_phys_valid := false
 var shake := 0.0
 var crack := 0.0
 var blocked_flash := 0.0
@@ -105,6 +111,16 @@ func is_locked() -> bool:
 
 func look_dir() -> Vector3:
 	return _look
+
+
+## Smooth position for visuals / camera: interpolated between the last two physics
+## ticks (physics runs at 60 Hz on web, slower than the display). Teleports (> 1 m in
+## one tick: restarts, test staging) snap instead of smearing.
+func render_position() -> Vector3:
+	var cur := global_position
+	if not _prev_phys_valid or _prev_phys_pos.distance_squared_to(cur) > 1.0:
+		return cur
+	return _prev_phys_pos.lerp(cur, clampf(Engine.get_physics_interpolation_fraction(), 0.0, 1.0))
 
 
 # --- State shifting -----------------------------------------------------------
@@ -172,7 +188,11 @@ func _handle_shift_input() -> void:
 # --- Physics -------------------------------------------------------------------
 
 func _physics_process(delta: float) -> void:
-	if Engine.is_editor_hint() or dead or won:
+	if Engine.is_editor_hint():
+		return
+	_prev_phys_pos = global_position
+	_prev_phys_valid = true
+	if dead or won:
 		return
 	_handle_zones(delta)
 	if dead or won:
@@ -268,9 +288,9 @@ func _jump_released() -> bool:
 
 
 func _move_water(dir: Vector3, delta: float) -> void:
-	_coyote = 0.1 if is_on_floor() else maxf(_coyote - delta, 0.0)
+	_coyote = maxf(Settings.coyote_time, 0.001) if is_on_floor() else maxf(_coyote - delta, 0.0)
 	if _jump_pressed():
-		_jump_buffer = 0.12
+		_jump_buffer = maxf(Settings.jump_buffer, 0.001)
 	else:
 		_jump_buffer = maxf(_jump_buffer - delta, 0.0)
 	velocity.y = maxf(velocity.y - water_gravity * delta, -water_max_fall)
@@ -350,10 +370,21 @@ func _process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 	_t += delta
-	squash = squash.lerp(Vector3.ONE, minf(12.0 * delta, 1.0))
+	_step_squash(delta)
 	shake = maxf(shake - 30.0 * delta, 0.0)
 	blocked_flash = maxf(blocked_flash - delta, 0.0)
 	crack = maxf(crack - delta * 1.5, 0.0)
+
+
+## Damped spring (stiffness 260, ~0.4 damping ratio) pulling squash back to 1 with a
+## wobble or two; sub-stepped so a long web frame can't blow it up.
+func _step_squash(delta: float) -> void:
+	var left := minf(delta, 0.1)
+	while left > 0.0:
+		var h := minf(left, 1.0 / 120.0)
+		_squash_v += ((Vector3.ONE - squash) * 260.0 - _squash_v * 13.0) * h
+		squash = (squash + _squash_v * h).clamp(Vector3.ONE * 0.4, Vector3.ONE * 1.8)
+		left -= h
 
 
 ## Expression shown by the eyes: "" for the normal look-around eyes.

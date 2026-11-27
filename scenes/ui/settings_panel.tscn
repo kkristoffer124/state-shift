@@ -2,7 +2,8 @@
 
 [ext_resource type="Script" path="res://scripts/ui/settings_panel.gd" id="1"]
 [ext_resource type="Theme" path="res://scenes/ui/theme.tres" id="2"]
-[ext_resource type="Script" path="res://scripts/ui/cycle_button.gd" id="3"]
+
+[sub_resource type="ButtonGroup" id="tab_group"]
 
 [node name="SettingsPanel" type="Control"]
 process_mode = 3
@@ -22,7 +23,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.08, 0.15, 0.55)
+color = Color(0.05, 0.08, 0.15, 0.6)
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -33,143 +34,210 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="Center"]
-custom_minimum_size = Vector2(560, 0)
+custom_minimum_size = Vector2(880, 500)
 layout_mode = 2
 
 [node name="VBox" type="VBoxContainer" parent="Center/Panel"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 8
 
-[node name="Title" type="Label" parent="Center/Panel/VBox"]
+[node name="Header" type="HBoxContainer" parent="Center/Panel/VBox"]
 layout_mode = 2
+
+[node name="Title" type="Label" parent="Center/Panel/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_type_variation = &"HeaderLabel"
 text = "SETTINGS"
-horizontal_alignment = 1
 
-[node name="Grid" type="GridContainer" parent="Center/Panel/VBox"]
+[node name="TabHint" type="Label" parent="Center/Panel/VBox/Header"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_type_variation = &"DimLabel"
+text = "Q / E  or  PgUp / PgDn  switch tabs"
+
+[node name="Tabs" type="HBoxContainer" parent="Center/Panel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_constants/h_separation = 36
-theme_override_constants/v_separation = 14
-columns = 2
+theme_override_constants/separation = 4
 
-[node name="MasterLabel" type="Label" parent="Center/Panel/VBox/Grid"]
+[node name="Audio" type="Button" parent="Center/Panel/VBox/Tabs"]
 layout_mode = 2
-text = "Master volume"
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+button_group = SubResource("tab_group")
+text = "Audio"
+metadata/category = "audio"
 
-[node name="MasterRow" type="HBoxContainer" parent="Center/Panel/VBox/Grid"]
+[node name="Video" type="Button" parent="Center/Panel/VBox/Tabs"]
 layout_mode = 2
-theme_override_constants/separation = 14
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+button_group = SubResource("tab_group")
+text = "Video"
+metadata/category = "video"
 
-[node name="Master" type="HSlider" parent="Center/Panel/VBox/Grid/MasterRow"]
+[node name="Gameplay" type="Button" parent="Center/Panel/VBox/Tabs"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+button_group = SubResource("tab_group")
+text = "Gameplay"
+metadata/category = "gameplay"
+
+[node name="Camera" type="Button" parent="Center/Panel/VBox/Tabs"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+button_group = SubResource("tab_group")
+text = "Camera"
+metadata/category = "camera"
+
+[node name="Controls" type="Button" parent="Center/Panel/VBox/Tabs"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+button_group = SubResource("tab_group")
+text = "Controls"
+metadata/category = "controls"
+
+[node name="Access" type="Button" parent="Center/Panel/VBox/Tabs"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+button_group = SubResource("tab_group")
+text = "Access"
+metadata/category = "access"
+
+[node name="Interface" type="Button" parent="Center/Panel/VBox/Tabs"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+button_group = SubResource("tab_group")
+text = "Interface"
+metadata/category = "interface"
+
+[node name="Pages" type="MarginContainer" parent="Center/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 20)
+custom_minimum_size = Vector2(0, 290)
 layout_mode = 2
-size_flags_vertical = 4
-step = 5.0
-value = 100.0
+size_flags_vertical = 3
 
-[node name="Pct" type="Label" parent="Center/Panel/VBox/Grid/MasterRow"]
-custom_minimum_size = Vector2(56, 0)
+[node name="Audio" type="ScrollContainer" parent="Center/Panel/VBox/Pages"]
+visible = true
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+metadata/category = "audio"
+
+[node name="List" type="VBoxContainer" parent="Center/Panel/VBox/Pages/Audio"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Video" type="ScrollContainer" parent="Center/Panel/VBox/Pages"]
+visible = false
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+metadata/category = "video"
+
+[node name="List" type="VBoxContainer" parent="Center/Panel/VBox/Pages/Video"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Gameplay" type="ScrollContainer" parent="Center/Panel/VBox/Pages"]
+visible = false
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+metadata/category = "gameplay"
+
+[node name="List" type="VBoxContainer" parent="Center/Panel/VBox/Pages/Gameplay"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Camera" type="ScrollContainer" parent="Center/Panel/VBox/Pages"]
+visible = false
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+metadata/category = "camera"
+
+[node name="List" type="VBoxContainer" parent="Center/Panel/VBox/Pages/Camera"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Controls" type="ScrollContainer" parent="Center/Panel/VBox/Pages"]
+visible = false
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+metadata/category = "controls"
+
+[node name="List" type="VBoxContainer" parent="Center/Panel/VBox/Pages/Controls"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Access" type="ScrollContainer" parent="Center/Panel/VBox/Pages"]
+visible = false
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+metadata/category = "access"
+
+[node name="List" type="VBoxContainer" parent="Center/Panel/VBox/Pages/Access"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Interface" type="ScrollContainer" parent="Center/Panel/VBox/Pages"]
+visible = false
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+metadata/category = "interface"
+
+[node name="List" type="VBoxContainer" parent="Center/Panel/VBox/Pages/Interface"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Desc" type="Label" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 theme_type_variation = &"DimLabel"
-theme_override_font_sizes/font_size = 16
-text = "100%"
-horizontal_alignment = 2
-
-[node name="MusicLabel" type="Label" parent="Center/Panel/VBox/Grid"]
-layout_mode = 2
-text = "Music"
-
-[node name="MusicRow" type="HBoxContainer" parent="Center/Panel/VBox/Grid"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="Music" type="HSlider" parent="Center/Panel/VBox/Grid/MusicRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 20)
-layout_mode = 2
-size_flags_vertical = 4
-step = 5.0
-value = 80.0
-
-[node name="Pct" type="Label" parent="Center/Panel/VBox/Grid/MusicRow"]
-custom_minimum_size = Vector2(56, 0)
-layout_mode = 2
-theme_type_variation = &"DimLabel"
-theme_override_font_sizes/font_size = 16
-text = "80%"
-horizontal_alignment = 2
-
-[node name="SfxLabel" type="Label" parent="Center/Panel/VBox/Grid"]
-layout_mode = 2
-text = "Sound effects"
-
-[node name="SfxRow" type="HBoxContainer" parent="Center/Panel/VBox/Grid"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="Sfx" type="HSlider" parent="Center/Panel/VBox/Grid/SfxRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 20)
-layout_mode = 2
-size_flags_vertical = 4
-step = 5.0
-value = 80.0
-
-[node name="Pct" type="Label" parent="Center/Panel/VBox/Grid/SfxRow"]
-custom_minimum_size = Vector2(56, 0)
-layout_mode = 2
-theme_type_variation = &"DimLabel"
-theme_override_font_sizes/font_size = 16
-text = "80%"
-horizontal_alignment = 2
-
-[node name="FullscreenLabel" type="Label" parent="Center/Panel/VBox/Grid"]
-layout_mode = 2
-text = "Fullscreen"
-
-[node name="Fullscreen" type="CheckButton" parent="Center/Panel/VBox/Grid"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-
-[node name="ShakeLabel" type="Label" parent="Center/Panel/VBox/Grid"]
-layout_mode = 2
-text = "Screen shake"
-
-[node name="Shake" type="CheckButton" parent="Center/Panel/VBox/Grid"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-button_pressed = true
-
-[node name="ZoomLabel" type="Label" parent="Center/Panel/VBox/Grid"]
-layout_mode = 2
-text = "Camera zoom"
-
-[node name="Zoom" type="Button" parent="Center/Panel/VBox/Grid"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-size_flags_horizontal = 0
-text = "<   2x   >"
-alignment = 0
-script = ExtResource("3")
-labels = PackedStringArray("1.5x", "2x", "3x")
-index = 1
+text = "Overall loudness of everything."
+autowrap_mode = 3
 
 [node name="Buttons" type="HBoxContainer" parent="Center/Panel/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="Reset" type="Button" parent="Center/Panel/VBox/Buttons"]
+[node name="ResetCat" type="Button" parent="Center/Panel/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+text = "Reset category"
+
+[node name="ResetAll" type="Button" parent="Center/Panel/VBox/Buttons"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(170, 0)
 layout_mode = 2
-text = "Defaults"
+text = "Reset all"
 
 [node name="Back" type="Button" parent="Center/Panel/VBox/Buttons"]
 unique_name_in_owner = true

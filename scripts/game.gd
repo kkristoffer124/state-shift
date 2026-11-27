@@ -69,6 +69,8 @@ var _transitioning := false
 var _show_card := false
 ## Bumped on every scene change so stale awaits (death/complete timers) can bail out.
 var _session := 0
+## Settings.restart_confirm: time of the first restart press.
+var _restart_asked_ms := -100000
 
 
 func _ready() -> void:
@@ -125,6 +127,13 @@ func new_game(with_intro := true) -> void:
 
 ## Plays a cutscene scene (it hands off by itself when done or skipped).
 func play_cutscene(path: String) -> void:
+	# Settings "Skip cutscenes": go straight to what the cutscene would hand off to.
+	if Settings.skip_cutscenes and path in [INTRO_SCENE, ENDING_SCENE]:
+		if path == INTRO_SCENE:
+			start_chapter(0)
+		else:
+			show_end_screen()
+		return
 	in_level = false
 	_show_card = false
 	Hud.visible = false
@@ -208,7 +217,8 @@ func on_level_ready(level: Node, player: Node) -> void:
 	deaths_changed.emit(chapter_deaths)
 	if _show_card:
 		_show_card = false
-		Overlay.show_chapter_card(level_index, title_from_level_name(level.level_name))
+		if not Settings.skip_chapter_cards:
+			Overlay.show_chapter_card(level_index, title_from_level_name(level.level_name))
 
 
 # --- Called by the player ----------------------------------------------------------
@@ -221,7 +231,7 @@ func player_died() -> void:
 	deaths_changed.emit(chapter_deaths)
 	_transitioning = true
 	var session := _session
-	await get_tree().create_timer(0.7, false).timeout
+	await get_tree().create_timer(Settings.respawn_delay, false).timeout
 	if session == _session:
 		_load_level()
 
@@ -236,9 +246,10 @@ func level_complete() -> void:
 	await get_tree().create_timer(0.6, false).timeout
 	if session != _session:
 		return
-	await Overlay.show_complete_card(index, chapter_name(index), chapter_time, chapter_deaths, record)
-	if session != _session:
-		return
+	if Settings.show_results:
+		await Overlay.show_complete_card(index, chapter_name(index), chapter_time, chapter_deaths, record)
+		if session != _session:
+			return
 	_next_level()
 
 
@@ -267,6 +278,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		Overlay.open_pause()
 	elif event.is_action_pressed("restart"):
+		# Settings "Confirm restart": a second press within 1.5 s is needed.
+		var now := Time.get_ticks_msec()
+		if Settings.restart_confirm and now - _restart_asked_ms > 1500:
+			_restart_asked_ms = now
+			SettingsFx.toast("Press %s again to restart" % SettingsFx.key_label("restart"), 1.5)
+			return
+		_restart_asked_ms = -100000
 		_load_level()
 	elif OS.is_debug_build() and event.is_action_pressed("skip_level"):
 		_transitioning = true

@@ -6,7 +6,9 @@ extends StaticBody3D
 ##  GRATE     blocks only ICE (layer 2) - see-through bars
 ##  BREAKABLE blocks everything; ICE hitting it fast shatters it (layer 4)
 ##  GLASS     lab glass, blocks the blob but not the camera probe (layer 32)
-##  DECOR     no collision (furniture, trims, background shapes)
+##  DECOR     no collision (trims, decals, background shapes). Anything that LOOKS solid
+##            (furniture, crates, rails...) should be WALL instead; tests/v3d_test.gd
+##            flags uncovered decor unless it has meta "passable" (liquids, hanging bits).
 ## Texture art comes from the level theme (EnvTheme) and maps 32 px per metre.
 
 enum Kind { WALL, GRATE, BREAKABLE, GLASS, DECOR }
@@ -59,9 +61,7 @@ func _refresh() -> void:
 	if _mesh == null:
 		_mesh = V3D.add_internal(self, MeshInstance3D.new())
 		_shape = V3D.add_internal(self, CollisionShape3D.new())
-	var bm := BoxMesh.new()
-	bm.size = size
-	_mesh.mesh = bm
+	_mesh.mesh = V3D.box_mesh(size)
 	_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if cast_shadow and kind != Kind.GLASS else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_mesh.material_override = _material()
 	var bs := BoxShape3D.new()
@@ -84,8 +84,8 @@ func _material() -> Material:
 	match look:
 		Look.FILL: return V3D.world_material(theme, "fill", tint)
 		Look.DARK: return V3D.world_material(theme, "dark", tint)
-		Look.METAL: return V3D.flat_material(tint, 0.55, 0.45)
-		Look.GLOW: return V3D.flat_material(tint, 0.0, 0.5, tint, 2.0)
+		Look.METAL: return V3D.metal_material(tint)
+		Look.GLOW: return V3D.glow_material(tint, 2.0)
 		Look.WALL: return V3D.world_material(theme, "wall", tint)
 	match kind:
 		Kind.GRATE: return V3D.world_material(theme, "grate", tint)

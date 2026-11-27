@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://assets/ui/fx/water_wipe.gdshader" id="1"]
+
+[resource]
+shader = ExtResource("1")
+shader_parameter/plain = false
+shader_parameter/res = Vector2(960, 540)

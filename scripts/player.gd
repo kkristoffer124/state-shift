@@ -112,16 +112,18 @@ func _ready() -> void:
 
 
 ## Camera zoom / screen shake come from the Settings autoload when it exists.
-func _apply_settings() -> void:
-	if zoom_override > 0.0:
-		camera.zoom = Vector2(zoom_override, zoom_override)
-		return
+## Settings.room_zoom multiplies the room's zoom (SettingsFx also handles smoothing).
+func _apply_settings(_key := "") -> void:
 	var settings := get_node_or_null("/root/Settings")
+	var mul := float(settings.get("room_zoom")) if settings else 1.0
+	if zoom_override > 0.0:
+		camera.zoom = Vector2.ONE * zoom_override * mul
+		return
 	if settings == null:
 		return
 	var z = settings.get("camera_zoom")
 	if z != null:
-		camera.zoom = Vector2(z, z)
+		camera.zoom = Vector2(z, z) * mul
 
 
 func _apply_state_physics() -> void:
@@ -266,9 +268,10 @@ func _move_ice(dir: float, delta: float) -> void:
 
 
 func _move_water(dir: float, delta: float) -> void:
-	_coyote = 0.1 if is_on_floor() else maxf(_coyote - delta, 0.0)
+	# Grace windows from Settings (a tiny minimum keeps on-floor / same-frame jumps working at "Off").
+	_coyote = maxf(Settings.coyote_time, 0.001) if is_on_floor() else maxf(_coyote - delta, 0.0)
 	if Input.is_action_just_pressed("jump"):
-		_jump_buffer = 0.12
+		_jump_buffer = maxf(Settings.jump_buffer, 0.001)
 	else:
 		_jump_buffer = maxf(_jump_buffer - delta, 0.0)
 	velocity.y = minf(velocity.y + water_gravity * delta, water_max_fall)
@@ -362,11 +365,7 @@ func _process(delta: float) -> void:
 	if not Engine.is_editor_hint():
 		_squash = _squash.lerp(Vector2.ONE, minf(12.0 * delta, 1.0))
 		_shake = maxf(_shake - 30.0 * delta, 0.0)
-		var shake_on = true
-		var settings := get_node_or_null("/root/Settings")
-		if settings and settings.get("screen_shake") != null:
-			shake_on = settings.get("screen_shake")
-		camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _shake * (0.5 if shake_on else 0.0)
+		camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _shake * 0.5 * Settings.shake_scale()
 		_blocked_flash = maxf(_blocked_flash - delta, 0.0)
 		_crack = maxf(_crack - delta * 1.5, 0.0)
 		if won:

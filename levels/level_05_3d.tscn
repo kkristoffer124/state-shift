@@ -220,7 +220,6 @@ duration = 0.7
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 1.3, 2.25)
 script = ExtResource("block")
 size = Vector3(1.4, 2, 0.1)
-kind = 4
 look = 5
 tint = Color(0.45, 0.85, 1, 1)
 
@@ -228,7 +227,6 @@ tint = Color(0.45, 0.85, 1, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 1.3, 2.25)
 script = ExtResource("block")
 size = Vector3(1.4, 2, 0.1)
-kind = 4
 look = 5
 tint = Color(0.45, 0.85, 1, 1)
 
@@ -249,10 +247,9 @@ look = 5
 tint = Color(0.9, 0.7, 0.15, 1)
 
 [node name="Console" type="StaticBody3D" parent="Decor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.6, 6.25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0.6, 6.25)
 script = ExtResource("block")
-size = Vector3(0.7, 1.2, 2.5)
-kind = 4
+size = Vector3(0.9, 1.2, 2.5)
 look = 3
 
 [node name="ConsoleScr" type="StaticBody3D" parent="Decor"]
@@ -267,14 +264,12 @@ tint = Color(0.4, 0.9, 1, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.9, 5.45, 11.1)
 script = ExtResource("block")
 size = Vector3(3.8, 0.9, 1)
-kind = 4
 look = 3
 
 [node name="ShelfTop" type="StaticBody3D" parent="Decor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 3.95, 6.45)
 script = ExtResource("block")
 size = Vector3(1.2, 0.9, 0.9)
-kind = 4
 look = 3
 
 [node name="Icicle1" type="StaticBody3D" parent="Decor"]
@@ -284,6 +279,7 @@ size = Vector3(0.2, 0.4, 0.2)
 kind = 4
 look = 5
 tint = Color(0.7, 0.9, 1, 1)
+metadata/passable = true
 
 [node name="PipeCold" type="MeshInstance3D" parent="Decor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 9.6, 0.35)

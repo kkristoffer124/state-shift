@@ -12,6 +12,11 @@ uniform float floor_shade = 0.0;
 uniform float floor_y = 0.0;
 // Cutaway (isometric): fragments above this world height are discarded.
 uniform float cut_y = 100000.0;
+// Pixel bevel along box edges (meshes from V3D.box_mesh(): UV = face metres from the
+// face's top-left, UV2 = face size). Other meshes have UV2 = 0 and get no bevel.
+uniform float bevel = 1.0;
+uniform float metal = 0.0;
+uniform float rough = 0.85;
 
 varying vec3 v_pos;
 varying vec3 v_nrm;
@@ -56,4 +61,35 @@ vec4 pixel_sample(bool front) {
 	// Slightly darker towards the room's floor (floor_y) for depth.
 	c.rgb *= mix(1.0 - floor_shade, 1.0, smoothstep(floor_y, floor_y + 3.0, v_wy));
 	return c;
+}
+
+// Brightness multiplier for the 1-2 texel rim along the face edges: top edges and the
+// rim of top faces catch the light, bottom/side edges are shaded. Snapped to texels.
+float bevel_shade(vec2 uv, vec2 uv2, bool top) {
+	if (bevel <= 0.0 || uv2.x <= 0.0) {
+		return 1.0;
+	}
+	vec2 t = floor(uv * px_per_unit);
+	vec2 n = floor(uv2 * px_per_unit);
+	float l = t.x;
+	float r = n.x - 1.0 - t.x;
+	float u = t.y;
+	float d = n.y - 1.0 - t.y;
+	float k = 1.0;
+	if (top) {
+		if (min(min(l, r), min(u, d)) < 1.0) {
+			k = 1.28;
+		}
+	} else {
+		if (u < 1.0) {
+			k = 1.3;
+		} else if (d < 1.0) {
+			k = 0.62;
+		} else if (min(l, r) < 1.0) {
+			k = 0.8;
+		} else if (u < 2.0) {
+			k = 0.86;
+		}
+	}
+	return mix(1.0, k, bevel);
 }

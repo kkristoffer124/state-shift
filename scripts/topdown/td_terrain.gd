@@ -314,7 +314,11 @@ func _draw_liquid() -> void:
 	var f := flow.normalized() if flow.length() > 0.01 else Vector2.RIGHT
 	for y in height():
 		for x in width():
-			if char_at_cell(Vector2i(x, y)) != SEWAGE:
+			var cc := char_at_cell(Vector2i(x, y))
+			if cc == PIT:
+				_draw_pit_motes(x, y, pal)
+				continue
+			if cc != SEWAGE:
 				continue
 			var p := Vector2(x, y) * CELL
 			var up_open := not is_hole(char_at_cell(Vector2i(x, y - 1)))
@@ -356,3 +360,31 @@ func _draw_liquid() -> void:
 				var gy := fmod(float(_hash(x + 3, y) % 20) + 10.0 + _t * 14.0 * f.y, CELL - top) + top
 				if gx < 0: gx += CELL
 				_liquid.draw_rect(Rect2((p + Vector2(gx, gy)).floor(), Vector2(3, 2)), pal.liquid_deep.lightened(0.15))
+			# a bubble swells and pops now and then
+			var hb := _hash(x * 5 + 1, y * 11 + 2)
+			var period := 2.2 + float(hb % 17) * 0.1
+			var bu := fmod(_t + float(hb % 100) * 0.031, period) / period
+			var bc := p + Vector2(6 + hb % 20, top + 4.0 + float((hb >> 5) % maxi(int(CELL - top - 8.0), 1))).floor()
+			if bu < 0.7:
+				var br := 1.0 + bu / 0.7 * 2.0
+				_liquid.draw_rect(Rect2(bc - Vector2(br, br * 0.7).floor(), Vector2(br * 2.0, br * 1.4).floor()), Color(pal.liquid_hi, 0.35))
+				_liquid.draw_rect(Rect2(bc - Vector2(br - 1.0, br * 0.7).floor(), Vector2(1, 1)), Color(1, 1, 1, 0.5))
+			elif bu < 0.85:
+				var pr := 3.0 + (bu - 0.7) / 0.15 * 4.0
+				_liquid.draw_arc(bc, pr, 0.0, TAU, 10, Color(pal.liquid_hi, 0.5 * (1.0 - (bu - 0.7) / 0.15)), 1.0)
+
+
+## Pits: dust motes drifting down into the dark and a slow glint far below.
+func _draw_pit_motes(x: int, y: int, pal: Dictionary) -> void:
+	var p := Vector2(x, y) * CELL
+	var hb := _hash(x * 3 + 7, y * 13 + 1)
+	for i in 2:
+		var period := 3.0 + float((hb >> i) % 13) * 0.15
+		var u := fmod(_t + float((hb >> (i * 4)) % 100) * 0.05, period) / period
+		var start := Vector2(4 + (hb >> (i * 3)) % 24, 3.0)
+		var q := start.lerp(Vector2(16, 20), u) + Vector2(sin(u * 6.0 + i) * 2.0, 0)
+		_liquid.draw_rect(Rect2((p + q).floor(), Vector2.ONE), Color(pal.rim, 0.5 * (1.0 - u)))
+	if (x * 7 + y * 3) % 4 == 0:
+		var ga := 0.15 + 0.15 * sin(_t * 1.3 + x)
+		_liquid.draw_rect(Rect2(p.x + 18, p.y + 22, 2, 1), Color(pal.liquid_hi, ga))
+

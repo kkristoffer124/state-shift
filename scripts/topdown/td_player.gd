@@ -369,6 +369,7 @@ func _squeeze(from: TdDrain, to: TdDrain) -> void:
 	busy = true
 	velocity = Vector2.ZERO
 	from.gulp()
+	visual.on_drain_in(from.center())
 	Sfx.play("land")
 	splash.global_position = from.center()
 	splash.restart()
@@ -384,6 +385,7 @@ func _squeeze(from: TdDrain, to: TdDrain) -> void:
 		in_pipe = false
 		squash = Vector2(0.3, 1.6)
 		to.gulp()
+		visual.on_drain_out(to.center())
 		splash.global_position = to.center()
 		splash.restart()
 		Sfx.play("jump")
@@ -447,9 +449,9 @@ func _process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 	squash = squash.lerp(Vector2.ONE, minf(12.0 * delta, 1.0)) if not busy else squash
-	vis_offset = vis_offset.lerp(Vector2.ZERO, minf(18.0 * delta, 1.0))
+	vis_offset = vis_offset.lerp(Vector2.ZERO, minf(11.0 * delta, 1.0)) # visual-only ease after snaps
 	_shake = maxf(_shake - 30.0 * delta, 0.0)
-	camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _shake * (0.5 if _shake_on() else 0.0)
+	camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _shake * 0.5 * Settings.shake_scale()
 	blocked_flash = maxf(blocked_flash - delta, 0.0)
 	crack = maxf(crack - delta * 1.2, 0.0)
 

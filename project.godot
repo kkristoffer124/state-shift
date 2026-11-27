@@ -23,6 +23,8 @@ Sfx="*res://scripts/sfx.gd"
 Game="*res://scripts/game.gd"
 Hud="*res://scenes/hud.tscn"
 Overlay="*res://scenes/ui/overlay.tscn"
+UiFx="*res://scripts/ui/ui_fx.gd"
+SettingsFx="*res://scenes/settings_fx.tscn"
 
 [audio]
 
@@ -37,6 +39,10 @@ window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+
+[gui]
+
+theme/custom_font="res://assets/fonts/pixelify.tres"
 
 [input]
 

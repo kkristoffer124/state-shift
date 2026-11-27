@@ -21,6 +21,7 @@ extends Area3D
 var charged := false
 var _charge := 0.0
 var _spin := 0.0
+var _vis_spin := 0.0
 var _flash := 0.0
 var _rotor: Node3D
 var _ticks: Array[MeshInstance3D] = []
@@ -49,16 +50,14 @@ func _refresh() -> void:
 		_vis.queue_free()
 	_ticks.clear()
 	_vis = V3D.add_internal(self, Node3D.new())
-	var steel := V3D.flat_material(Color("5d7b93"), 0.7, 0.35)
-	var dark := V3D.flat_material(Color("1a242e"), 0.4, 0.7)
+	var steel := V3D.metal_material(Color("5d7b93"), 0.7)
+	var dark := V3D.metal_material(Color("2a3644"), 0.4)
 	# Housing ring: 8 boxes in a circle.
 	var rr := 0.62
 	for i in 8:
 		var a := i * TAU / 8.0
 		var b := MeshInstance3D.new()
-		var bm := BoxMesh.new()
-		bm.size = Vector3(0.5, 0.22, 0.14)
-		b.mesh = bm
+		b.mesh = V3D.box_mesh(Vector3(0.5, 0.22, 0.14))
 		b.material_override = steel
 		b.position = Vector3(cos(a), 0, sin(a)) * rr
 		b.rotation.y = -a + PI / 2.0
@@ -74,12 +73,10 @@ func _refresh() -> void:
 	_vis.add_child(hub)
 	_rotor = Node3D.new()
 	_vis.add_child(_rotor)
-	var blade := V3D.flat_material(Color("b8d4ea"), 0.8, 0.25)
+	var blade := V3D.metal_material(Color("b8d4ea"), 0.8)
 	for i in 6:
 		var b := MeshInstance3D.new()
-		var bm := BoxMesh.new()
-		bm.size = Vector3(0.46, 0.03, 0.16)
-		b.mesh = bm
+		b.mesh = V3D.box_mesh(Vector3(0.46, 0.03, 0.16))
 		b.material_override = blade
 		var a := i * TAU / 6.0
 		b.position = Vector3(cos(a), 0, sin(a)) * 0.3
@@ -98,9 +95,7 @@ func _refresh() -> void:
 			_ticks.append(t)
 	if pole_length > 0.0:
 		var pole := MeshInstance3D.new()
-		var pm := BoxMesh.new()
-		pm.size = Vector3(0.12, pole_length, 0.12)
-		pole.mesh = pm
+		pole.mesh = V3D.box_mesh(Vector3(0.12, pole_length, 0.12))
 		pole.material_override = steel
 		pole.position = Vector3(0, 0.15 + pole_length / 2.0, 0)
 		_vis.add_child(pole)
@@ -127,19 +122,31 @@ func _paint_ticks() -> void:
 		_ticks[i].material_override = V3D.flat_material(c, 0.0, 0.5, c, e)
 
 
+## Rotor turns every rendered frame (smooth at any refresh rate); speed eases toward
+## the physics-driven `_spin` so spin-up / spin-down never steps.
+func _process(delta: float) -> void:
+	if _rotor == null:
+		return
+	if Engine.is_editor_hint():
+		_rotor.rotate_y(delta * 2.0)
+		return
+	_vis_spin = lerpf(_vis_spin, _spin, 1.0 - exp(-4.0 * delta))
+	_rotor.rotate_y(_vis_spin * delta)
+	# A slight hum-wobble of the whole housing while it's spinning hard.
+	_vis.rotation.x = sin(Time.get_ticks_msec() * 0.031) * clampf(_vis_spin / 40.0, 0.0, 1.0) * 0.025
+
+
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
-		if _rotor:
-			_rotor.rotate_y(delta * 2.0)
 		return
 	var steam := false
 	for b in get_overlapping_bodies():
 		if V3D.state_of(b) == 2:
 			steam = true
 			_spin += b.velocity.length() * 2.5 * delta + 30.0 * delta
-	_spin = clampf(_spin - _spin * 0.6 * delta, 0.0, 40.0)
-	if _rotor:
-		_rotor.rotate_y(_spin * delta)
+	# Inertia: steam drives the rotor up, it coasts down slowly; once charged it idles.
+	var idle := 4.0 if charged else 0.0
+	_spin = clampf(_spin - (_spin - idle) * 0.6 * delta, 0.0, 40.0)
 	var before := int(round(_charge / maxf(charge_time, 0.01) * 12))
 	if channel != "" and not charged:
 		_charge = clampf(_charge + (delta if steam else -delta * 0.5), 0.0, charge_time)
