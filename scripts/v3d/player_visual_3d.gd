@@ -123,8 +123,11 @@ func _process(delta: float) -> void:
 		light.light_color = V3D.STATE_COLORS[st]
 	var end := 1.0
 	if p.dead or p.won:
-		end = maxf(scale.x - delta * (5.0 if p.dead else 2.5), 0.0)
+		end = maxf(scale.x - delta * (5.0 if p.dead else 2.5), 0.02)
 		scale = Vector3.ONE * end
+		if end <= 0.02:
+			for n in [ice, water, steam, eyes]:
+				n.visible = false
 		if p.won:
 			rotate_y(delta * 12.0)
 		puffs.emitting = false

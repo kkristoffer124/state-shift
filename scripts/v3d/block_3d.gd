@@ -35,6 +35,9 @@ const SHARD_TEX: Array[Texture2D] = [
 	set(v):
 		tint = v
 		_refresh()
+## BREAKABLE only: impact speed (m/s) that shatters it. 0 = the blob's default
+## (23 m/s, a long ICE fall). ~9 makes a thin cracked wall an ICE slide can smash.
+@export var break_speed := 0.0
 ## Casts shadows (turn off for thin trims to save draw calls).
 @export var cast_shadow := true:
 	set(v):

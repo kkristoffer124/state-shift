@@ -21,7 +21,7 @@ func _ready() -> void:
 			only = a.substr(7)
 		elif a == "--trace":
 			_trace = true
-	var solutions := { 3: _solve_03, 6: _solve_06, 8: _solve_08 }
+	var solutions := { 3: _solve_03, 5: _solve_05, 6: _solve_06, 8: _solve_08, 10: _solve_10, 12: _solve_12 }
 	for n in solutions:
 		if only != "" and str(n) != only:
 			continue
@@ -166,6 +166,9 @@ func _until(cond: Callable, max_frames: int, actions: Array = []) -> bool:
 ## Jumps (jump_3d held `frames`) while steering at `target`, and keeps steering
 ## until the blob lands again.
 func _jump_toward(target: Vector3, frames := 45) -> void:
+	Input.action_release("jump_3d")
+	_steer(target)
+	await _step()
 	Input.action_press("jump_3d")
 	var left_floor := false
 	for i in 200:
@@ -264,6 +267,62 @@ func _solve_08() -> void:
 	await _go_to(Vector3(13.5, 0, 1.5), 900, 0.15, _x_gt(13.3))
 	await _to_ice()
 	await _until(func() -> bool: return p.won, 600)
+
+
+## 5 (isometric): the hot vent lifts you as STEAM, drift into the cold zone (forced ICE),
+## fall through the cracked deck onto the plate (opens the fan hatch), melt, walk to the
+## fan, steam up through the hatch and condense on the upper floor's goal.
+func _solve_05() -> void:
+	await _go_to(Vector3(5, 0, 8.5), 400, 0.2, func() -> bool: return p.state == Player3D.State.STEAM)
+	await _until(_y_gt(9.0), 600)
+	await _go_to(Vector3(9, 0, 4), 600, 0.2, func() -> bool: return p.state == Player3D.State.ICE)
+	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y < 1.0, 400)
+	await _until(_gate_open("FanHatch"), 200)
+	await _tap("heat")
+	await _go_to(Vector3(14, 0, 3), 600, 0.2)
+	await _to_steam()
+	await _until(_y_gt(9.0), 600)
+	await _go_to(Vector3(14, 0, 9), 600, 0.15)
+	await _tap("cool")
+	await _until(func() -> bool: return p.won, 400)
+
+
+## 10 (isometric): hop up the steps to the high deck, freeze at its back and slide the
+## spiked runway at full speed, fly the pit onto the strip, slide into the cracked wall
+## (smashes it), over the plate (opens the shutter) into the goal.
+func _solve_10() -> void:
+	await _go_to(Vector3(2, 0, 11.2), 300, 0.3)
+	await _jump_toward(Vector3(2, 0, 9.5), 40)
+	await _jump_toward(Vector3(2, 0, 7.5), 40)
+	await _jump_toward(Vector3(2, 0, 5.0), 40)
+	await _go_to(Vector3(0.8, 0, 2.5), 300, 0.2)
+	await _to_ice()
+	await _go_to(Vector3(1.2, 0, 2.5), 200, 0.25)
+	await _go_to(Vector3(30, 0, 2.5), 600, 0.2, func() -> bool: return p.global_position.x > 16.5 and p.is_on_floor())
+	await _go_to(Vector3(16.6, 0, 14), 900, 0.2)
+
+
+## 12 (third person finale): jump the alley, the exhaust vent turns you to STEAM under the
+## awning; drift into the attic, freeze over the crack and smash down onto the plate
+## (opens the corridor), slide to the grate, melt through, the roof vent steams you again,
+## ride the crosswind under the spiked gantry and condense over the helipad.
+func _solve_12() -> void:
+	await _go_to(Vector3(9.0, 0, 5), 400, 0.3)
+	await _jump_toward(Vector3(16, 0, 5), 40)
+	await _go_to(Vector3(14.5, 0, 5), 400, 0.2, func() -> bool: return p.state == Player3D.State.STEAM)
+	await _until(_y_gt(8.8), 600)
+	await _go_to(Vector3(19, 0, 5), 900, 0.12)
+	await _go_to(Vector3(19, 0, 5), 40, 0.0)
+	await _to_ice()
+	await _until(func() -> bool: return p.is_on_floor() and p.global_position.y < 1.0, 400)
+	await _until(_gate_open("CorridorShutter"), 200)
+	await _go_to(Vector3(30, 0, 5), 600, 0.2, func() -> bool: return p.global_position.x > 26.0 and p.is_on_floor() and Vector2(p.velocity.x, p.velocity.z).length() < 0.2)
+	await _tap("heat")
+	await _go_to(Vector3(29.5, 0, 5), 400, 0.2, func() -> bool: return p.state == Player3D.State.STEAM)
+	await _go_to(Vector3(60, 0, 5), 900, 0.2, _x_gt(45.5))
+	await _go_to(Vector3(46.5, 0, 5), 600, 0.2)
+	await _tap("cool")
+	await _until(func() -> bool: return p.won, 400)
 
 
 # --- Rule checks (state physics in 3D) ----------------------------------------------

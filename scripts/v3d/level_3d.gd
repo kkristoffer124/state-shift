@@ -23,6 +23,13 @@ extends Node3D
 @export var side_plane_z := 0.0
 ## Falling below this kills (safety net).
 @export var kill_y := -12.0
+## Outdoor levels: highest the blob can float (steam stops rising here).
+@export var max_y := 1000.0
+## Multiplies the palette ambient light (isometric rooms want more).
+@export var ambient_boost := 1.0:
+	set(v):
+		ambient_boost = v
+		_apply_theme()
 ## Multiplies the palette fog density.
 @export var fog_scale := 1.0:
 	set(v):
@@ -48,6 +55,17 @@ func _ready() -> void:
 	var side := camera_mode == V3D.CameraMode.SIDE_25D
 	rig.setup(self, player, camera_mode, get_bounds(), side_plane_z)
 	player.setup(self, rig, side, side_plane_z, kill_y)
+	player.max_y = max_y
+	if camera_mode == V3D.CameraMode.ISOMETRIC:
+		# Orthographic view shows far more of the room: scale the hints up to match
+		# and keep them readable over walls.
+		var s: float = rig.camera.size / 6.0
+		for h in find_children("*", "Label3D", true, false):
+			if h is Hint3D:
+				h.pixel_size *= s
+				h.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+				h.no_depth_test = true
+				h.render_priority = 5
 	Game.on_level_ready(self, player)
 
 
@@ -112,7 +130,7 @@ func _apply_theme() -> void:
 		env.background_color = pal.bg
 		env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 		env.ambient_light_color = pal.ambient
-		env.ambient_light_energy = pal.ambient_energy
+		env.ambient_light_energy = pal.ambient_energy * ambient_boost
 		env.fog_enabled = true
 		env.fog_light_color = pal.fog
 		env.fog_density = pal.fog_density * fog_scale

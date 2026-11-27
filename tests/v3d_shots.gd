@@ -51,6 +51,30 @@ func _ready() -> void:
 		]],
 		[8, M.THIRD_PERSON, [["tp_room", Vector3(8.6, 0.4, 3.5), 1, 70.0, -20.0, 60], ["tp_ice", Vector3(6.8, 0.6, 2.0), 0, 80.0, -20.0, 40]]],
 		[8, M.ISOMETRIC, [["iso", Vector3(8.0, 0.4, 4.0), 1, null, null, 50]]],
+		[5, -1, [
+			["start", null, 1, null, null, 50],
+			["steam", Vector3(6.0, 9.4, 7.0), 2, null, null, 14],
+			["plate", Vector3(9.0, 0.6, 4.0), 0, null, null, 30],
+			["fan", Vector3(14.0, 2.0, 3.0), 2, null, null, 10],
+			["upper", Vector3(14.0, 9.2, 8.6), 2, null, null, 12],
+		]],
+		[10, -1, [
+			["start", null, 1, null, null, 50],
+			["steps", Vector3(2.0, 1.6, 9.5), 1, null, null, 30],
+			["deck", Vector3(2.0, 4.2, 2.5), 0, null, null, 30],
+			["runway", Vector3(10.0, 4.2, 2.5), 0, null, null, 20],
+			["strip", Vector3(16.6, 1.8, 5.0), 0, null, null, 30],
+		]],
+		[12, -1, [
+			["start", null, 1, null, null, 60],
+			["overview", Vector3(6.0, 0.4, 8.5), 1, -125.0, -8.0, 40],
+			["gap", Vector3(9.0, 0.4, 5.0), 1, -90.0, -14.0, 30],
+			["vent", Vector3(13.2, 0.4, 5.0), 1, -70.0, -5.0, 30],
+			["attic", Vector3(18.0, 9.0, 5.0), 2, -90.0, -25.0, 14],
+			["chamber", Vector3(21.0, 0.6, 5.0), 0, -90.0, -15.0, 30],
+			["crosswind", Vector3(35.0, 4.0, 5.0), 2, -90.0, -8.0, 12],
+			["goal", Vector3(44.5, 2.0, 5.0), 1, -90.0, -18.0, 40],
+		]],
 	]
 	for entry in plan:
 		if only != "" and str(entry[0]) != only:

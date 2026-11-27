@@ -12,6 +12,8 @@ EXT = {
     "lamp": ("Script", "res://scripts/v3d/lamp_3d.gd"),
     "pipe": ("Script", "res://scripts/v3d/pipe_3d.gd"),
     "jet": ("Script", "res://scripts/v3d/steam_jet_3d.gd"),
+    "rain": ("Script", "res://scripts/v3d/rain_3d.gd"),
+    "skyline": ("Script", "res://scripts/v3d/skyline_3d.gd"),
     "player": ("PackedScene", "res://scenes/v3d/player_3d.tscn"),
     "rig": ("PackedScene", "res://scenes/v3d/camera_rig_3d.tscn"),
 }
@@ -114,7 +116,19 @@ class Scene:
         return "\n".join(out)
 
     # --- helpers --------------------------------------------------------------
-    def block(self, name, a, b, kind="wall", look="auto", tint=None, parent="Blocks", shadow=True, rot=(0, 0, 0)):
+    def plate(self, name, pos, size, channel, latch=True, parent="Interactive"):
+        props = {"transform": xform(self.ys(pos)), "channel": '"%s"' % channel,
+                 "size": "Vector2(%s, %s)" % (f(size[0]), f(size[1]))}
+        if latch:
+            props["latch"] = "true"
+        return self.node(name, "Area3D", parent, props, script="plate")
+
+    def gate(self, name, center, size, open_offset, channel, duration=0.8, parent="Interactive"):
+        return self.node(name, "AnimatableBody3D", parent, {
+            "transform": xform(self.ys(center)), "channel": '"%s"' % channel, "size": v3(size),
+            "open_offset": v3(open_offset), "duration": f(duration)}, script="gate")
+
+    def block(self, name, a, b, kind="wall", look="auto", tint=None, parent="Blocks", shadow=True, rot=(0, 0, 0), break_speed=None):
         a, b = self.ys(a), self.ys(b)
         c = [(a[i] + b[i]) / 2.0 for i in range(3)]
         s = [abs(b[i] - a[i]) for i in range(3)]
@@ -128,6 +142,8 @@ class Scene:
             props["tint"] = col(tint)
         if not shadow:
             props["cast_shadow"] = "false"
+        if break_speed is not None:
+            props["break_speed"] = f(break_speed)
         return self.node(name, "StaticBody3D", parent, props, script="block")
 
     def zone(self, name, center, size, kind, rot=(0, 0, 0), extra=None, parent="Zones"):
@@ -169,7 +185,7 @@ class Scene:
         return self.node(name, "CPUParticles3D", parent, props, script="jet")
 
 
-def level_header(sc, level_name, theme, mode, extra=None, sun_rot=(-0.9, 0.5, 0)):
+def level_header(sc, level_name, theme, mode, extra=None, sun_rot=(-0.9, 0.5, 0), shadows=False):
     props = {"level_name": '"%s"' % level_name, "theme": '"%s"' % theme, "camera_mode": str(mode)}
     props.update(extra or {})
     sc.sub("Env", "Environment", {
@@ -185,6 +201,9 @@ def level_header(sc, level_name, theme, mode, extra=None, sun_rot=(-0.9, 0.5, 0)
     })
     sc.node("Level", "Node3D", None, props, script="level")
     sc.node("WorldEnvironment", "WorldEnvironment", ".", {"environment": 'SubResource("Env")'})
-    sc.node("KeyLight", "DirectionalLight3D", ".", {"transform": xform((0, 10, 0), sun_rot)})
+    key = {"transform": xform((0, 10, 0), sun_rot)}
+    if shadows:
+        key.update({"shadow_enabled": "true", "shadow_opacity": "0.75", "directional_shadow_max_distance": "30.0"})
+    sc.node("KeyLight", "DirectionalLight3D", ".", key)
     for g in ("Blocks", "Zones", "Interactive", "Decor", "Hints"):
         sc.node(g, "Node3D", ".")

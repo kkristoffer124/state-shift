@@ -1,0 +1,399 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/v3d/level_3d.gd" id="level"]
+[ext_resource type="Script" path="res://scripts/v3d/block_3d.gd" id="block"]
+[ext_resource type="Script" path="res://scripts/v3d/zone_3d.gd" id="zone"]
+[ext_resource type="Script" path="res://scripts/v3d/gate_3d.gd" id="gate"]
+[ext_resource type="Script" path="res://scripts/v3d/plate_3d.gd" id="plate"]
+[ext_resource type="Script" path="res://scripts/v3d/hint_3d.gd" id="hint"]
+[ext_resource type="Script" path="res://scripts/v3d/lamp_3d.gd" id="lamp"]
+[ext_resource type="Script" path="res://scripts/v3d/pipe_3d.gd" id="pipe"]
+[ext_resource type="Script" path="res://scripts/v3d/steam_jet_3d.gd" id="jet"]
+[ext_resource type="PackedScene" path="res://scenes/v3d/player_3d.tscn" id="player"]
+[ext_resource type="PackedScene" path="res://scenes/v3d/camera_rig_3d.tscn" id="rig"]
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 1
+tonemap_mode = 2
+tonemap_white = 6.0
+glow_enabled = true
+glow_intensity = 0.6
+glow_bloom = 0.05
+glow_hdr_threshold = 1.1
+fog_enabled = true
+fog_density = 0.03
+
+[node name="Level" type="Node3D"]
+script = ExtResource("level")
+level_name = "5 - Pressure"
+theme = "cryo"
+camera_mode = 3
+kill_y = -6.0
+fog_scale = 0.12
+ambient_boost = 1.4
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.7648, -0.5421, 0.3481, 0, 0.5403, 0.8415, -0.6442, -0.6436, 0.4132, 0, 10, 0)
+
+[node name="Blocks" type="Node3D" parent="."]
+
+[node name="Zones" type="Node3D" parent="."]
+
+[node name="Interactive" type="Node3D" parent="."]
+
+[node name="Decor" type="Node3D" parent="."]
+
+[node name="Hints" type="Node3D" parent="."]
+
+[node name="Floor" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, -0.5, 6)
+script = ExtResource("block")
+size = Vector3(17, 1, 13)
+
+[node name="WallN" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 5.25, -0.25)
+script = ExtResource("block")
+size = Vector3(17, 10.5, 0.5)
+
+[node name="WallW" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 5.25, 6)
+script = ExtResource("block")
+size = Vector3(0.5, 10.5, 12)
+
+[node name="WallS" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.6, 12.25)
+script = ExtResource("block")
+size = Vector3(17, 1.2, 0.5)
+
+[node name="WallE" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.25, 0.6, 6)
+script = ExtResource("block")
+size = Vector3(0.5, 1.2, 12)
+
+[node name="GlassS" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 5.85, 12.2)
+script = ExtResource("block")
+size = Vector3(17, 9.3, 0.2)
+kind = 3
+
+[node name="GlassE" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.2, 5.85, 6)
+script = ExtResource("block")
+size = Vector3(0.2, 9.3, 12)
+kind = 3
+
+[node name="Ceiling" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 10.25, 6)
+script = ExtResource("block")
+size = Vector3(17, 0.5, 13)
+
+[node name="DeckW" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.75, 3.25, 3.5)
+script = ExtResource("block")
+size = Vector3(1.5, 0.5, 7)
+
+[node name="DeckE" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.75, 3.25, 3.5)
+script = ExtResource("block")
+size = Vector3(0.5, 0.5, 7)
+
+[node name="DeckN" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.25, 1.25)
+script = ExtResource("block")
+size = Vector3(3, 0.5, 2.5)
+
+[node name="DeckS" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.25, 6.25)
+script = ExtResource("block")
+size = Vector3(3, 0.5, 1.5)
+
+[node name="CrackedFloor" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.25, 4)
+script = ExtResource("block")
+size = Vector3(3, 0.5, 3)
+kind = 2
+
+[node name="DeckPostA" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.2, 1.5, 6.8)
+script = ExtResource("block")
+size = Vector3(0.4, 3, 0.4)
+look = 3
+
+[node name="DeckPostB" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 1.5, 6.8)
+script = ExtResource("block")
+size = Vector3(0.4, 3, 0.4)
+look = 3
+
+[node name="Partition" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.2, 7.5, 6)
+script = ExtResource("block")
+size = Vector3(0.4, 5, 12)
+
+[node name="UpperW" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.2, 4.75, 6)
+script = ExtResource("block")
+size = Vector3(1.6, 0.5, 12)
+
+[node name="UpperE" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 4.75, 6)
+script = ExtResource("block")
+size = Vector3(1, 0.5, 12)
+
+[node name="UpperN" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4.75, 1)
+script = ExtResource("block")
+size = Vector3(2, 0.5, 2)
+
+[node name="UpperS" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4.75, 8)
+script = ExtResource("block")
+size = Vector3(2, 0.5, 8)
+
+[node name="UpperPost" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.2, 2.25, 11.7)
+script = ExtResource("block")
+size = Vector3(0.4, 4.5, 0.6)
+look = 3
+
+[node name="CryoPod1" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 1.3, 1.3)
+script = ExtResource("block")
+size = Vector3(1.8, 2.6, 1.8)
+look = 2
+
+[node name="CryoPod2" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 1.3, 1.3)
+script = ExtResource("block")
+size = Vector3(1.8, 2.6, 1.8)
+look = 2
+
+[node name="Crate" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.9, 0.6, 9.8)
+script = ExtResource("block")
+size = Vector3(1.4, 1.2, 1.6)
+look = 3
+
+[node name="Heat" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.5, 8.5)
+script = ExtResource("zone")
+kind = 1
+size = Vector3(2, 3, 2)
+
+[node name="Freeze" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 8.25, 4)
+script = ExtResource("zone")
+kind = 2
+size = Vector3(2.4, 3.5, 2.4)
+
+[node name="Fan" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 3.5, 3)
+script = ExtResource("zone")
+kind = 3
+size = Vector3(1.9, 7, 1.9)
+
+[node name="Goal" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 6, 9)
+script = ExtResource("zone")
+kind = 4
+size = Vector3(2, 2, 2)
+
+[node name="IcePlate" type="Area3D" parent="Interactive"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 4)
+script = ExtResource("plate")
+channel = "hatch"
+size = Vector2(2, 2)
+latch = true
+
+[node name="FanHatch" type="AnimatableBody3D" parent="Interactive"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4.75, 3)
+script = ExtResource("gate")
+channel = "hatch"
+size = Vector3(2, 0.5, 2)
+open_offset = Vector3(0, 0, 2.4)
+duration = 0.7
+
+[node name="PodGlass1" type="StaticBody3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 1.3, 2.25)
+script = ExtResource("block")
+size = Vector3(1.4, 2, 0.1)
+kind = 4
+look = 5
+tint = Color(0.45, 0.85, 1, 1)
+
+[node name="PodGlass2" type="StaticBody3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 1.3, 2.25)
+script = ExtResource("block")
+size = Vector3(1.4, 2, 0.1)
+kind = 4
+look = 5
+tint = Color(0.45, 0.85, 1, 1)
+
+[node name="FrostRug" type="StaticBody3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0.01, 4)
+script = ExtResource("block")
+size = Vector3(4.4, 0.02, 2.4)
+kind = 4
+look = 5
+tint = Color(0.35, 0.6, 0.8, 1)
+
+[node name="WarnHatch" type="StaticBody3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 5.01, 3)
+script = ExtResource("block")
+size = Vector3(2.4, 0.02, 2.4)
+kind = 4
+look = 5
+tint = Color(0.9, 0.7, 0.15, 1)
+
+[node name="Console" type="StaticBody3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.6, 6.25)
+script = ExtResource("block")
+size = Vector3(0.7, 1.2, 2.5)
+kind = 4
+look = 3
+
+[node name="ConsoleScr" type="StaticBody3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.925, 0.9, 6.25)
+script = ExtResource("block")
+size = Vector3(0.05, 0.4, 2.1)
+kind = 4
+look = 5
+tint = Color(0.4, 0.9, 1, 1)
+
+[node name="Bench" type="StaticBody3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.9, 5.45, 11.1)
+script = ExtResource("block")
+size = Vector3(3.8, 0.9, 1)
+kind = 4
+look = 3
+
+[node name="ShelfTop" type="StaticBody3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 3.95, 6.45)
+script = ExtResource("block")
+size = Vector3(1.2, 0.9, 0.9)
+kind = 4
+look = 3
+
+[node name="Icicle1" type="StaticBody3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.7, 9.8, 0.2)
+script = ExtResource("block")
+size = Vector3(0.2, 0.4, 0.2)
+kind = 4
+look = 5
+tint = Color(0.7, 0.9, 1, 1)
+
+[node name="PipeCold" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 9.6, 0.35)
+script = ExtResource("pipe")
+length = 11
+radius = 0.18
+axis = 0
+flange_every = 1.5
+color = Color(0.6, 0.75, 0.9, 1)
+
+[node name="PipeFreeze" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 9.6, 4)
+script = ExtResource("pipe")
+length = 0.8
+radius = 0.3
+axis = 1
+flange_every = 1.5
+color = Color(0.6, 0.75, 0.9, 1)
+
+[node name="PipeUp" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 5, 11.6)
+script = ExtResource("pipe")
+length = 10
+radius = 0.16
+axis = 1
+flange_every = 1.5
+
+[node name="PipeUpper" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.7, 9.6, 11.6)
+script = ExtResource("pipe")
+length = 4.6
+radius = 0.15
+axis = 0
+flange_every = 1.5
+
+[node name="ColdMist" type="CPUParticles3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.6, 1.3)
+script = ExtResource("jet")
+height = 1
+period = 3.5
+burst_time = 1.4
+phase = 0
+
+[node name="HeatPuff" type="CPUParticles3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.05, 8.5)
+script = ExtResource("jet")
+height = 3
+period = 2.2
+burst_time = 1
+phase = 0
+
+[node name="LampCold" type="OmniLight3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 4.5, 4)
+script = ExtResource("lamp")
+light_color = Color(0.6, 0.85, 1, 1)
+light_energy = 1.6
+omni_range = 9
+omni_attenuation = 1.4
+
+[node name="LampDeck" type="OmniLight3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2.6, 6.5)
+script = ExtResource("lamp")
+light_color = Color(0.6, 0.85, 1, 1)
+light_energy = 1
+omni_range = 6
+omni_attenuation = 1.4
+fitting = 1
+tube_length = 2
+
+[node name="LampUpper" type="OmniLight3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.5, 8.5, 7)
+script = ExtResource("lamp")
+light_color = Color(1, 0.9, 0.7, 1)
+light_energy = 1.4
+omni_range = 8
+omni_attenuation = 1.4
+
+[node name="LampUnder" type="OmniLight3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.5, 4.1, 7.5)
+script = ExtResource("lamp")
+light_color = Color(0.8, 0.9, 1, 1)
+light_energy = 1.1
+omni_range = 7
+omni_attenuation = 1.4
+fitting = 1
+tube_length = 2
+
+[node name="Hint1" type="Label3D" parent="Hints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 3.6, 8.5)
+script = ExtResource("hint")
+text = "Hot zones force STEAM"
+
+[node name="Hint2" type="Label3D" parent="Hints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 6, 5.6)
+script = ExtResource("hint")
+text = "Cold zones force ICE"
+
+[node name="Hint3" type="Label3D" parent="Hints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 1.6, 6)
+script = ExtResource("hint")
+text = "Ice is heavy: press the plate"
+
+[node name="Hint4" type="Label3D" parent="Hints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 1.9, 5)
+script = ExtResource("hint")
+text = "Fans blow gas upward"
+
+[node name="Player" parent="." instance=ExtResource("player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.4, 10)
+state = 1
+
+[node name="CameraRig" parent="." instance=ExtResource("rig")]
+iso_size = 13.0

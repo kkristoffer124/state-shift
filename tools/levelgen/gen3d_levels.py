@@ -1,4 +1,5 @@
-"""Generates levels/level_03_3d.tscn, level_06_3d.tscn, level_08_3d.tscn (real nodes)."""
+"""Generates levels/level_XX_3d.tscn (3, 5, 6, 8, 10, 12) as real-node scenes.
+   python -I tools/levelgen/gen3d_levels.py [05 10 ...]"""
 import math
 import os
 import sys
@@ -290,8 +291,10 @@ def level_08():
 
 
 if __name__ == "__main__":
-    only = sys.argv[1:] or ["03", "06", "08"]
-    for key, fn in (("03", level_03), ("06", level_06), ("08", level_08)):
+    from gen3d_phase2 import level_05, level_10, level_12
+    only = sys.argv[1:] or ["03", "05", "06", "08", "10", "12"]
+    for key, fn in (("03", level_03), ("05", level_05), ("06", level_06), ("08", level_08),
+                    ("10", level_10), ("12", level_12)):
         if key not in only:
             continue
         name = "level_%s_3d.tscn" % key

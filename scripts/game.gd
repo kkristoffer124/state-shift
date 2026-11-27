@@ -12,14 +12,14 @@ const LEVELS: Array[String] = [
 	"res://levels/level_02_topdown.tscn",
 	"res://levels/level_03_3d.tscn",
 	"res://levels/level_04.tscn",
-	"res://levels/level_05.tscn",
+	"res://levels/level_05_3d.tscn",
 	"res://levels/level_06_3d.tscn",
 	"res://levels/level_07_topdown.tscn",
 	"res://levels/level_08_3d.tscn",
 	"res://levels/level_09.tscn",
-	"res://levels/level_10.tscn",
+	"res://levels/level_10_3d.tscn",
 	"res://levels/level_11.tscn",
-	"res://levels/level_12.tscn",
+	"res://levels/level_12_3d.tscn",
 ]
 ## Chapter names for menus (so the chapter select needn't load every level).
 ## The level's own `level_name` ("6 - Crosswind") wins in-game; tests check they match.

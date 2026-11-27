@@ -49,6 +49,8 @@ var won := false
 var rig: CameraRig3D
 var side_mode := false
 var kill_y := -30.0
+## Outdoors: the blob can't float above this (rising steam is capped here).
+var max_y := 1000.0
 
 var _shapes := {}
 var _t := 0.0
@@ -192,6 +194,9 @@ func _physics_process(delta: float) -> void:
 	var pre := velocity
 	move_and_slide()
 	_after_move(pre)
+	if global_position.y > max_y:
+		global_position.y = max_y
+		velocity.y = minf(velocity.y, 0.0)
 	if global_position.y < kill_y:
 		die()
 
@@ -295,7 +300,8 @@ func _after_move(pre: Vector3) -> void:
 		var c := get_slide_collision(i)
 		var block := c.get_collider() as Block3D
 		if state == State.ICE and block and block.kind == Block3D.Kind.BREAKABLE and not block.broken:
-			if -pre.dot(c.get_normal()) > shatter_speed:
+			var need := block.break_speed if block.break_speed > 0.0 else shatter_speed
+			if -pre.dot(c.get_normal()) > need:
 				block.shatter(pre)
 				velocity = pre * 0.75
 				shake = 12.0

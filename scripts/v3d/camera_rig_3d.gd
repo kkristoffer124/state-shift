@@ -33,7 +33,7 @@ const Mode := V3D.CameraMode
 @export var iso_yaw_deg := 45.0
 @export var iso_pitch_deg := -35.264
 ## Cutaway: everything higher than this above the blob is hidden.
-@export var iso_cut_height := 1.4
+@export var iso_cut_height := 3.4
 @export_group("Input")
 ## Starting view direction (degrees around Y; 0 looks along -Z).
 @export var yaw_deg := 0.0
