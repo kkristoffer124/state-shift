@@ -225,21 +225,22 @@ func _gate_open(gate_name: String) -> Callable:
 
 # --- Solutions --------------------------------------------------------------------
 
-## 3 (third person): hop the bench, steam up grate 1, drift under the mezzanine to
-## grate 2, rise, drift through the roof turbine (opens the tank lid), condense over the tank.
+## 3 (third person): hop the bench, steam up the big grate 1, drift under the mezzanine
+## ceiling to grate 2, rise to the top floor, drift through the roof turbine over the
+## atrium (opens the tank lid), condense over the tank.
 func _solve_03() -> void:
-	await _go_to(Vector3(6, 0, 6.6), 400)
-	await _jump_toward(Vector3(6, 0, 2), 40)
+	await _go_to(Vector3(5, 0, 12.2), 400)
+	await _jump_toward(Vector3(5, 0, 9.0), 40)
 	await _until(_on_floor(), 120)
-	await _go_to(Vector3(6, 0, 2), 300, 0.15)
+	await _go_to(Vector3(10, 0, 5), 400, 0.2)
 	await _to_steam()
-	await _until(_y_gt(8.3), 600)
-	await _go_to(Vector3(2, 0, 8), 900, 0.1, _y_gt(9.7))
-	await _until(_y_gt(13.0), 600)
-	await _go_to(Vector3(9.6, 0, 6.2), 900, 0.4)
-	await _go_to(Vector3(11.5, 0, 5.0), 600, 0.15)
+	await _until(_y_gt(9.6), 700)
+	await _go_to(Vector3(5.5, 0, 12.5), 900, 0.1, _y_gt(11.2))
+	await _until(_y_gt(15.6), 700)
+	await _go_to(Vector3(17.0, 0, 5.8), 900, 0.4)
+	await _go_to(Vector3(18.25, 0, 8.0), 600, 0.15)
 	await _until(_gate_open("TankLid"), 300, [])
-	await _go_to(Vector3(11.5, 0, 5.0), 200, 0.12)
+	await _go_to(Vector3(18.25, 0, 8.0), 200, 0.12)
 	await _tap("cool")
 	await _until(func() -> bool: return p.won, 400)
 

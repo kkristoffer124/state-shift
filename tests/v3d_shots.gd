@@ -24,14 +24,14 @@ func _ready() -> void:
 	var plan := [
 		[3, -1, [
 			["start", null, 1, null, null, 50],
-			["bench", Vector3(5.5, 1.4, 6.6), 1, 200.0, -12.0, 30],
-			["grate1", Vector3(6, 3.2, 2.4), 2, 160.0, -10.0, 12],
-			["mezz", Vector3(3.0, 8.2, 6.0), 2, 30.0, -8.0, 14],
-			["top", Vector3(6.5, 13.4, 7.5), 2, 300.0, -28.0, 14],
-			["tank", Vector3(11.5, 10.0, 8.2), 1, 0.0, -38.0, 6],
-			["ice", Vector3(4.0, 0.6, 7.0), 0, 30.0, -15.0, 30],
+			["bench", Vector3(5.0, 1.4, 12.2), 1, 0.0, -14.0, 30],
+			["grate1", Vector3(10.0, 4.4, 5.5), 2, -40.0, -5.0, 12],
+			["mezz", Vector3(8.0, 10.0, 8.0), 2, -40.0, -10.0, 14],
+			["top", Vector3(10.0, 16.0, 9.5), 2, -60.0, -20.0, 14],
+			["tank", Vector3(18.25, 12.0, 8.0), 1, -90.0, -38.0, 6],
+			["ice", Vector3(6.0, 0.6, 8.0), 0, 0.0, -15.0, 30],
 		]],
-		[3, M.ISOMETRIC, [["iso", null, 1, null, null, 40], ["iso_top", Vector3(6.5, 13.4, 7.5), 2, null, null, 14]]],
+		[3, M.ISOMETRIC, [["iso", null, 1, null, null, 40], ["iso_top", Vector3(10.0, 16.0, 9.5), 2, null, null, 14]]],
 		[6, -1, [
 			["start", null, 1, null, null, 50],
 			["freeze", Vector3(9.6, 2.6, 0), 0, null, null, 40],

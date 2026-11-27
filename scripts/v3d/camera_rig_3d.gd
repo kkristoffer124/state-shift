@@ -329,8 +329,11 @@ func _collect_arm_excludes() -> void:
 			_arm_exclude.append((n as CollisionObject3D).get_rid())
 
 
+## Ceiling / floor / focus rays. Unlike the arm sweep these see grates as surfaces, so the
+## camera stays on the blob's side of a grate floor and follows it through the opening
+## instead of leading it (no looking back down through the bars).
 func _ray(from: Vector3, to: Vector3) -> Dictionary:
-	var q := PhysicsRayQueryParameters3D.create(from, to, ARM_MASK, _arm_exclude)
+	var q := PhysicsRayQueryParameters3D.create(from, to, ARM_MASK | V3D.L_GRATE, _arm_exclude)
 	return get_world_3d().direct_space_state.intersect_ray(q)
 
 

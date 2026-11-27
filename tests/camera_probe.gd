@@ -12,6 +12,7 @@ extends "res://tests/v3d_test.gd"
 ##   spin       frames the view turned faster than 200 deg/s, and the max turn rate
 ##   clip       frames the near plane is within 0.12 m of a solid (wall clipping)
 ##   ndc_y      average vertical screen position of the blob (0 = centre, + = lower half)
+##   grate      frames a grate is between camera and blob within 1.5 m of the camera (close-up through bars)
 ##   cuts       isometric cutaway jumps (> 0.3 m in one frame) per second (popping)
 
 const LEVELS := [3, 12, 5, 10]
@@ -48,7 +49,7 @@ func _ready() -> void:
 			continue
 		_cur_level = n
 		_m = { "frames": 0, "jumps": 0, "arm": 0.0, "occl": 0, "off": 0, "spin": 0, "spin_max": 0.0,
-			"clip": 0, "ndc_y": 0.0, "cuts": 0, "arm_min": 99.0, "arm_sum": 0.0 }
+			"clip": 0, "grate": 0, "ndc_y": 0.0, "cuts": 0, "arm_min": 99.0, "arm_sum": 0.0 }
 		_prev_fwd = Vector3.ZERO
 		_prev_arm = -1.0
 		_prev_cut = INF
@@ -62,10 +63,10 @@ func _report(n: int) -> void:
 	var f: int = maxi(_m.frames, 1)
 	var mode: String = V3D.CameraMode.keys()[level.camera_mode]
 	var secs := f / 120.0
-	print("  CAM ch%02d %-12s frames=%d jumps=%d arm=%.1fm arm_avg=%.2f arm_min=%.2f occl=%.1f%% off=%.1f%% spin=%d (max %.0f deg/s) clip=%d ndc_y=%+.2f cuts=%.2f/s"
+	print("  CAM ch%02d %-12s frames=%d jumps=%d arm=%.1fm arm_avg=%.2f arm_min=%.2f occl=%.1f%% off=%.1f%% spin=%d (max %.0f deg/s) clip=%d grate=%d ndc_y=%+.2f cuts=%.2f/s"
 		% [n, mode, f, _m.jumps, _m.arm, _m.arm_sum / f, _m.arm_min, 100.0 * _m.occl / f, 100.0 * _m.off / f,
-			_m.spin, _m.spin_max, _m.clip, _m.ndc_y / f, _m.cuts / secs])
-	for kind in ["short", "occ"]:
+			_m.spin, _m.spin_max, _m.clip, _m.grate, _m.ndc_y / f, _m.cuts / secs])
+	for kind in ["short", "occ", "grate"]:
 		if _m.has(kind + "_by"):
 			print("      %s by: %s" % [kind, _m[kind + "_by"]])
 
@@ -142,6 +143,12 @@ func _measure() -> void:
 		break
 	if occluded:
 		_m.occl += 1
+	if not iso:
+		var gq := PhysicsRayQueryParameters3D.create(cpos, ppos, V3D.L_GRATE, [p.get_rid()])
+		var gh := space.intersect_ray(gq)
+		if not gh.is_empty() and cpos.distance_to(gh.position) < 1.5:
+			_m.grate += 1
+			_tally("grate", "%s@f%d" % [(gh.collider as Node).name, _frame - _frame % 30])
 	# On screen.
 	var vp := cam.get_viewport().get_visible_rect().size
 	var behind := cam.is_position_behind(ppos)
