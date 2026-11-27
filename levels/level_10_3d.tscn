@@ -122,6 +122,7 @@ break_speed = 8
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 1.5, 12.4)
 script = ExtResource("block")
 size = Vector3(1.8, 3, 2.8)
+look = 2
 
 [node name="FloorSpikes" type="Area3D" parent="Zones"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.6, 0.4, 7)
@@ -176,16 +177,14 @@ tint = Color(1, 0.85, 0.5, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 3.75, 0.56)
 script = ExtResource("block")
 size = Vector3(7, 0.3, 0.12)
-look = 4
-tint = Color(0.75, 0.55, 0.3, 1)
+look = 6
 cast_shadow = false
 
 [node name="RailS" type="StaticBody3D" parent="Decor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 3.75, 4.44)
 script = ExtResource("block")
 size = Vector3(7, 0.3, 0.12)
-look = 4
-tint = Color(0.75, 0.55, 0.3, 1)
+look = 6
 cast_shadow = false
 
 [node name="RunStripe" type="StaticBody3D" parent="Decor"]

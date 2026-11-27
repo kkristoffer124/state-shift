@@ -34,6 +34,12 @@ const MASK_CAMERA := L_WORLD | L_BREAKABLE
 
 const RL_BLOB := 2
 
+## box_mesh() trim bits: base band on the sides; edge trim on side face i (0 +X,
+## 1 -X, 2 +Z, 3 -Z) is TRIM_EDGE << i.
+const TRIM_BASE := 1
+const TRIM_EDGE := 2
+const TRIM_EDGE_ALL := 30
+
 enum CameraMode { THIRD_PERSON, FIRST_PERSON, SIDE_25D, ISOMETRIC }
 
 const C_WATER := Color("3f8cff")
@@ -84,77 +90,190 @@ const PALETTES := {
 }
 
 const SH_WORLD := preload("res://shaders/v3d/pixel_world.gdshader")
+const SH_SURFACE := preload("res://shaders/v3d/pixel_surface.gdshader")
 const SH_GRATE := preload("res://shaders/v3d/pixel_grate.gdshader")
 const SH_GLOW := preload("res://shaders/v3d/pixel_glow.gdshader")
+const SH_GLASS := preload("res://shaders/v3d/pixel_glass.gdshader")
+const SH_SCREEN := preload("res://shaders/v3d/pixel_screen.gdshader")
+const TEX_DIR := "res://assets/v3d/tex/"
+
+## Per-theme surface tuning: floor B share of the 2x2 m cells, chance a 2 m row of a
+## block's sides uses wall B, chance a whole block does.
+const SURFACE := {
+	"lab": {"floor_b": 0.3, "rows": 0.22, "blocks": 0.0},
+	"cryo": {"floor_b": 0.35, "rows": 0.25, "blocks": 0.0},
+	"boiler": {"floor_b": 0.35, "rows": 0.25, "blocks": 0.0},
+	"sewer": {"floor_b": 0.4, "rows": 0.3, "blocks": 0.0},
+	"rooftop": {"floor_b": 0.35, "rows": 0.0, "blocks": 0.4},
+}
+
+## Warning light states (Gate3D status lamp).
+enum Warn { OFF, BLINK, OPEN }
 
 static var _mat_cache := {}
 static var _mesh_cache := {}
-static var _metal_tex: Texture2D
 
 
 static func palette(theme: String) -> Dictionary:
 	return PALETTES.get(theme, PALETTES["lab"])
 
 
+## Hand-made 3D texture `name` (assets/v3d/tex/<name>.png).
+static func tex(name: String) -> Texture2D:
+	return load(TEX_DIR + name + ".png")
+
+
 ## Shared pixel-art material for a block look in `theme`. Looks:
-## "wall" (9-slice panel art on sides, fill art on tops), "fill" (fill art everywhere),
-## "grate", "cracked", "gate" (object-space, for moving parts), "dark" (dimmed wall).
+## "wall" (floor A/B tops, wall A/B sides, ceiling undersides, base/edge trims),
+## "fill" (same art, wall A only and no trims: furniture), "dark" (dimmed wall),
+## "grate" (see-through bars), "cracked" (crack1 frame), "gate" (steel shutter with a
+## hazard frame, object space so it moves with the gate).
 static func world_material(theme: String, look: String, tint := Color.WHITE) -> Material:
+	if not SURFACE.has(theme):
+		theme = "lab"
 	var key := "%s/%s/%s" % [theme, look, tint.to_html()]
 	if _mat_cache.has(key):
 		return _mat_cache[key]
-	var tex := EnvTheme.textures(theme)
+	match look:
+		"grate":
+			var g := ShaderMaterial.new()
+			g.shader = SH_GRATE
+			g.set_shader_parameter("side_tex", tex("m6_grate"))
+			g.set_shader_parameter("top_tex", tex("m6_grate"))
+			g.set_shader_parameter("tint", tint)
+			g.set_shader_parameter("top_tint", tint)
+			_mat_cache[key] = g
+			return g
+		"cracked":
+			return cracked_material(1, tint)
+		"gate":
+			var gm := ShaderMaterial.new()
+			gm.shader = SH_WORLD
+			gm.set_shader_parameter("side_tex", tex("m9_metal_steel"))
+			gm.set_shader_parameter("top_tex", tex("m9_metal_steel"))
+			gm.set_shader_parameter("local_space", true)
+			gm.set_shader_parameter("frame_tex", tex("m9_metal_hazard"))
+			gm.set_shader_parameter("frame_w", 0.19)
+			gm.set_shader_parameter("tint", Color(0.78, 0.8, 0.85) * tint)
+			gm.set_shader_parameter("top_tint", Color(0.85, 0.87, 0.92) * tint)
+			gm.set_shader_parameter("metal", 0.5)
+			gm.set_shader_parameter("rough", 0.5)
+			_mat_cache[key] = gm
+			return gm
 	var pal := palette(theme)
-	var fill: Texture2D = load("res://assets/env_%s/e1b_wall_fill.png" % theme) if ResourceLoader.exists("res://assets/env_%s/e1b_wall_fill.png" % theme) else tex.wall
+	var cfg: Dictionary = SURFACE[theme]
 	var m := ShaderMaterial.new()
-	m.shader = SH_GRATE if look == "grate" else SH_WORLD
-	var side: Texture2D = tex.wall
-	var top: Texture2D = fill
+	m.shader = SH_SURFACE
+	m.set_shader_parameter("floor_a", tex("m1_floor_a_" + theme))
+	m.set_shader_parameter("floor_b", tex("m1_floor_b_" + theme))
+	m.set_shader_parameter("wall_a", tex("m2_wall_a_" + theme))
+	m.set_shader_parameter("wall_b", tex("m2_wall_b_" + theme))
+	m.set_shader_parameter("ceil_tex", tex("m4_ceiling_" + theme))
+	m.set_shader_parameter("base_trim", tex("m3_wall_base_trim_" + theme))
+	m.set_shader_parameter("edge_trim", tex("m5_edge_trim_" + theme))
+	m.set_shader_parameter("floor_b_chance", cfg.floor_b)
+	m.set_shader_parameter("wall_b_rows", cfg.rows)
+	m.set_shader_parameter("wall_b_blocks", cfg.blocks)
 	var tint_side := tint
 	var tint_top: Color = tint * pal.top_tint
 	match look:
 		"fill":
-			side = fill
-		"grate":
-			side = tex.grate
-			top = tex.grate
-			tint_top = tint
-		"cracked":
-			side = tex.cracked
-			top = tex.cracked
-			tint_top = tint
-		"gate":
-			side = load("res://assets/interactive/ix_gate_tile.png")
-			top = side
-			m.set_shader_parameter("local_space", true)
+			m.set_shader_parameter("wall_b_rows", 0.0)
+			m.set_shader_parameter("wall_b_blocks", 0.0)
+			m.set_shader_parameter("trims", false)
 		"dark":
-			tint_side = tint * Color(0.55, 0.55, 0.6)
-			tint_top = tint * Color(0.6, 0.6, 0.65)
-	m.set_shader_parameter("side_tex", side)
-	m.set_shader_parameter("top_tex", top)
+			tint_side = tint * Color(0.62, 0.62, 0.68)
+			tint_top = tint * Color(0.68, 0.68, 0.72)
 	m.set_shader_parameter("tint", tint_side)
 	m.set_shader_parameter("top_tint", tint_top)
+	m.set_shader_parameter("ceil_tint", tint_side)
 	_mat_cache[key] = m
 	return m
 
 
-## Pixel-art metal (brushed plate, seams, rivets; 32 px = 1 m) tinted `tint`.
-## Used for trims, rails, pipes, plates, turbines: no more flat-colour props.
+## Cracked block (m7 atlas): frame 0 intact, 1 cracked, 2 about to break.
+static func cracked_material(frame: int, tint := Color.WHITE) -> Material:
+	var key := "cracked/%d/%s" % [frame, tint.to_html()]
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+	var m := ShaderMaterial.new()
+	m.shader = SH_WORLD
+	m.set_shader_parameter("side_tex", tex("m7_cracked_block_3f"))
+	m.set_shader_parameter("top_tex", tex("m7_cracked_block_3f"))
+	m.set_shader_parameter("atlas_frames", 3)
+	m.set_shader_parameter("atlas_frame", clampi(frame, 0, 2))
+	m.set_shader_parameter("tint", tint)
+	m.set_shader_parameter("top_tint", tint * 1.08)
+	_mat_cache[key] = m
+	return m
+
+
+## Pixel-art steel (m9 steel, 32 px = 1 m) recoloured to `tint`: trims, rails, plates,
+## turbines and other steel props.
 static func metal_material(tint: Color, shine := 0.55) -> Material:
 	var key := "metal/%s/%.2f" % [tint.to_html(), shine]
 	if _mat_cache.has(key):
 		return _mat_cache[key]
 	var m := ShaderMaterial.new()
 	m.shader = SH_WORLD
-	var tex := metal_texture()
-	m.set_shader_parameter("side_tex", tex)
-	m.set_shader_parameter("top_tex", tex)
-	m.set_shader_parameter("tint", tint * 1.25)
-	m.set_shader_parameter("top_tint", tint * 1.38)
+	m.set_shader_parameter("side_tex", tex("m9_metal_steel"))
+	m.set_shader_parameter("top_tex", tex("m9_metal_steel"))
+	m.set_shader_parameter("recolor", 0.85)
+	m.set_shader_parameter("tint", tint * 1.35)
+	m.set_shader_parameter("top_tint", tint * 1.35)
 	m.set_shader_parameter("metal", shine)
 	m.set_shader_parameter("rough", 0.5)
 	_mat_cache[key] = m
 	return m
+
+
+## Copper (m9 copper pipe art) for pipes, bands and warm metal trims. `pipe`: cylinder
+## mapping (local Y axis) so the highlight streak runs along the pipe.
+static func copper_material(tint := Color.WHITE, pipe := false) -> Material:
+	return _metal_tex_material("m9_metal_copper_pipe", tint, pipe, 0.6)
+
+
+## Steel art wrapped around a pipe (cold / coloured pipes), recoloured to `tint`.
+static func steel_pipe_material(tint: Color) -> Material:
+	var key := "steelpipe/%s" % tint.to_html()
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+	var m := _metal_tex_material("m9_metal_steel", Color.WHITE, true, 0.6, key) as ShaderMaterial
+	m.set_shader_parameter("recolor", 0.85)
+	m.set_shader_parameter("tint", tint * 1.45)
+	m.set_shader_parameter("top_tint", tint * 1.6)
+	return m
+
+
+## Yellow/black hazard stripes (plate rims, drop edges, warning pads, gate frames).
+static func hazard_material() -> Material:
+	return _metal_tex_material("m9_metal_hazard", Color(0.95, 0.95, 0.95), false, 0.2)
+
+
+static func _metal_tex_material(file: String, tint: Color, pipe: bool, shine: float, key := "") -> Material:
+	if key == "":
+		key = "%s/%s/%s" % [file, tint.to_html(), pipe]
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+	var m := ShaderMaterial.new()
+	m.shader = SH_WORLD
+	m.set_shader_parameter("side_tex", tex(file))
+	m.set_shader_parameter("top_tex", tex(file))
+	m.set_shader_parameter("tint", tint)
+	m.set_shader_parameter("top_tint", tint * 1.1)
+	m.set_shader_parameter("metal", shine)
+	m.set_shader_parameter("rough", 0.5)
+	if pipe:
+		m.set_shader_parameter("local_space", true)
+		m.set_shader_parameter("uv_mode", 1)
+		m.set_shader_parameter("bevel", 0.0)
+	_mat_cache[key] = m
+	return m
+
+
+## True for warm (orange/brown) tints: those metals use the copper art.
+static func is_warm(c: Color) -> bool:
+	return c.r > c.b * 1.35 and c.r >= c.g
 
 
 ## Emissive panel / screen / sign (pixel scanlines + dark bezel on box faces).
@@ -171,49 +290,54 @@ static func glow_material(color: Color, energy := 2.0, scanlines := 1.0) -> Mate
 	return m
 
 
-## 32x32 grey metal plate texture generated once (tinted by the material).
-static func metal_texture() -> Texture2D:
-	if _metal_tex:
-		return _metal_tex
-	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 7311
-	var rows := []
-	for y in 32:
-		rows.append(rng.randf_range(-0.035, 0.035))
-	for y in 32:
-		for x in 32:
-			var v: float = 0.78 + rows[y] + rng.randf_range(-0.02, 0.02)
-			if x == 0 or y == 0:
-				v = 0.5
-			elif x == 31 or y == 31:
-				v = 0.62
-			elif x == 1 or y == 1:
-				v = 0.9
-			img.set_pixel(x, y, Color(v, v, v))
-	for c in [Vector2i(4, 4), Vector2i(26, 4), Vector2i(4, 26), Vector2i(26, 26)]:
-		img.set_pixel(c.x, c.y, Color(0.97, 0.97, 0.97))
-		img.set_pixel(c.x + 1, c.y, Color(0.84, 0.84, 0.84))
-		img.set_pixel(c.x, c.y + 1, Color(0.84, 0.84, 0.84))
-		img.set_pixel(c.x + 1, c.y + 1, Color(0.6, 0.6, 0.6))
-		img.set_pixel(c.x + 2, c.y + 2, Color(0.5, 0.5, 0.5))
-	# A couple of faint scratches.
-	for i in 3:
-		var sx := rng.randi_range(6, 22)
-		var sy := rng.randi_range(8, 24)
-		for k in rng.randi_range(4, 8):
-			var px := clampi(sx + k, 2, 29)
-			var col := img.get_pixel(px, sy)
-			img.set_pixel(px, sy, col.lightened(0.12))
-	_metal_tex = ImageTexture.create_from_image(img)
-	return _metal_tex
+## Animated monitor (m10 monitor, 4 frames at 4 fps) filling the face height and
+## repeating across wide faces as a row of panels.
+static func screen_material(energy := 1.5) -> Material:
+	var key := "screen/%.2f" % energy
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+	var m := ShaderMaterial.new()
+	m.shader = SH_SCREEN
+	m.set_shader_parameter("screen_tex", tex("m10_emissive_monitor_4f"))
+	m.set_shader_parameter("screen_frames", 4)
+	m.set_shader_parameter("fps", 4.0)
+	m.set_shader_parameter("energy", energy)
+	_mat_cache[key] = m
+	return m
+
+
+## Round warning lamp (m10 warning light: off / on). OPEN shows it lit green.
+static func warning_material(state: Warn) -> Material:
+	var key := "warn/%d" % state
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+	var m := ShaderMaterial.new()
+	m.shader = SH_SCREEN
+	m.set_shader_parameter("screen_tex", tex("m10_emissive_warning_light_2f"))
+	m.set_shader_parameter("screen_frames", 2)
+	m.set_shader_parameter("cutout", true)
+	m.set_shader_parameter("energy", 2.2)
+	match state:
+		Warn.OFF:
+			m.set_shader_parameter("still_frame", 0)
+			m.set_shader_parameter("energy", 0.6)
+		Warn.BLINK:
+			m.set_shader_parameter("blink", 3.0)
+		Warn.OPEN:
+			m.set_shader_parameter("still_frame", 1)
+			m.set_shader_parameter("recolor_to", Color(0.45, 1.0, 0.55, 1.0))
+	_mat_cache[key] = m
+	return m
 
 
 ## Box mesh of `size` centred on the origin whose UV is the face position in metres
 ## from the face's top-left and UV2 the face size: pixel_world / pixel_glow draw a
 ## texel-snapped bevel along the edges from it. Shared per size.
-static func box_mesh(size: Vector3) -> Mesh:
-	var key := "%.3f/%.3f/%.3f" % [size.x, size.y, size.z]
+## `trims` (pixel_surface): TRIM_BASE draws the base trim band along the bottom 0.5 m
+## of the sides, TRIM_EDGE << face the edge trim along that side's top 0.25 m
+## (stored in COLOR.r / COLOR.g).
+static func box_mesh(size: Vector3, trims := 0) -> Mesh:
+	var key := "%.3f/%.3f/%.3f/%d" % [size.x, size.y, size.z, trims]
 	if _mesh_cache.has(key):
 		return _mesh_cache[key]
 	var h := size / 2.0
@@ -229,8 +353,12 @@ static func box_mesh(size: Vector3) -> Mesh:
 	var norms := PackedVector3Array()
 	var uvs := PackedVector2Array()
 	var uv2s := PackedVector2Array()
+	var cols := PackedColorArray()
 	var idx := PackedInt32Array()
-	for f in faces:
+	for fi in faces.size():
+		var f: Array = faces[fi]
+		var edge := fi < 4 and trims & (TRIM_EDGE << fi) != 0
+		var col := Color(0.0 if trims & TRIM_BASE else 1.0, 0.0 if edge else 1.0, 1.0, 1.0)
 		var n: Vector3 = f[0]
 		var u: Vector3 = f[1]
 		var v: Vector3 = f[2]
@@ -242,6 +370,7 @@ static func box_mesh(size: Vector3) -> Mesh:
 			norms.append(n)
 			uvs.append(Vector2(c.x * w, c.y * hh))
 			uv2s.append(Vector2(w, hh))
+			cols.append(col)
 		idx.append_array([base, base + 1, base + 2, base, base + 2, base + 3])
 	var arr := []
 	arr.resize(Mesh.ARRAY_MAX)
@@ -249,6 +378,7 @@ static func box_mesh(size: Vector3) -> Mesh:
 	arr[Mesh.ARRAY_NORMAL] = norms
 	arr[Mesh.ARRAY_TEX_UV] = uvs
 	arr[Mesh.ARRAY_TEX_UV2] = uv2s
+	arr[Mesh.ARRAY_COLOR] = cols
 	arr[Mesh.ARRAY_INDEX] = idx
 	var m := ArrayMesh.new()
 	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
@@ -259,15 +389,11 @@ static func box_mesh(size: Vector3) -> Mesh:
 static func glass_material() -> Material:
 	if _mat_cache.has("glass"):
 		return _mat_cache["glass"]
-	var m := StandardMaterial3D.new()
-	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	m.albedo_color = Color(0.55, 0.85, 1.0, 0.16)
-	m.roughness = 0.05
-	m.metallic_specular = 0.9
-	m.rim_enabled = true
-	m.rim = 0.6
-	m.rim_tint = 0.2
-	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var m := ShaderMaterial.new()
+	m.shader = SH_GLASS
+	m.set_shader_parameter("side_tex", tex("m8_glass"))
+	m.set_shader_parameter("top_tex", tex("m8_glass"))
+	m.set_shader_parameter("bevel", 0.0)
 	_mat_cache["glass"] = m
 	return m
 

@@ -5,7 +5,9 @@ extends StaticBody2D
 ## Stops everything; an ICE cube sliding into it fast enough (TdPlayer.shatter_speed)
 ## smashes it and keeps sliding.
 
-const FACE := 10.0
+## 3 x 32x32 frames: intact, crack 1, crack 2. Cells show the cracked frames (it breaks
+## in one hit, so it always reads as breakable).
+const TEX_BLOCK := preload("res://assets/topdown/tex/t20_cracked_block_3f.png")
 const TEX_SHARDS: Array[Texture2D] = [
 	preload("res://assets/env/e3c_shard_1.png"),
 	preload("res://assets/env/e3c_shard_2.png"),
@@ -14,18 +16,12 @@ const TEX_SHARDS: Array[Texture2D] = [
 	preload("res://assets/env/e3c_shard_5.png"),
 	preload("res://assets/env/e3c_shard_6.png"),
 ]
-const TEX_CRACKS: Array[Texture2D] = [
-	preload("res://assets/env/e3b_crack_1.png"),
-	preload("res://assets/env/e3b_crack_2.png"),
-]
 const TEX_DUST := preload("res://assets/vfx/v4_dust_5f.png")
 
 @export var size := Vector2(32, 32):
 	set(v):
 		size = v.max(Vector2(16, 16))
 		_refresh()
-
-var _box: StyleBoxTexture
 
 
 func _ready() -> void:
@@ -42,23 +38,20 @@ func _refresh() -> void:
 	if cs and cs.shape is RectangleShape2D:
 		(cs.shape as RectangleShape2D).size = size
 		cs.position = size / 2.0
-	_box = Zone._nine(EnvTheme.textures(EnvTheme.find_theme(self)).cracked, 8.0, 8.0, Vector2(size.x, size.y - FACE))
 	queue_redraw()
 
 
 func _draw() -> void:
-	var top := Rect2(0, 0, size.x, size.y - FACE)
-	if _box:
-		draw_style_box(_box, top)
-	draw_set_transform(Vector2(0, 2))
-	draw_texture_rect_region(TEX_CRACKS[int(position.x / 32.0) % 2], Rect2(0, 0, size.x, top.size.y - 4), Rect2(0, 0, size.x, top.size.y - 4), Color(1, 1, 1, 0.8))
-	draw_set_transform(Vector2.ZERO)
-	var face := Rect2(0, top.end.y, size.x, FACE)
-	draw_rect(face, Color("4a3424"))
-	draw_rect(Rect2(face.position, Vector2(size.x, 1)), Color("a07a52"))
-	draw_rect(Rect2(face.position.x, face.end.y - 1, size.x, 1), Color("1a120c"))
-	for x in range(5, int(size.x), 9):
-		draw_rect(Rect2(x, face.position.y + 2, 1, FACE - 4), Color("2a1c12"))
+	var nx := maxi(1, ceili(size.x / 32.0))
+	var ny := maxi(1, ceili(size.y / 32.0))
+	var base := int(global_position.x / 32.0) + int(global_position.y / 32.0)
+	# contact shadow on the floor below / right of the block
+	draw_rect(Rect2(2, size.y, size.x, 2), Color(0, 0, 0.03, 0.35))
+	draw_rect(Rect2(size.x, 2, 2, size.y), Color(0, 0, 0.03, 0.25))
+	for ty in ny:
+		for tx in nx:
+			var f := 1 + (base + tx + ty) % 2
+			draw_texture_rect_region(TEX_BLOCK, Rect2(Vector2(tx, ty) * 32.0, Vector2(32, 32)), Rect2(f * 32, 0, 32, 32))
 
 
 func shatter(impact_velocity: Vector2) -> void:

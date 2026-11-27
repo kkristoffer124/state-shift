@@ -44,6 +44,7 @@ var _cut_items: Array = []
 
 func _ready() -> void:
 	_apply_theme()
+	assign_trims()
 	if Engine.is_editor_hint():
 		return
 	V3D.set_cut(100000.0)
@@ -101,6 +102,62 @@ static func _bottom_of(n: Node3D) -> float:
 	if n is VisualInstance3D:
 		return (n.global_transform * (n as VisualInstance3D).get_aabb()).position.y
 	return n.global_position.y
+
+
+## Base / edge trim bits for every theme-surface block from its neighbours:
+##  base  sides >= 1.2 m tall standing on another block (top within 6 cm of its bottom)
+##  edge  platforms (footprint >= 1.5 m both ways, >= 0.4 m tall) whose top isn't covered
+##        by a block sitting on most of it: hazard/metal strip along each side whose
+##        top edge is open (no wall standing along it), i.e. the drop edges.
+func assign_trims() -> void:
+	var blocks: Array[Block3D] = []
+	for b in find_children("*", "StaticBody3D", true, false):
+		if b is Block3D and b.kind != Block3D.Kind.DECOR:
+			blocks.append(b)
+	var boxes := {}
+	for b in blocks:
+		boxes[b] = AABB(b.global_position - b.size / 2.0, b.size)
+	for b in blocks:
+		if not b.is_surface():
+			continue
+		var bb: AABB = boxes[b]
+		var flags := 0
+		var bottom := bb.position.y
+		var top := bb.end.y
+		var foot := Rect2(bb.position.x, bb.position.z, bb.size.x, bb.size.z)
+		var area := foot.get_area()
+		var supported := false
+		var covered := 0.0
+		# Strips along the four top edges (+X, -X, +Z, -Z) and how much of each is built on.
+		var e := 0.3
+		var strips := [
+			Rect2(foot.end.x - e, foot.position.y, e, foot.size.y),
+			Rect2(foot.position.x, foot.position.y, e, foot.size.y),
+			Rect2(foot.position.x, foot.end.y - e, foot.size.x, e),
+			Rect2(foot.position.x, foot.position.y, foot.size.x, e),
+		]
+		var strip_cover := [0.0, 0.0, 0.0, 0.0]
+		for o in blocks:
+			if o == b:
+				continue
+			var ob: AABB = boxes[o]
+			var of := Rect2(ob.position.x, ob.position.z, ob.size.x, ob.size.z)
+			var inter := foot.intersection(of).get_area()
+			if inter <= 0.0001:
+				continue
+			if absf(ob.end.y - bottom) < 0.06:
+				supported = true
+			if ob.position.y <= top + 0.06 and ob.end.y > top + 0.06:
+				covered += inter
+				for i in 4:
+					strip_cover[i] += strips[i].intersection(of).get_area()
+		if supported and bb.size.y >= 1.2:
+			flags |= V3D.TRIM_BASE
+		if bb.size.y >= 0.4 and minf(bb.size.x, bb.size.z) >= 1.5 and covered < area * 0.6:
+			for i in 4:
+				if strip_cover[i] < strips[i].get_area() * 0.5:
+					flags |= V3D.TRIM_EDGE << i
+		b.set_trims(flags)
 
 
 ## Union of all solid blocks.

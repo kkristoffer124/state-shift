@@ -41,9 +41,10 @@ func _refresh() -> void:
 	bs.size = Vector3(size.x, 0.6, size.y)
 	_shape.shape = bs
 	_shape.position.y = 0.3
-	_base.mesh = V3D.box_mesh(Vector3(size.x + 0.2, 0.06, size.y + 0.2))
+	# Hazard-striped rim around the pad.
+	_base.mesh = V3D.box_mesh(Vector3(size.x + 0.32, 0.06, size.y + 0.32))
 	_base.position.y = 0.03
-	_base.material_override = V3D.metal_material(Color("3a4656"), 0.5)
+	_base.material_override = V3D.hazard_material()
 	_pad.mesh = V3D.box_mesh(Vector3(size.x, 0.1, size.y))
 	_paint()
 	_pad.position.y = _pad_y

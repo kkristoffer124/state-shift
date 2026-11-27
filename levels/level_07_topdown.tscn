@@ -89,22 +89,22 @@ size = Vector2(96, 96)
 [node name="DrainA" parent="Props" instance=ExtResource("r9")]
 position = Vector2(320, 224)
 target = NodePath("../DrainA2")
-tint = Color(0.4, 0.85, 1, 1)
+tint = Color(0.878431, 0.419608, 0.815686, 1)
 
 [node name="DrainA2" parent="Props" instance=ExtResource("r9")]
 position = Vector2(32, 288)
 target = NodePath("../DrainA")
-tint = Color(0.4, 0.85, 1, 1)
+tint = Color(0.878431, 0.419608, 0.815686, 1)
 
 [node name="DrainB" parent="Props" instance=ExtResource("r9")]
 position = Vector2(832, 352)
 target = NodePath("../DrainB2")
-tint = Color(1, 0.75, 0.3, 1)
+tint = Color(0.94902, 0.760784, 0.188235, 1)
 
 [node name="DrainB2" parent="Props" instance=ExtResource("r9")]
 position = Vector2(832, 224)
 target = NodePath("../DrainB")
-tint = Color(1, 0.75, 0.3, 1)
+tint = Color(0.94902, 0.760784, 0.188235, 1)
 
 [node name="PipeN1" type="Sprite2D" parent="Decor"]
 position = Vector2(940, 12)

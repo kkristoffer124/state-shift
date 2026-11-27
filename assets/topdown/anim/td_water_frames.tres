@@ -1,0 +1,197 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t2_water_idle_8f.png" id="t0"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t2_water_move_n_8f.png" id="t1"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t2_water_move_e_8f.png" id="t2"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t2_water_move_s_8f.png" id="t3"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t2_water_move_w_8f.png" id="t4"]
+
+[sub_resource type="AtlasTexture" id="idle_0"]
+atlas = ExtResource("t0")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_1"]
+atlas = ExtResource("t0")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_2"]
+atlas = ExtResource("t0")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_3"]
+atlas = ExtResource("t0")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_4"]
+atlas = ExtResource("t0")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_5"]
+atlas = ExtResource("t0")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_6"]
+atlas = ExtResource("t0")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_7"]
+atlas = ExtResource("t0")
+region = Rect2(336, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_n_0"]
+atlas = ExtResource("t1")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_n_1"]
+atlas = ExtResource("t1")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_n_2"]
+atlas = ExtResource("t1")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_n_3"]
+atlas = ExtResource("t1")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_n_4"]
+atlas = ExtResource("t1")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_n_5"]
+atlas = ExtResource("t1")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_n_6"]
+atlas = ExtResource("t1")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_n_7"]
+atlas = ExtResource("t1")
+region = Rect2(336, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_e_0"]
+atlas = ExtResource("t2")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_e_1"]
+atlas = ExtResource("t2")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_e_2"]
+atlas = ExtResource("t2")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_e_3"]
+atlas = ExtResource("t2")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_e_4"]
+atlas = ExtResource("t2")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_e_5"]
+atlas = ExtResource("t2")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_e_6"]
+atlas = ExtResource("t2")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_e_7"]
+atlas = ExtResource("t2")
+region = Rect2(336, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_s_0"]
+atlas = ExtResource("t3")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_s_1"]
+atlas = ExtResource("t3")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_s_2"]
+atlas = ExtResource("t3")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_s_3"]
+atlas = ExtResource("t3")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_s_4"]
+atlas = ExtResource("t3")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_s_5"]
+atlas = ExtResource("t3")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_s_6"]
+atlas = ExtResource("t3")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_s_7"]
+atlas = ExtResource("t3")
+region = Rect2(336, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_w_0"]
+atlas = ExtResource("t4")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_w_1"]
+atlas = ExtResource("t4")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_w_2"]
+atlas = ExtResource("t4")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_w_3"]
+atlas = ExtResource("t4")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_w_4"]
+atlas = ExtResource("t4")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_w_5"]
+atlas = ExtResource("t4")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_w_6"]
+atlas = ExtResource("t4")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="move_w_7"]
+atlas = ExtResource("t4")
+region = Rect2(336, 0, 48, 48)
+
+[resource]
+animations = [{
+"frames": [{"duration": 1.0, "texture": SubResource("idle_0")}, {"duration": 1.0, "texture": SubResource("idle_1")}, {"duration": 1.0, "texture": SubResource("idle_2")}, {"duration": 1.0, "texture": SubResource("idle_3")}, {"duration": 1.0, "texture": SubResource("idle_4")}, {"duration": 1.0, "texture": SubResource("idle_5")}, {"duration": 1.0, "texture": SubResource("idle_6")}, {"duration": 1.0, "texture": SubResource("idle_7")}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("move_n_0")}, {"duration": 1.0, "texture": SubResource("move_n_1")}, {"duration": 1.0, "texture": SubResource("move_n_2")}, {"duration": 1.0, "texture": SubResource("move_n_3")}, {"duration": 1.0, "texture": SubResource("move_n_4")}, {"duration": 1.0, "texture": SubResource("move_n_5")}, {"duration": 1.0, "texture": SubResource("move_n_6")}, {"duration": 1.0, "texture": SubResource("move_n_7")}],
+"loop": true,
+"name": &"move_n",
+"speed": 12.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("move_e_0")}, {"duration": 1.0, "texture": SubResource("move_e_1")}, {"duration": 1.0, "texture": SubResource("move_e_2")}, {"duration": 1.0, "texture": SubResource("move_e_3")}, {"duration": 1.0, "texture": SubResource("move_e_4")}, {"duration": 1.0, "texture": SubResource("move_e_5")}, {"duration": 1.0, "texture": SubResource("move_e_6")}, {"duration": 1.0, "texture": SubResource("move_e_7")}],
+"loop": true,
+"name": &"move_e",
+"speed": 12.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("move_s_0")}, {"duration": 1.0, "texture": SubResource("move_s_1")}, {"duration": 1.0, "texture": SubResource("move_s_2")}, {"duration": 1.0, "texture": SubResource("move_s_3")}, {"duration": 1.0, "texture": SubResource("move_s_4")}, {"duration": 1.0, "texture": SubResource("move_s_5")}, {"duration": 1.0, "texture": SubResource("move_s_6")}, {"duration": 1.0, "texture": SubResource("move_s_7")}],
+"loop": true,
+"name": &"move_s",
+"speed": 12.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("move_w_0")}, {"duration": 1.0, "texture": SubResource("move_w_1")}, {"duration": 1.0, "texture": SubResource("move_w_2")}, {"duration": 1.0, "texture": SubResource("move_w_3")}, {"duration": 1.0, "texture": SubResource("move_w_4")}, {"duration": 1.0, "texture": SubResource("move_w_5")}, {"duration": 1.0, "texture": SubResource("move_w_6")}, {"duration": 1.0, "texture": SubResource("move_w_7")}],
+"loop": true,
+"name": &"move_w",
+"speed": 12.0
+}]
+metadata/body = {"idle": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), "move_n": PackedVector2Array(0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -1, 0, -1, 0, -1), "move_e": PackedVector2Array(2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 1, 0, 1, 0, 1, 0), "move_s": PackedVector2Array(0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 1, 0, 1, 0, 1), "move_w": PackedVector2Array(-2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -1, 0, -1, 0, -1, 0)}
+metadata/eye = {"idle": PackedVector2Array(0, -3, 0, -3, 0, -3, 0, -3, 0, -3, 0, -3, 0, -3, 0, -3), "move_n": PackedVector2Array(0, -5, 0, -5, 0, -5, 0, -5, 0, -5, 0, -4, 0, -4, 0, -4), "move_e": PackedVector2Array(2, -3, 2, -3, 2, -3, 2, -3, 2, -3, 1, -3, 1, -3, 1, -3), "move_s": PackedVector2Array(0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -2, 0, -2, 0, -2), "move_w": PackedVector2Array(-2, -3, -2, -3, -2, -3, -2, -3, -2, -3, -1, -3, -1, -3, -1, -3)}

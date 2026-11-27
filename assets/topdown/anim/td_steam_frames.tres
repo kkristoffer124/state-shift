@@ -1,0 +1,165 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t3_steam_idle_8f.png" id="t0"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t3_steam_drift_n_6f.png" id="t1"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t3_steam_drift_e_6f.png" id="t2"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t3_steam_drift_s_6f.png" id="t3"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t3_steam_drift_w_6f.png" id="t4"]
+
+[sub_resource type="AtlasTexture" id="idle_0"]
+atlas = ExtResource("t0")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_1"]
+atlas = ExtResource("t0")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_2"]
+atlas = ExtResource("t0")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_3"]
+atlas = ExtResource("t0")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_4"]
+atlas = ExtResource("t0")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_5"]
+atlas = ExtResource("t0")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_6"]
+atlas = ExtResource("t0")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="idle_7"]
+atlas = ExtResource("t0")
+region = Rect2(336, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_n_0"]
+atlas = ExtResource("t1")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_n_1"]
+atlas = ExtResource("t1")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_n_2"]
+atlas = ExtResource("t1")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_n_3"]
+atlas = ExtResource("t1")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_n_4"]
+atlas = ExtResource("t1")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_n_5"]
+atlas = ExtResource("t1")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_e_0"]
+atlas = ExtResource("t2")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_e_1"]
+atlas = ExtResource("t2")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_e_2"]
+atlas = ExtResource("t2")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_e_3"]
+atlas = ExtResource("t2")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_e_4"]
+atlas = ExtResource("t2")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_e_5"]
+atlas = ExtResource("t2")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_s_0"]
+atlas = ExtResource("t3")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_s_1"]
+atlas = ExtResource("t3")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_s_2"]
+atlas = ExtResource("t3")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_s_3"]
+atlas = ExtResource("t3")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_s_4"]
+atlas = ExtResource("t3")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_s_5"]
+atlas = ExtResource("t3")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_w_0"]
+atlas = ExtResource("t4")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_w_1"]
+atlas = ExtResource("t4")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_w_2"]
+atlas = ExtResource("t4")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_w_3"]
+atlas = ExtResource("t4")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_w_4"]
+atlas = ExtResource("t4")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="drift_w_5"]
+atlas = ExtResource("t4")
+region = Rect2(240, 0, 48, 48)
+
+[resource]
+animations = [{
+"frames": [{"duration": 1.0, "texture": SubResource("idle_0")}, {"duration": 1.0, "texture": SubResource("idle_1")}, {"duration": 1.0, "texture": SubResource("idle_2")}, {"duration": 1.0, "texture": SubResource("idle_3")}, {"duration": 1.0, "texture": SubResource("idle_4")}, {"duration": 1.0, "texture": SubResource("idle_5")}, {"duration": 1.0, "texture": SubResource("idle_6")}, {"duration": 1.0, "texture": SubResource("idle_7")}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("drift_n_0")}, {"duration": 1.0, "texture": SubResource("drift_n_1")}, {"duration": 1.0, "texture": SubResource("drift_n_2")}, {"duration": 1.0, "texture": SubResource("drift_n_3")}, {"duration": 1.0, "texture": SubResource("drift_n_4")}, {"duration": 1.0, "texture": SubResource("drift_n_5")}],
+"loop": true,
+"name": &"drift_n",
+"speed": 10.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("drift_e_0")}, {"duration": 1.0, "texture": SubResource("drift_e_1")}, {"duration": 1.0, "texture": SubResource("drift_e_2")}, {"duration": 1.0, "texture": SubResource("drift_e_3")}, {"duration": 1.0, "texture": SubResource("drift_e_4")}, {"duration": 1.0, "texture": SubResource("drift_e_5")}],
+"loop": true,
+"name": &"drift_e",
+"speed": 10.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("drift_s_0")}, {"duration": 1.0, "texture": SubResource("drift_s_1")}, {"duration": 1.0, "texture": SubResource("drift_s_2")}, {"duration": 1.0, "texture": SubResource("drift_s_3")}, {"duration": 1.0, "texture": SubResource("drift_s_4")}, {"duration": 1.0, "texture": SubResource("drift_s_5")}],
+"loop": true,
+"name": &"drift_s",
+"speed": 10.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("drift_w_0")}, {"duration": 1.0, "texture": SubResource("drift_w_1")}, {"duration": 1.0, "texture": SubResource("drift_w_2")}, {"duration": 1.0, "texture": SubResource("drift_w_3")}, {"duration": 1.0, "texture": SubResource("drift_w_4")}, {"duration": 1.0, "texture": SubResource("drift_w_5")}],
+"loop": true,
+"name": &"drift_w",
+"speed": 10.0
+}]
+metadata/body = {"idle": PackedVector2Array(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), "drift_n": PackedVector2Array(0, -1, 0, -1, 0, -1, 0, -2, 0, -1, 1, -1), "drift_e": PackedVector2Array(2, 0, 1, 0, 1, 0, 1, 0, 1, 0, 2, 0), "drift_s": PackedVector2Array(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 2), "drift_w": PackedVector2Array(-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0)}
+metadata/eye = {"idle": PackedVector2Array(1, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1), "drift_n": PackedVector2Array(0, -2, 0, -2, 0, -2, 0, -3, 0, -2, 1, -2), "drift_e": PackedVector2Array(2, -1, 1, -1, 1, -1, 1, -1, 1, -1, 2, -1), "drift_s": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), "drift_w": PackedVector2Array(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1)}

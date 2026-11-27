@@ -2,7 +2,7 @@
 class_name Skyline3D
 extends MultiMeshInstance3D
 ## Night city around the rooftops: a ring of tower blocks (one MultiMesh, one draw
-## call) with procedural lit windows, plus a far sky band (stars + moon art) and the
+## call) with the lit-window tiles (windows A-D, one style per tower), plus a far sky band (stars + moon art) and the
 ## moon itself. Decor only; seeded so it looks the same every run.
 
 const SH_CITY := preload("res://shaders/v3d/skyline.gdshader")
@@ -48,6 +48,8 @@ func _refresh() -> void:
 	box.size = Vector3.ONE
 	var mat := ShaderMaterial.new()
 	mat.shader = SH_CITY
+	for k in ["a", "b", "c", "d"]:
+		mat.set_shader_parameter("win_" + k, V3D.tex("m10_emissive_windows_" + k))
 	box.material = mat
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D

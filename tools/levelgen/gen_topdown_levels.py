@@ -223,13 +223,13 @@ def ch7():
     s.node("Goal", parent="Zones", instance="res://scenes/topdown/td_goal.tscn", props={
         "position": v2(25 * C, 2 * C), "size": v2(96, 96)})
     s.node("DrainA", parent="Props", instance="res://scenes/topdown/td_drain.tscn", props={
-        "position": v2(10 * C, 7 * C), "target": 'NodePath("../DrainA2")', "tint": col(0.4, 0.85, 1)})
+        "position": v2(10 * C, 7 * C), "target": 'NodePath("../DrainA2")', "tint": col(0.878431, 0.419608, 0.815686)})
     s.node("DrainA2", parent="Props", instance="res://scenes/topdown/td_drain.tscn", props={
-        "position": v2(1 * C, 9 * C), "target": 'NodePath("../DrainA")', "tint": col(0.4, 0.85, 1)})
+        "position": v2(1 * C, 9 * C), "target": 'NodePath("../DrainA")', "tint": col(0.878431, 0.419608, 0.815686)})
     s.node("DrainB", parent="Props", instance="res://scenes/topdown/td_drain.tscn", props={
-        "position": v2(26 * C, 11 * C), "target": 'NodePath("../DrainB2")', "tint": col(1, 0.75, 0.3)})
+        "position": v2(26 * C, 11 * C), "target": 'NodePath("../DrainB2")', "tint": col(0.94902, 0.760784, 0.188235)})
     s.node("DrainB2", parent="Props", instance="res://scenes/topdown/td_drain.tscn", props={
-        "position": v2(26 * C, 7 * C), "target": 'NodePath("../DrainB")', "tint": col(1, 0.75, 0.3)})
+        "position": v2(26 * C, 7 * C), "target": 'NodePath("../DrainB")', "tint": col(0.94902, 0.760784, 0.188235)})
     decor_ch7(s)
     s.node("Hints", "Node2D", props={"z_index": "30"})
     hint(s, "Hint1", 20, 20, 260, "WATER slips through bars")

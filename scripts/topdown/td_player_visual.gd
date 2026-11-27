@@ -2,14 +2,17 @@
 extends Node2D
 ## What you SEE of the top-down blob (td_player.tscn -> Visual). Physics in td_player.gd;
 ## everything here is cosmetic and never feeds back into movement.
-##  ICE   animated cube: leans/stretches along the slide, jelly squash on impact,
-##        speed lines, afterimages, sparkle trail (IceSparkles), chips
-##  WATER animated blob: wobbles and stretches the way it moves, eyes follow, ripple
-##        rings + a fading puddle trail (WetTrail); swirls down drains, pops out the other
-##  STEAM a cluster of puffs hovering above its shadow; puffs sway and lag behind,
-##        the shadow shrinks/fades with hover height, sheds wisps
-## State shifts cross-fade the two bodies (scale + alpha) with a frost burst / splash /
-## puff ring. Death (splat / fall) and goal-absorb animations, blinking, glancing eyes.
+## Sprites: assets/topdown/anim/td_*_frames.tres (built by make_frames.py), one
+## direction-correct strip per motion, picked by the dominant axis of the motion.
+##  ICE   idle / slide_<dir> / impact_<dir> (into the wall it hit); leans and stretches
+##        along the slide, speed lines, afterimages, sparkle trail (IceSparkles), chips
+##  WATER idle / move_<dir>; extra wobble, eyes follow, ripple rings + a fading puddle
+##        trail (WetTrail); swirls down drains, pops out the other
+##  STEAM idle / drift_<dir> hovering above its shadow (smaller + fainter), sheds wisps
+## State shifts play the Shift strip (melt / freeze / boil / condense) in place of the
+## bodies, then the new state's idle, with a frost burst / splash / puff ring.
+## Death (splat / fall) and goal-absorb animations; procedural eyes (the art has none)
+## sit on per-frame anchors baked into the SpriteFrames metadata (`eye`, `body`).
 ## The blob's "height" is faked by lifting the Body above the Shadow.
 ## Settings.reduce_motion (if present) tones squash, wobble and particles down.
 
@@ -20,16 +23,19 @@ const TEX_PUFFS: Array[Texture2D] = [
 ]
 const TEX_SPARK := preload("res://assets/vfx/v1_sparkle.png")
 const TEX_DROP := preload("res://assets/player/p2e_droplet.png")
-## Puff layout of the steam cloud: offset, size index, wobble phase.
-const CLOUD := [
-	[Vector2(0, 3), 0, 0.0], [Vector2(-9, 2), 1, 1.3], [Vector2(9, 2), 1, 2.1],
-	[Vector2(-5, -5), 1, 0.7], [Vector2(6, -6), 2, 2.9], [Vector2(-13, -2), 2, 3.7],
-	[Vector2(13, -1), 2, 4.4],
+## Ground shadow per state (ice / water / steam): steam hovers, so its shadow is the small one.
+const TEX_SHADOWS: Array[Texture2D] = [
+	preload("res://assets/topdown/anim/t5_shadow_30.png"),
+	preload("res://assets/topdown/anim/t5_shadow_30.png"),
+	preload("res://assets/topdown/anim/t5_shadow_20.png"),
 ]
-const ICE_OFFSET := Vector2(0, -6)
-const WATER_OFFSET := Vector2(0, -19)
+## Shift strip per "from>to" state change.
+const SHIFT_ANIM := {"0>1": &"melt", "1>0": &"freeze", "1>2": &"boil", "2>1": &"condense"}
+const BODY_OFFSET := Vector2(0, -4)
+const SHADOW_Y := 8.0
 const STEAM_LIFT := 12.0
-const MORPH_TIME := 0.3
+## Length of the shift strips (8 frames @ 16 fps).
+const MORPH_TIME := 0.5
 const SPLAT_TIME := 0.45
 
 @onready var player: TdPlayer = get_parent() as TdPlayer
@@ -37,16 +43,17 @@ const SPLAT_TIME := 0.45
 @onready var body: Node2D = $Body
 @onready var ice: AnimatedSprite2D = $Body/Ice
 @onready var water: AnimatedSprite2D = $Body/Water
-@onready var cloud: Node2D = $Body/Cloud
+@onready var steam: AnimatedSprite2D = $Body/Steam
+@onready var shift_spr: AnimatedSprite2D = $Body/Shift
 @onready var face: Node2D = $Body/Face
 @onready var speed_lines: Sprite2D = $Body/SpeedLines
 @onready var wisps: CPUParticles2D = $Wisps
 @onready var trail: Node2D = $WetTrail
 @onready var sparkles: CPUParticles2D = get_node_or_null("IceSparkles") as CPUParticles2D
 
-static var _eye_cache := {}
-
 var _t := 0.0
+## True while the Shift strip plays (the state bodies are hidden meanwhile).
+var _shifting := false
 var _after := 0.0
 var _trail_from := Vector2.INF
 var _bob := 0.0
@@ -57,9 +64,8 @@ var _sq_v := Vector2.ZERO
 var _lean := 0.0
 var _lean_v := 0.0
 var _lift := 0.0
-## Morph between states: 0 -> 1 after a shift; _from_state fades out.
+## Morph clock: 0 -> 1 over the shift strip.
 var _morph := 1.0
-var _from_state := -1
 var _heating := true
 ## Drain swirl: extra body rotation while squeezing.
 var _spin := 0.0
@@ -79,11 +85,14 @@ var _rm_check := 0.0
 
 func _ready() -> void:
 	face.draw.connect(_draw_face)
-	cloud.draw.connect(_draw_cloud)
-	ice.position = ICE_OFFSET
-	water.position = WATER_OFFSET
+	for s: AnimatedSprite2D in [ice, water, steam, shift_spr]:
+		s.position = BODY_OFFSET
+		s.flip_h = false
 	ice.play("idle")
 	water.play("idle")
+	steam.play("idle")
+	if not Engine.is_editor_hint():
+		shift_spr.animation_finished.connect(_on_shift_finished)
 
 
 func _reduce_motion() -> bool:
@@ -98,12 +107,53 @@ func _add_fx(n: Node2D, at: Vector2, z := 7) -> void:
 	n.global_position = at
 
 
+## Compass letter of a motion's dominant axis. `keep` (the current letter) wins near-ties
+## so diagonal motion doesn't flicker between two strips.
+static func _dir_of(v: Vector2, keep := "") -> String:
+	var ax := absf(v.x)
+	var ay := absf(v.y)
+	if keep in ["e", "w"] and ax * 1.25 >= ay and ax > 0.0:
+		return "e" if v.x > 0.0 else "w"
+	if keep in ["n", "s"] and ay * 1.25 >= ax and ay > 0.0:
+		return "s" if v.y > 0.0 else "n"
+	if ax >= ay:
+		return "e" if v.x >= 0.0 else "w"
+	return "s" if v.y > 0.0 else "n"
+
+
+static func _dir_letter(anim: StringName) -> String:
+	var a := String(anim)
+	var i := a.rfind("_")
+	return a.substr(i + 1) if i >= 0 else ""
+
+
+## Switch to `anim`, keeping the frame / progress when it is the same motion in a new
+## direction (the strips of one motion have the same length).
+static func _play_keep(s: AnimatedSprite2D, anim: StringName) -> void:
+	if s.animation == anim and s.is_playing():
+		return
+	var same_family := String(s.animation).get_slice("_", 0) == String(anim).get_slice("_", 0)
+	var f := s.frame
+	var prog := s.frame_progress
+	s.play(anim)
+	if same_family and f < s.sprite_frames.get_frame_count(anim):
+		s.set_frame_and_progress(f, prog)
+
+
 # --- Events from td_player.gd ----------------------------------------------------------
 
 func on_shift(heating: bool) -> void:
 	_heating = heating
-	_from_state = player.state - 1 if heating else player.state + 1
-	_morph = 0.0 if not _rm else 0.6
+	var from_state := player.state - 1 if heating else player.state + 1
+	_morph = 0.0
+	var key := "%d>%d" % [from_state, player.state]
+	if SHIFT_ANIM.has(key):
+		_shifting = true
+		shift_spr.play(SHIFT_ANIM[key])
+		# the ice / steam bodies restart from idle once the strip is done
+		ice.play("idle")
+		water.play("idle")
+		steam.play("idle")
 	var ring := Sprite2D.new()
 	ring.texture = Player.TEX_BURST
 	ring.hframes = 5
@@ -119,7 +169,6 @@ func on_shift(heating: bool) -> void:
 			_spawn_chips(3 if _rm else 6)
 			_spray(TEX_SPARK, at + Vector2(0, -6), 4 if _rm else 10, 28.0, Color(0.8, 0.95, 1.0), 0.45, 0.0)
 		TdPlayer.State.WATER:
-			water.play("land")
 			player.splash.global_position = at
 			player.splash.restart()
 			if trail:
@@ -130,19 +179,26 @@ func on_shift(heating: bool) -> void:
 			_puff_ring(at + Vector2(0, -8), 4 if _rm else 8)
 
 
+func _on_shift_finished() -> void:
+	_shifting = false
+	_morph = 1.0
+
+
 func on_push() -> void:
-	ice.play("slide")
+	ice.play("slide_" + _dir_of(player.slide_dir))
 	if not _rm:
-		_lean_v -= player.slide_dir.x * 4.0
+		_lean_v -= player.slide_dir.x * 2.0
 
 
 func on_ice_stop(impact: float) -> void:
-	ice.play("stop")
+	# the impact strip squashes the cube against the wall it hit (player.look = slide dir)
+	if not _shifting:
+		ice.play("impact_" + _dir_of(player.look))
 	var k := clampf(impact / 540.0, 0.2, 1.0)
 	if not _rm:
-		# tip forward into the wall, then wobble back
-		_lean_v += player.look.x * 5.0 * k
-		_sq_v += (Vector2(-3.0, 3.0) if absf(player.look.x) > 0.0 else Vector2(3.0, -3.0)) * k
+		# tip forward into the wall, then wobble back (the strip does the big squash)
+		_lean_v += player.look.x * 3.0 * k
+		_sq_v += (Vector2(-1.2, 1.2) if absf(player.look.x) > 0.0 else Vector2(1.2, -1.2)) * k
 	if impact > 300.0:
 		_spawn_chips(int(clampf(impact / 90.0, 3, 7)))
 	_spray(TEX_SPARK, player.global_position + player.look * 12.0 + Vector2(0, -4), 3 if _rm else 6, 18.0, Color(0.85, 0.97, 1.0), 0.35, 0.0)
@@ -206,8 +262,9 @@ func _process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		ice.visible = st == TdPlayer.State.ICE
 		water.visible = st == TdPlayer.State.WATER
-		cloud.visible = st == TdPlayer.State.STEAM
-		cloud.queue_redraw()
+		steam.visible = st == TdPlayer.State.STEAM
+		shift_spr.visible = false
+		shadow.texture = TEX_SHADOWS[st]
 		face.queue_redraw()
 		return
 	_rm_check -= delta
@@ -242,6 +299,9 @@ func _process(delta: float) -> void:
 
 	# --- squash: jelly spring toward what the physics asked for, plus motion stretch
 	var target := player.squash
+	if st == TdPlayer.State.ICE and String(ice.animation).begins_with("impact") and ice.is_playing():
+		# the impact strip already squashes the cube: keep only a hint of the physics jolt
+		target = Vector2.ONE.lerp(target, 0.3)
 	if splat:
 		target = Vector2(1.0, 1.0).lerp(Vector2(1.9, 0.18), _ease_out(splat_k))
 	target *= _motion_stretch(st)
@@ -278,19 +338,25 @@ func _process(delta: float) -> void:
 		mod.a = 1.0 - _ease_out(clampf((splat_k - 0.4) / 0.6, 0.0, 1.0))
 	body.modulate = mod
 
-	# --- shadow: tight and dark on the floor, wide and faint when hovering
+	# --- shadow: tight and dark on the floor; small and faint under the hovering steam
 	var hover := clampf(_lift / STEAM_LIFT, 0.0, 1.5)
-	shadow.position = player.vis_offset.round() + Vector2(0, 9.0 + hover)
-	var base := 1.0 if st == TdPlayer.State.ICE else 0.85
+	shadow.texture = TEX_SHADOWS[TdPlayer.State.STEAM if hover > 0.5 else mini(st, TdPlayer.State.WATER)]
+	shadow.position = player.vis_offset.round() + Vector2(0, SHADOW_Y + roundf(hover * 2.0))
+	var base := Vector2.ONE
 	if st == TdPlayer.State.WATER:
-		base = 0.85 * (1.0 + (_sq.x - 1.0) * 0.6)
-	shadow.scale = Vector2(base * (1.0 - hover * 0.18), base * (1.0 - hover * 0.22)) * (1.0 - fall)
-	shadow.modulate.a = lerpf(0.85, 0.4, clampf(hover, 0.0, 1.0)) * (1.0 - fall) * (1.0 - win)
+		base = Vector2(1.0 + (_sq.x - 1.0) * 0.6, 1.0 + (_sq.y - 1.0) * 0.3)
+	elif hover > 0.5:
+		# breathes with the bob: higher = smaller
+		base = Vector2.ONE * (1.0 - _bob * 0.03)
+	shadow.scale = base * (1.0 - fall)
+	shadow.modulate.a = lerpf(0.9, 0.45, clampf(hover, 0.0, 1.0)) * (1.0 - fall) * (1.0 - win)
 
-	match st:
-		TdPlayer.State.ICE: _update_ice(delta)
-		TdPlayer.State.WATER: _update_water(delta)
-	speed_lines.visible = show and st == TdPlayer.State.ICE and player.slide_speed > 300.0 and _morph >= 1.0
+	if not _shifting:
+		match st:
+			TdPlayer.State.ICE: _update_ice(delta)
+			TdPlayer.State.WATER: _update_water(delta)
+			TdPlayer.State.STEAM: _update_steam()
+	speed_lines.visible = show and st == TdPlayer.State.ICE and player.slide_speed > 300.0 and not _shifting
 	wisps.emitting = show and st == TdPlayer.State.STEAM and not _rm
 	if wisps.emitting:
 		wisps.position = body.position
@@ -301,27 +367,24 @@ func _process(delta: float) -> void:
 	if st != TdPlayer.State.WATER:
 		_trail_from = Vector2.INF
 	_update_eyes(delta)
-	cloud.queue_redraw()
 	face.queue_redraw()
 
 
-## Stretch from motion: ice along its slide axis, water toward where it flows.
+## Stretch from motion on top of the strips: ice along its slide axis (the slide strips
+## don't stretch), water just a jelly wobble (the move strips already elongate).
 func _motion_stretch(st: int) -> Vector2:
 	if player.busy or player.dead:
 		return Vector2.ONE
 	if st == TdPlayer.State.ICE and player.is_sliding():
 		var f := clampf(player.slide_speed / player.ice_max_speed, 0.0, 1.0)
-		var along := 1.0 + 0.16 * f
-		var across := 1.0 - 0.09 * f
+		var along := 1.0 + 0.12 * f
+		var across := 1.0 - 0.07 * f
 		return Vector2(along, across) if player.slide_dir.x != 0.0 else Vector2(across, along)
 	if st == TdPlayer.State.WATER:
-		var v := _vel_s
-		var m := clampf(v.length() / player.water_speed, 0.0, 1.0)
-		var n := v.normalized() if m > 0.02 else Vector2.ZERO
-		var wob := sin(_t * 15.0) * 0.07 * m
-		var idle := sin(_t * 3.1) * 0.025 * (1.0 - m)
-		return Vector2(1.0 + 0.13 * m * absf(n.x) - 0.05 * m * absf(n.y) + wob + idle,
-			1.0 + 0.1 * m * absf(n.y) - 0.07 * m * absf(n.x) - wob - idle)
+		var m := clampf(_vel_s.length() / player.water_speed, 0.0, 1.0)
+		var wob := sin(_t * 15.0) * 0.045 * m
+		var idle := sin(_t * 3.1) * 0.02 * (1.0 - m)
+		return Vector2(1.0 + wob + idle, 1.0 - wob - idle)
 	if st == TdPlayer.State.STEAM:
 		return Vector2(1.0 + sin(_t * 3.3) * 0.03, 1.0 + cos(_t * 2.9) * 0.03)
 	return Vector2.ONE
@@ -333,46 +396,28 @@ func _lean_target(st: int) -> float:
 	if st == TdPlayer.State.ICE and player.is_sliding() and player.slide_dir.x != 0.0:
 		# top lags behind while it is still picking up speed
 		var f := clampf(player.slide_speed / player.ice_max_speed, 0.0, 1.0)
-		return -player.slide_dir.x * 0.16 * (1.0 - f) - player.slide_dir.x * 0.05
+		return -player.slide_dir.x * 0.08 * (1.0 - f) - player.slide_dir.x * 0.03
 	if st == TdPlayer.State.WATER:
-		return -clampf(_vel_s.x / player.water_speed, -1.0, 1.0) * 0.14
+		return -clampf(_vel_s.x / player.water_speed, -1.0, 1.0) * 0.1
 	if st == TdPlayer.State.STEAM:
-		return -clampf(_vel_s.x / 200.0, -1.0, 1.0) * 0.12
+		return -clampf(_vel_s.x / 200.0, -1.0, 1.0) * 0.08
 	return 0.0
 
 
-## Visibility + cross-fade of the three bodies during a morph.
+## Which body is visible: the Shift strip while morphing, else the current state's.
 func _update_layers(st: int, show: bool) -> void:
-	var k := _ease_out(_morph)
-	var nodes := [ice, water, cloud]
-	var offs := [ICE_OFFSET, WATER_OFFSET, Vector2.ZERO]
+	var bodies := [ice, water, steam]
 	for i in 3:
-		var n: Node2D = nodes[i]
-		var a := 0.0
-		var sc := 1.0
-		if i == st:
-			a = k
-			sc = lerpf(0.55 if _heating else 1.35, 1.0, _ease_back(_morph))
-		elif i == _from_state and _morph < 1.0:
-			a = 1.0 - k
-			# melting ice slumps; boiling water swells; condensing steam shrinks
-			sc = lerpf(1.0, 1.4 if _heating else 0.6, k)
-		n.visible = show and a > 0.01
-		n.modulate.a = a
-		var v := Vector2(sc, sc)
-		if i == TdPlayer.State.ICE and i == _from_state and _heating:
-			v = Vector2(lerpf(1.0, 1.3, k), lerpf(1.0, 0.5, k))
-		n.scale = v
-		n.position = (offs[i] as Vector2) * v.y
+		(bodies[i] as AnimatedSprite2D).visible = show and i == st and not _shifting
+	shift_spr.visible = show and _shifting
 
 
 func _update_ice(delta: float) -> void:
 	var d := player.slide_dir
-	if d.x != 0.0:
-		ice.flip_h = d.x < 0.0
 	if d != Vector2.ZERO:
-		if ice.animation != &"slide":
-			ice.play("slide")
+		var anim := StringName("slide_" + _dir_of(d))
+		if ice.animation != anim:
+			ice.play(anim)
 		speed_lines.rotation = 0.0 if d.x != 0.0 else PI / 2.0
 		speed_lines.flip_h = d.x < 0.0 or d.y < 0.0
 		speed_lines.position = -d * 26.0 + Vector2(0, -4)
@@ -381,21 +426,15 @@ func _update_ice(delta: float) -> void:
 		if player.slide_speed > 320.0 and _after <= 0.0 and not _rm:
 			_after = 0.04
 			_spawn_afterimage()
-	elif ice.animation == &"slide":
-		ice.play("stop")
-	elif not ice.is_playing():
+	elif String(ice.animation).begins_with("slide") or not ice.is_playing():
+		# impact strips play out (once) and hand back to idle
 		ice.play("idle")
 
 
 func _update_water(delta: float) -> void:
 	var v := player.velocity
-	if absf(v.x) > 5.0:
-		water.flip_h = v.x < 0.0
-	if water.animation == &"land" and water.is_playing():
-		pass
-	elif v.length() > 20.0:
-		if water.animation != &"move":
-			water.play("move")
+	if v.length() > 20.0:
+		_play_keep(water, StringName("move_" + _dir_of(v, _dir_letter(water.animation))))
 	elif water.animation != &"idle":
 		water.play("idle")
 	var p := player.global_position
@@ -417,6 +456,14 @@ func _update_water(delta: float) -> void:
 	elif p.distance_to(_trail_from) > 7.0:
 		_trail_from = p
 		trail.add_spot(p + Vector2(randf_range(-3, 3), 6 + randf_range(-2, 2)), randf_range(3.0, 5.5), 2.6)
+
+
+func _update_steam() -> void:
+	# smoothed velocity: wind gusts and drift ease in, so the strip doesn't flicker
+	if _vel_s.length() > 18.0:
+		_play_keep(steam, StringName("drift_" + _dir_of(_vel_s, _dir_letter(steam.animation))))
+	elif steam.animation != &"idle":
+		steam.play("idle")
 
 
 func _update_eyes(delta: float) -> void:
@@ -469,12 +516,6 @@ static func _ease_out(k: float) -> float:
 	return 1.0 - pow(1.0 - clampf(k, 0.0, 1.0), 3.0)
 
 
-static func _ease_back(k: float) -> float:
-	k = clampf(k, 0.0, 1.0)
-	var c1 := 1.9
-	return 1.0 + (c1 + 1.0) * pow(k - 1.0, 3.0) + c1 * pow(k - 1.0, 2.0)
-
-
 ## Little sprites thrown outward that slow down and fade.
 func _spray(tex: Texture2D, at: Vector2, n: int, dist: float, col: Color, life: float, grav: float) -> void:
 	for i in n:
@@ -509,11 +550,11 @@ func _puff_ring(at: Vector2, n: int) -> void:
 		tw.tween_callback(sp.queue_free)
 
 
+## A fading copy of the current slide frame left behind at speed.
 func _spawn_afterimage() -> void:
 	var g := Sprite2D.new()
-	g.texture = PlayerVisual.TEX_AFTER[randi() % 2]
-	g.flip_h = ice.flip_h
-	g.modulate = Color(1, 1, 1, 0.4)
+	g.texture = ice.sprite_frames.get_frame_texture(ice.animation, ice.frame)
+	g.modulate = Color(0.8, 0.95, 1.0, 0.35)
 	g.scale = body.scale
 	_add_fx(g, ice.global_position.round(), 5)
 	var tw := g.create_tween()
@@ -536,23 +577,7 @@ func _spawn_chips(n: int) -> void:
 		tw.chain().tween_callback(c.queue_free)
 
 
-# --- Steam cloud + face -------------------------------------------------------------------
-
-func _draw_cloud() -> void:
-	# outer puffs trail behind the motion, each with its own sway
-	var drag := (-_vel_s * 0.03).limit_length(7.0)
-	for i in CLOUD.size():
-		var e: Array = CLOUD[i]
-		var tex: Texture2D = TEX_PUFFS[e[1]]
-		var o: Vector2 = e[0]
-		var lag := 0.25 + o.length() / 13.0
-		var sway := 1.5 if not _rm else 0.6
-		var off: Vector2 = o + drag * lag + Vector2(sin(_t * 2.0 + e[2]) * sway, cos(_t * 1.6 + e[2]) * sway * 0.8)
-		var breathe := 1.0 + sin(_t * 2.6 + e[2]) * 0.06
-		var sz := tex.get_size() * breathe
-		cloud.draw_texture_rect(tex, Rect2((off - sz * 0.5).round(), sz.round()), false)
-	cloud.draw_texture(Player.TEX_CORE_GLOW, -Player.TEX_CORE_GLOW.get_size() * 0.5 + Vector2(0, -1), Color(1, 1, 1, 0.45 + sin(_t * 3.0) * 0.12))
-
+# --- Face -----------------------------------------------------------------------------------
 
 func _expression() -> String:
 	if player.won:
@@ -568,25 +593,13 @@ func _expression() -> String:
 	return ""
 
 
-func _eye_anchor(s: AnimatedSprite2D, is_ice: bool) -> Vector2:
-	var tex := s.sprite_frames.get_frame_texture(s.animation, s.frame)
-	if tex == null:
-		return Vector2.ZERO
-	var key := "%s|%s|%d" % [s.sprite_frames.resource_path, s.animation, s.frame]
-	var a: Vector2
-	if _eye_cache.has(key):
-		a = _eye_cache[key]
-	else:
-		var img := tex.get_image()
-		var r := img.get_used_rect() if img else Rect2i(0, 0, tex.get_width(), tex.get_height())
-		var fs := Vector2(tex.get_width(), tex.get_height())
-		if is_ice:
-			a = Vector2(r.get_center()) - fs * 0.5 + Vector2(0, -2)
-		else:
-			a = Vector2(r.get_center().x, r.position.y + 10) - fs * 0.5
-		_eye_cache[key] = a
-	if s.flip_h:
-		a.x = -a.x
+## Per-frame anchor (`eye` or `body`, from the SpriteFrames metadata) in Body space.
+static func _anchor(s: AnimatedSprite2D, key: String) -> Vector2:
+	var a := Vector2.ZERO
+	var meta: Dictionary = s.sprite_frames.get_meta(key, {})
+	var pts: PackedVector2Array = meta.get(String(s.animation), PackedVector2Array())
+	if s.frame < pts.size():
+		a = pts[s.frame]
 	return s.position + a * s.scale
 
 
@@ -595,24 +608,25 @@ func _draw_face() -> void:
 		return
 	if player.dead:
 		if player.fall_t < 0.0 and _dead_t < SPLAT_TIME:
-			_eye_set(Player.TEX_EYES.dizzy, Vector2(0, 2 + sin(_t * 8.0) * 1.5))
+			_eye_set(Player.TEX_EYES.dizzy, Vector2(0, -2 + sin(_t * 8.0) * 1.5))
 		return
+	if _shifting:
+		return # eyes pop back in once the new body has formed
 	var at := Vector2.ZERO
 	match player.state:
 		TdPlayer.State.ICE:
-			at = _eye_anchor(ice, true)
-			var cube := ice.position + Vector2(0, 3)
+			at = _anchor(ice, "eye")
+			var cube := _anchor(ice, "body").round()
 			if player.crack > 0.05:
+				# 30 px crack art trimmed to the 26 px cube
 				var lv := clampi(ceili(player.crack) - 1, 0, 2)
-				face.draw_texture(Player.TEX_ICE_CRACKS[lv], cube + Vector2(-15, -15), Color(1, 1, 1, clampf(player.crack - lv, 0.3, 1.0)))
+				face.draw_texture_rect_region(Player.TEX_ICE_CRACKS[lv], Rect2(cube - Vector2(13, 13), Vector2(26, 26)), Rect2(2, 2, 26, 26), Color(1, 1, 1, clampf(player.crack - lv, 0.3, 1.0)))
 			if player.locked:
-				face.draw_texture(Player.TEX_FROST_RIM, cube + Vector2(-15, -15), Color(1, 1, 1, 0.7 + sin(_t * 6.0) * 0.3))
+				face.draw_texture(Player.TEX_FROST_RIM, cube - Vector2(15, 15), Color(1, 1, 1, 0.7 + sin(_t * 6.0) * 0.3))
 		TdPlayer.State.WATER:
-			at = _eye_anchor(water, false)
+			at = _anchor(water, "eye")
 		TdPlayer.State.STEAM:
-			at = Vector2(0, -1) + (-_vel_s * 0.01).limit_length(2.0)
-	if _morph < 0.5:
-		return # eyes pop back in once the new body has formed
+			at = _anchor(steam, "eye") + (-_vel_s * 0.01).limit_length(1.5)
 	var jitter := sin(_t * 70.0) * 2.0 if player.blocked_flash > 0.0 else 0.0
 	at += Vector2(jitter, 2)
 	var expr := _expression()

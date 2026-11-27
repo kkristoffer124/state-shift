@@ -11,34 +11,77 @@ extends Node2D
 ## Gates, plates, drains, bars, zones and decor are their own nodes on top.
 
 const CELL := 32
-## Height (px) of the south-facing wall strip that gives walls their depth.
-const FACE := 12
+## Height (px) of the south-facing wall strip that gives walls their depth (t12 art).
+const FACE := 16
 const WALL := "#"
 const PIT := "o"
 const SEWAGE := "~"
 const SPIKES := "^"
+## Share (%) of floor cells that get a detail tile (crack / stain / bolts / vent).
+const DETAIL_PCT := 11
 
-const TEX_FLOOR := {
-	"lab": preload("res://assets/topdown/td_floor_lab.png"),
-	"sewer": preload("res://assets/topdown/td_floor_sewer.png"),
+const TEX_FLOOR_PLAIN := {
+	"lab": [
+		preload("res://assets/topdown/tex/t10_floor_plain_1_lab.png"),
+		preload("res://assets/topdown/tex/t10_floor_plain_2_lab.png"),
+		preload("res://assets/topdown/tex/t10_floor_plain_3_lab.png"),
+		preload("res://assets/topdown/tex/t10_floor_plain_4_lab.png"),
+	],
+	"sewer": [
+		preload("res://assets/topdown/tex/t10_floor_plain_1_sewer.png"),
+		preload("res://assets/topdown/tex/t10_floor_plain_2_sewer.png"),
+		preload("res://assets/topdown/tex/t10_floor_plain_3_sewer.png"),
+		preload("res://assets/topdown/tex/t10_floor_plain_4_sewer.png"),
+	],
 }
-const TEX_FACE := {
-	"lab": preload("res://assets/topdown/td_face_lab.png"),
-	"sewer": preload("res://assets/topdown/td_face_sewer.png"),
+const TEX_FLOOR_DETAIL := {
+	"lab": [
+		preload("res://assets/topdown/tex/t10_floor_detail_1_lab.png"),
+		preload("res://assets/topdown/tex/t10_floor_detail_2_lab.png"),
+		preload("res://assets/topdown/tex/t10_floor_detail_3_lab.png"),
+		preload("res://assets/topdown/tex/t10_floor_detail_4_lab.png"),
+	],
+	"sewer": [
+		preload("res://assets/topdown/tex/t10_floor_detail_1_sewer.png"),
+		preload("res://assets/topdown/tex/t10_floor_detail_2_sewer.png"),
+		preload("res://assets/topdown/tex/t10_floor_detail_3_sewer.png"),
+		preload("res://assets/topdown/tex/t10_floor_detail_4_sewer.png"),
+	],
 }
+## 96x96 9-slices (32 px cells), autotiled per quadrant.
+const TEX_WALL_TOP := {
+	"lab": preload("res://assets/topdown/tex/t11_wall_top_9s32_lab.png"),
+	"sewer": preload("res://assets/topdown/tex/t11_wall_top_9s32_sewer.png"),
+}
+const TEX_PIT := {
+	"lab": preload("res://assets/topdown/tex/t13_pit_9s32_lab.png"),
+	"sewer": preload("res://assets/topdown/tex/t13_pit_9s32_sewer.png"),
+}
+## 32x16 south faces; a / b alternate along a wall run.
+const TEX_WALL_FRONT := {
+	"lab": [
+		preload("res://assets/topdown/tex/t12_wall_front_a_lab.png"),
+		preload("res://assets/topdown/tex/t12_wall_front_b_lab.png"),
+	],
+	"sewer": [
+		preload("res://assets/topdown/tex/t12_wall_front_a_sewer.png"),
+		preload("res://assets/topdown/tex/t12_wall_front_b_sewer.png"),
+	],
+}
+## 8 x 32x32 frames scrolling toward +x; rotated / reversed to match `flow`.
+const TEX_SEWAGE := preload("res://assets/topdown/tex/t14_sewage_8f_sewer.png")
+const SEWAGE_FPS := 8.0
 const TEX_SPIKES := preload("res://assets/topdown/td_spikes.png")
 
-## Per-theme palette for the procedurally drawn parts.
+## Per-theme palette for the procedural touches (face ends, motes, foam, bubbles).
 const PAL := {
 	"lab": {
-		"rim": Color("8fb0d2"), "rim_dark": Color("1a2330"), "pit": Color("06090e"),
-		"pit_wall": Color("1d2734"), "hazard": Color("e0b43a"), "liquid": Color("1b5a6e"),
-		"liquid_hi": Color("5fc2d8"), "liquid_deep": Color("0d2f3d"), "top_tint": Color(0.6, 0.66, 0.78),
+		"rim": Color("8fb0d2"), "rim_dark": Color("1a2330"), "liquid_hi": Color("5fc2d8"),
+		"liquid_deep": Color("0d2f3d"),
 	},
 	"sewer": {
-		"rim": Color("8fb3a0"), "rim_dark": Color("141c19"), "pit": Color("050807"),
-		"pit_wall": Color("1d2925"), "hazard": Color("7a9a54"), "liquid": Color("1f5a46"),
-		"liquid_hi": Color("79c79a"), "liquid_deep": Color("0f3126"), "top_tint": Color(0.55, 0.62, 0.58),
+		"rim": Color("8fb3a0"), "rim_dark": Color("141c19"), "liquid_hi": Color("a8d89a"),
+		"liquid_deep": Color("0f3126"),
 	},
 }
 
@@ -68,7 +111,7 @@ func _ready() -> void:
 
 func _find_theme() -> String:
 	var t := EnvTheme.find_theme(self)
-	return t if TEX_FLOOR.has(t) else "lab"
+	return t if TEX_FLOOR_PLAIN.has(t) else "lab"
 
 
 func _process(delta: float) -> void:
@@ -173,52 +216,44 @@ func _hash(x: int, y: int) -> int:
 
 
 func _draw() -> void:
-	var pal: Dictionary = PAL[_theme]
-	var floor_tex: Texture2D = TEX_FLOOR[_theme]
-	var face_tex: Texture2D = TEX_FACE[_theme]
-	var wall_tex: Texture2D = EnvTheme.textures(_theme).wall
 	var h := height()
 	var w := width()
-	# 1) floor everywhere that isn't a wall or a hole
+	var plain: Array = TEX_FLOOR_PLAIN[_theme]
+	var detail: Array = TEX_FLOOR_DETAIL[_theme]
+	# 1) floor: plain tiles with a deterministic sprinkle of detail tiles (`,` = always grimy)
 	for y in h:
 		for x in w:
 			var ch := char_at_cell(Vector2i(x, y))
 			if ch == WALL or is_hole(ch):
 				continue
-			var hv := _hash(x, y) % 100
-			var v := 0
-			if ch == ",":
-				v = 3
-			elif hv < 9:
-				v = 1
-			elif hv < 15:
-				v = 2
-			elif hv < 21:
-				v = 3
+			var hv := _hash(x, y)
 			var p := Vector2(x, y) * CELL
-			draw_texture_rect_region(floor_tex, Rect2(p, Vector2(CELL, CELL)), Rect2(v * CELL, 0, CELL, CELL))
+			var tex: Texture2D
+			if ch == ",":
+				tex = detail[1]
+			elif hv % 100 < DETAIL_PCT:
+				tex = detail[(hv >> 8) % detail.size()]
+			else:
+				tex = plain[(hv >> 4) % plain.size()]
+			draw_texture(tex, p)
 			if ch == SPIKES:
 				draw_texture(TEX_SPIKES, p)
-	# 2) holes (pits / sewage beds)
+	# 2) pits: 9-slice autotile (sewage beds are drawn animated on the Liquid child)
+	var pit_tex: Texture2D = TEX_PIT[_theme]
 	for y in h:
 		for x in w:
-			var ch := char_at_cell(Vector2i(x, y))
-			if is_hole(ch):
-				_draw_hole(x, y, ch, pal)
+			if char_at_cell(Vector2i(x, y)) == PIT:
+				_autotile(pit_tex, x, y, Rect2(Vector2(x, y) * CELL, Vector2(CELL, CELL)), _is_hole_xy)
 	# 3) shadows cast by walls on the floor (south and east of walls)
 	for y in h:
 		for x in w:
-			if _is_wall(x, y):
+			if _is_wall(x, y) or char_at_cell(Vector2i(x, y)) == SEWAGE:
 				continue
-			var p := Vector2(x, y) * CELL
-			if _is_wall(x, y - 1):
-				for i in 8:
-					draw_rect(Rect2(p.x, p.y + i, CELL, 1), Color(0, 0, 0.03, 0.42 * (1.0 - i / 8.0)))
-			if _is_wall(x - 1, y):
-				for i in 5:
-					draw_rect(Rect2(p.x + i, p.y, 1, CELL), Color(0, 0, 0.03, 0.3 * (1.0 - i / 5.0)))
-	# 4) walls: top face (theme wall art sampled in world space), rims, south face
-	var wtw := wall_tex.get_width()
+			_draw_cast_shadow(self, x, y)
+	# 4) walls: 9-slice top face, south face strip under south-facing walls
+	var top_tex: Texture2D = TEX_WALL_TOP[_theme]
+	var fronts: Array = TEX_WALL_FRONT[_theme]
+	var pal: Dictionary = PAL[_theme]
 	for y in h:
 		for x in w:
 			if not _is_wall(x, y):
@@ -226,92 +261,76 @@ func _draw() -> void:
 			var p := Vector2(x, y) * CELL
 			var south_open := not _is_wall(x, y + 1) and y + 1 < h
 			var top_h := CELL - (FACE if south_open else 0)
-			# Sample the interior (non-border) part of the 9-slice wall art.
-			var sx := 32 + (x * CELL) % 32
-			var sy := 32 + (y * CELL) % 32
-			draw_texture_rect_region(wall_tex, Rect2(p, Vector2(CELL, top_h)), Rect2(sx, sy, CELL, top_h), pal.top_tint)
-			# rims where the top meets open space (lit from the top-left)
-			if not _is_wall(x, y - 1) and y > 0:
-				draw_rect(Rect2(p.x, p.y, CELL, 2), pal.rim)
-				draw_rect(Rect2(p.x, p.y + 2, CELL, 1), pal.rim.darkened(0.5))
-			if not _is_wall(x - 1, y) and x > 0:
-				draw_rect(Rect2(p.x, p.y, 2, top_h), pal.rim.darkened(0.1))
-			if not _is_wall(x + 1, y) and x + 1 < w:
-				draw_rect(Rect2(p.x + CELL - 2, p.y, 2, top_h), pal.rim.darkened(0.45))
+			_autotile(top_tex, x, y, Rect2(p, Vector2(CELL, top_h)), _is_wall)
 			if south_open:
-				draw_rect(Rect2(p.x, p.y + top_h - 2, CELL, 2), pal.rim.lightened(0.15))
-				draw_texture_rect_region(face_tex, Rect2(p.x, p.y + top_h, CELL, FACE), Rect2((x * CELL) % 32, 0, CELL, FACE))
+				var fp := Vector2(p.x, p.y + top_h)
+				draw_texture(fronts[x % fronts.size()], fp)
 				# face ends darken next to open sides
 				if not _is_wall(x - 1, y):
-					draw_rect(Rect2(p.x, p.y + top_h, 1, FACE), pal.rim_dark)
+					draw_rect(Rect2(fp, Vector2(1, FACE)), pal.rim_dark)
 				if not _is_wall(x + 1, y):
-					draw_rect(Rect2(p.x + CELL - 1, p.y + top_h, 1, FACE), pal.rim_dark)
+					draw_rect(Rect2(fp.x + CELL - 1, fp.y, 1, FACE), pal.rim_dark)
 	if Engine.is_editor_hint():
 		draw_rect(Rect2(Vector2.ZERO, Vector2(w, h) * CELL), Color(1, 1, 1, 0.15), false, 1.0)
 
 
-func _draw_hole(x: int, y: int, ch: String, pal: Dictionary) -> void:
+func _is_hole_xy(x: int, y: int) -> bool:
+	return is_hole(char_at_cell(Vector2i(x, y)))
+
+
+## Draws cell (x, y) from a 96x96 9-slice into `dst` (a full cell, or the shortened top
+## of a south-facing wall), one 16 px wide x half-height quadrant at a time: each
+## quadrant picks edge / corner / centre art from its two neighbours, so 1-wide runs and
+## odd shapes work. Concave (inner) corners get the two rims joined by hand.
+func _autotile(tex: Texture2D, x: int, y: int, dst: Rect2, same: Callable, ci: CanvasItem = null) -> void:
+	if ci == null:
+		ci = self
+	var qw := 16.0
+	var qh := dst.size.y * 0.5
+	for qy in 2:
+		for qx in 2:
+			var hx := x - 1 if qx == 0 else x + 1
+			var vy := y - 1 if qy == 0 else y + 1
+			var h_same: bool = same.call(hx, y)
+			var v_same: bool = same.call(x, vy)
+			var col := 1 if h_same else (0 if qx == 0 else 2)
+			var row := 1 if v_same else (0 if qy == 0 else 2)
+			var sx := col * 32.0 + qx * 16.0
+			var sy := row * 32.0 + (0.0 if qy == 0 else 32.0 - qh)
+			var d := Rect2(dst.position + Vector2(qx * qw, qy * qh), Vector2(qw, qh))
+			ci.draw_texture_rect_region(tex, d, Rect2(sx, sy, qw, qh))
+			if h_same and v_same and not same.call(hx, vy):
+				# inner corner: run the horizontal rim into the corner, then the vertical one
+				var cx := d.position.x if qx == 0 else d.end.x - 3.0
+				var cy := d.position.y if qy == 0 else d.end.y - 3.0
+				var ry := 0.0 if qy == 0 else 93.0
+				var rx := 0.0 if qx == 0 else 93.0
+				ci.draw_texture_rect_region(tex, Rect2(cx, cy, 3, 3), Rect2(40, ry, 3, 3))
+				ci.draw_texture_rect_region(tex, Rect2(cx, cy, 3, 3), Rect2(rx, 40, 3, 3))
+
+
+func _draw_cast_shadow(ci: CanvasItem, x: int, y: int) -> void:
 	var p := Vector2(x, y) * CELL
-	var up_open := not is_hole(char_at_cell(Vector2i(x, y - 1)))
-	if ch == PIT:
-		draw_rect(Rect2(p, Vector2(CELL, CELL)), pal.pit)
-		# far (north) inner wall fading into the dark: reads as a deep shaft
-		if up_open:
-			for i in 10:
-				draw_rect(Rect2(p.x, p.y + i, CELL, 1), pal.pit_wall.lerp(pal.pit, i / 10.0))
-			for bx in range(0, CELL, 8):
-				draw_rect(Rect2(p.x + bx + (4 if (x + bx / 8) % 2 else 0), p.y + 2, 1, 3), pal.pit_wall.darkened(0.5))
-		if not is_hole(char_at_cell(Vector2i(x - 1, y))):
-			for i in 3:
-				draw_rect(Rect2(p.x + i, p.y, 1, CELL), Color(pal.pit_wall, 0.5 - i * 0.15))
-		# a faint glint far below
-		if (x * 7 + y * 3) % 4 == 0:
-			draw_rect(Rect2(p.x + 18, p.y + 22, 2, 1), Color(pal.liquid_hi, 0.25))
-	else:
-		draw_rect(Rect2(p, Vector2(CELL, CELL)), pal.liquid_deep)
-		if up_open:
-			draw_rect(Rect2(p, Vector2(CELL, 8)), pal.pit_wall)
-			draw_rect(Rect2(p.x, p.y + 7, CELL, 1), pal.pit_wall.darkened(0.4))
-	# lips where the floor ends
-	var dirs := [Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0)]
-	for d in dirs:
-		var n := char_at_cell(Vector2i(x, y) + d)
-		if is_hole(n) or n == WALL:
-			continue
-		var r: Rect2
-		var hz: Rect2
-		if d.y < 0:
-			r = Rect2(p.x, p.y, CELL, 2)
-			hz = Rect2(p.x, p.y - 3, CELL, 3)
-		elif d.y > 0:
-			r = Rect2(p.x, p.y + CELL - 2, CELL, 2)
-			hz = Rect2(p.x, p.y + CELL, CELL, 3)
-		elif d.x < 0:
-			r = Rect2(p.x, p.y, 2, CELL)
-			hz = Rect2(p.x - 3, p.y, 3, CELL)
-		else:
-			r = Rect2(p.x + CELL - 2, p.y, 2, CELL)
-			hz = Rect2(p.x + CELL, p.y, 3, CELL)
-		draw_rect(r, pal.rim.darkened(0.25))
-		if ch == PIT and _theme == "lab":
-			# hazard paint on the floor lip
-			var horizontal: bool = d.y != 0
-			var n_seg := 8
-			for i in n_seg:
-				if (i + x + y) % 2:
-					continue
-				var seg := hz
-				if horizontal:
-					seg = Rect2(hz.position.x + i * 4, hz.position.y, 4, hz.size.y)
-				else:
-					seg = Rect2(hz.position.x, hz.position.y + i * 4, hz.size.x, 4)
-				draw_rect(seg, pal.hazard)
+	if _is_wall(x, y - 1):
+		for i in 7:
+			ci.draw_rect(Rect2(p.x, p.y + i, CELL, 1), Color(0, 0, 0.03, 0.4 * (1.0 - i / 7.0)))
+	if _is_wall(x - 1, y):
+		for i in 5:
+			ci.draw_rect(Rect2(p.x + i, p.y, 1, CELL), Color(0, 0, 0.03, 0.28 * (1.0 - i / 5.0)))
 
 
-## Animated sewage surface (redrawn every frame on the internal Liquid child).
+## Animated sewage (redrawn every frame on the internal Liquid child): scrolling t14
+## frames along `flow`, channel banks cut from the pit 9-slice, foam, gunk and bubbles.
 func _draw_liquid() -> void:
 	var pal: Dictionary = PAL[_theme]
+	var pit_tex: Texture2D = TEX_PIT[_theme]
 	var f := flow.normalized() if flow.length() > 0.01 else Vector2.RIGHT
+	var horizontal := absf(f.x) >= absf(f.y)
+	var fi := int(_t * SEWAGE_FPS) % 8
+	# the frames scroll toward +x; play them backwards for -x / -y flow
+	if (horizontal and f.x < 0.0) or (not horizontal and f.y < 0.0):
+		fi = (8 - fi) % 8
+	var src := Rect2(fi * CELL, 0, CELL, CELL)
 	for y in height():
 		for x in width():
 			var cc := char_at_cell(Vector2i(x, y))
@@ -321,45 +340,33 @@ func _draw_liquid() -> void:
 			if cc != SEWAGE:
 				continue
 			var p := Vector2(x, y) * CELL
-			var up_open := not is_hole(char_at_cell(Vector2i(x, y - 1)))
-			var top := 8.0 if up_open else 0.0
-			var body := Rect2(p.x, p.y + top, CELL, CELL - top)
-			var deep := 0
-			for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
-				if char_at_cell(Vector2i(x, y) + d) == SEWAGE:
-					deep += 1
-			_liquid.draw_rect(body, pal.liquid.lerp(pal.liquid_deep, 0.12 * deep))
-			# moving ripples: short light dashes travelling along the flow
-			for i in 4:
-				var sd := _hash(x * 7 + i, y * 3 + i)
-				var lane := float(sd % 26) + 3.0
-				var speed := 26.0 + float(sd % 17)
-				var along := fmod(_t * speed + float(sd % 97), CELL + 12.0) - 6.0
-				var q: Vector2
-				if absf(f.x) >= absf(f.y):
-					along = along if f.x > 0.0 else CELL - along
-					q = Vector2(along, lane)
-				else:
-					along = along if f.y > 0.0 else CELL - along
-					q = Vector2(lane, along)
-				q = (p + q).floor()
-				if q.y < body.position.y or q.y > body.end.y - 1:
-					continue
-				var dash := Rect2(q, Vector2(5, 1) if absf(f.x) >= absf(f.y) else Vector2(1, 4))
-				dash = dash.intersection(body)
-				if dash.has_area():
-					_liquid.draw_rect(dash, Color(pal.liquid_hi, 0.55))
-			# foam along the banks
+			if horizontal:
+				_liquid.draw_texture_rect_region(TEX_SEWAGE, Rect2(p, Vector2(CELL, CELL)), src)
+			else:
+				# a quarter turn so the scroll runs down the screen
+				_liquid.draw_set_transform(p + Vector2(CELL, 0), PI / 2.0)
+				_liquid.draw_texture_rect_region(TEX_SEWAGE, Rect2(0, 0, CELL, CELL), src)
+				_liquid.draw_set_transform(Vector2.ZERO)
+			_draw_banks(pit_tex, x, y)
+			_draw_cast_shadow(_liquid, x, y)
+			var up_open := not _is_hole_xy(x, y - 1)
+			var top := 12.0 if up_open else 0.0
+			# foam along the far bank
 			if up_open:
-				for i in 6:
+				for i in 5:
 					var fx := fmod(float(_hash(x, y + i) % 32) + _t * 9.0 * (1 if i % 2 else -1), CELL)
-					_liquid.draw_rect(Rect2((p + Vector2(fx, top + (i % 2))).floor(), Vector2(2, 1)), Color(pal.liquid_hi, 0.7))
+					if fx < 0.0:
+						fx += CELL
+					_liquid.draw_rect(Rect2((p + Vector2(fx, top + (i % 2))).floor(), Vector2(2, 1)), Color(pal.liquid_hi, 0.6))
 			# drifting gunk
 			if _hash(x, y) % 7 == 0:
 				var gx := fmod(float(_hash(y, x) % 32) + _t * 14.0 * f.x, CELL)
-				var gy := fmod(float(_hash(x + 3, y) % 20) + 10.0 + _t * 14.0 * f.y, CELL - top) + top
-				if gx < 0: gx += CELL
-				_liquid.draw_rect(Rect2((p + Vector2(gx, gy)).floor(), Vector2(3, 2)), pal.liquid_deep.lightened(0.15))
+				var gy := fmod(float(_hash(x + 3, y) % 16) + _t * 14.0 * f.y, CELL - top - 4.0)
+				if gx < 0.0:
+					gx += CELL
+				if gy < 0.0:
+					gy += CELL - top - 4.0
+				_liquid.draw_rect(Rect2((p + Vector2(minf(gx, CELL - 3.0), top + 2.0 + gy)).floor(), Vector2(3, 2)), pal.liquid_deep.lightened(0.1))
 			# a bubble swells and pops now and then
 			var hb := _hash(x * 5 + 1, y * 11 + 2)
 			var period := 2.2 + float(hb % 17) * 0.1
@@ -374,6 +381,28 @@ func _draw_liquid() -> void:
 				_liquid.draw_arc(bc, pr, 0.0, TAU, 10, Color(pal.liquid_hi, 0.5 * (1.0 - (bu - 0.7) / 0.15)), 1.0)
 
 
+## Sewage channel banks: the pit 9-slice's edge bands where the channel meets floor.
+func _draw_banks(tex: Texture2D, x: int, y: int) -> void:
+	var p := Vector2(x, y) * CELL
+	var n := not _is_hole_xy(x, y - 1)
+	var s := not _is_hole_xy(x, y + 1)
+	var wv := not _is_hole_xy(x - 1, y)
+	var e := not _is_hole_xy(x + 1, y)
+	if n:
+		# far bank: rim + inner wall (top 12 px of the top-edge art; corners at open sides)
+		var c0 := 0.0 if wv else 32.0
+		var c1 := 80.0 if e else 48.0
+		_liquid.draw_texture_rect_region(tex, Rect2(p, Vector2(16, 12)), Rect2(c0, 0, 16, 12))
+		_liquid.draw_texture_rect_region(tex, Rect2(p + Vector2(16, 0), Vector2(16, 12)), Rect2(c1, 0, 16, 12))
+	if s:
+		_liquid.draw_texture_rect_region(tex, Rect2(p.x, p.y + CELL - 3, CELL, 3), Rect2(32, 93, 32, 3))
+	var y0 := 12.0 if n else 0.0
+	if wv:
+		_liquid.draw_texture_rect_region(tex, Rect2(p.x, p.y + y0, 3, CELL - y0), Rect2(0, 32 + y0, 3, CELL - y0))
+	if e:
+		_liquid.draw_texture_rect_region(tex, Rect2(p.x + CELL - 3, p.y + y0, 3, CELL - y0), Rect2(93, 32 + y0, 3, CELL - y0))
+
+
 ## Pits: dust motes drifting down into the dark and a slow glint far below.
 func _draw_pit_motes(x: int, y: int, pal: Dictionary) -> void:
 	var p := Vector2(x, y) * CELL
@@ -381,8 +410,8 @@ func _draw_pit_motes(x: int, y: int, pal: Dictionary) -> void:
 	for i in 2:
 		var period := 3.0 + float((hb >> i) % 13) * 0.15
 		var u := fmod(_t + float((hb >> (i * 4)) % 100) * 0.05, period) / period
-		var start := Vector2(4 + (hb >> (i * 3)) % 24, 3.0)
-		var q := start.lerp(Vector2(16, 20), u) + Vector2(sin(u * 6.0 + i) * 2.0, 0)
+		var start := Vector2(5 + (hb >> (i * 3)) % 22, 13.0)
+		var q := start.lerp(Vector2(16, 25), u) + Vector2(sin(u * 6.0 + i) * 2.0, 0)
 		_liquid.draw_rect(Rect2((p + q).floor(), Vector2.ONE), Color(pal.rim, 0.5 * (1.0 - u)))
 	if (x * 7 + y * 3) % 4 == 0:
 		var ga := 0.15 + 0.15 * sin(_t * 1.3 + x)

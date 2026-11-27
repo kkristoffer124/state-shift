@@ -19,7 +19,7 @@ EXT = {
 }
 
 KIND = {"wall": 0, "grate": 1, "breakable": 2, "glass": 3, "decor": 4}
-LOOK = {"auto": 0, "wall": 1, "fill": 2, "dark": 3, "metal": 4, "glow": 5}
+LOOK = {"auto": 0, "wall": 1, "fill": 2, "dark": 3, "metal": 4, "glow": 5, "hazard": 6, "copper": 7, "screen": 8}
 ZKIND = {"spikes": 0, "heat": 1, "freeze": 2, "fan": 3, "goal": 4}
 
 

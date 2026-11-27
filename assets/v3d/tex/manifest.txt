@@ -1,0 +1,47 @@
+m1_floor_a_lab.png  64x64  tiling
+m1_floor_b_lab.png  64x64  tiling
+m2_wall_a_lab.png  64x64  tiling
+m2_wall_b_lab.png  64x64  tiling
+m3_wall_base_trim_lab.png  64x16  tiling
+m4_ceiling_lab.png  64x64  tiling
+m5_edge_trim_lab.png  32x8  tiles horizontally
+m1_floor_a_cryo.png  64x64  tiling
+m1_floor_b_cryo.png  64x64  tiling
+m2_wall_a_cryo.png  64x64  tiling
+m2_wall_b_cryo.png  64x64  tiling
+m3_wall_base_trim_cryo.png  64x16  tiling
+m4_ceiling_cryo.png  64x64  tiling
+m5_edge_trim_cryo.png  32x8  tiles horizontally
+m1_floor_a_boiler.png  64x64  tiling
+m1_floor_b_boiler.png  64x64  tiling
+m2_wall_a_boiler.png  64x64  tiling
+m2_wall_b_boiler.png  64x64  tiling
+m3_wall_base_trim_boiler.png  64x16  tiling
+m4_ceiling_boiler.png  64x64  tiling
+m5_edge_trim_boiler.png  32x8  tiles horizontally
+m1_floor_a_sewer.png  64x64  tiling
+m1_floor_b_sewer.png  64x64  tiling
+m2_wall_a_sewer.png  64x64  tiling
+m2_wall_b_sewer.png  64x64  tiling
+m3_wall_base_trim_sewer.png  64x16  tiling
+m4_ceiling_sewer.png  64x64  tiling
+m5_edge_trim_sewer.png  32x8  tiles horizontally
+m1_floor_a_rooftop.png  64x64  tiling
+m1_floor_b_rooftop.png  64x64  tiling
+m2_wall_a_rooftop.png  64x64  tiling
+m2_wall_b_rooftop.png  64x64  tiling
+m3_wall_base_trim_rooftop.png  64x16  tiling
+m4_ceiling_rooftop.png  64x64  tiling
+m5_edge_trim_rooftop.png  32x8  tiles horizontally
+m6_grate.png  32x32  tiling
+m7_cracked_block_3f.png  96x32  32x32 frames: intact, crack 1, crack 2
+m8_glass.png  32x32  tiling
+m9_metal_steel.png  32x32  tiling
+m9_metal_copper_pipe.png  32x32  tiling
+m9_metal_hazard.png  32x32  tiling
+m10_emissive_monitor_4f.png  128x32  32x32 frames, 4 fps, loop
+m10_emissive_warning_light_2f.png  64x32  32x32 frames, off / on
+m10_emissive_windows_a.png  32x32  tiling
+m10_emissive_windows_b.png  32x32  tiling
+m10_emissive_windows_c.png  32x32  tiling
+m10_emissive_windows_d.png  32x32  tiling

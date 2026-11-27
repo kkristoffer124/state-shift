@@ -321,11 +321,14 @@ func _after_move(pre: Vector3) -> void:
 		var block := c.get_collider() as Block3D
 		if state == State.ICE and block and block.kind == Block3D.Kind.BREAKABLE and not block.broken:
 			var need := block.break_speed if block.break_speed > 0.0 else shatter_speed
-			if -pre.dot(c.get_normal()) > need:
+			var hit := -pre.dot(c.get_normal())
+			if hit > need:
 				block.shatter(pre)
 				velocity = pre * 0.75
 				shake = 12.0
 				crack = 3.0
+			elif hit > need * 0.35:
+				block.stress()
 	var on_floor := is_on_floor()
 	if on_floor and not _was_on_floor and pre.y < -200.0 * PX:
 		last_landing = -pre.y

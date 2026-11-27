@@ -3,10 +3,12 @@ class_name TdZone
 extends Area2D
 ## Top-down trigger area (same meaning as Zone, drawn from above).
 ## ORIGIN = top-left corner; `size` in px (use multiples of 32 to match the grid).
-##  HEAT    hot floor grill: forces STEAM while inside
-##  FREEZE  cryo leak: forces ICE while inside (frosted floor, drifting snow)
-##  FAN     floor/wall fan: pushes STEAM (a little WATER) along push_direction
-##  GOAL    the exit swirl
+##  HEAT    hot floor grill (t21 heat pads on the floor cells): forces STEAM while inside
+##  FREEZE  cryo leak (t22 freeze pads, frost edge, drifting snow): forces ICE while inside
+##  FAN     floor fan (t23 housing + spinning blades at the upwind end): pushes STEAM
+##          (a little WATER) along push_direction
+##  GOAL    the exit swirl (t24, turning over a glow)
+## Pads are only laid on floor cells of Blocks/Terrain (not on walls / pits / sewage).
 
 enum Kind { HEAT, FREEZE, FAN, GOAL }
 
@@ -18,9 +20,11 @@ const TEX_SNOW: Array[Texture2D] = [
 	preload("res://assets/env/e6c_snowflake_3.png"),
 ]
 const TEX_AIRFLOW := preload("res://assets/env/e7c_airflow_streak.png")   # 4x32
-const TEX_FAN_HOUSING := preload("res://assets/interactive/ix_turbine_housing.png") # 40x40
-const TEX_FAN_ROTOR := preload("res://assets/interactive/ix_turbine_rotor_4f.png")  # 4 x 32x32
-const TEX_GOAL_SWIRL := preload("res://assets/env/e8a_goal_swirl.png")
+const TEX_HEAT_PAD := preload("res://assets/topdown/tex/t21_heat_pad.png")     # 32x32
+const TEX_FREEZE_PAD := preload("res://assets/topdown/tex/t22_freeze_pad.png") # 32x32
+const TEX_FAN_HOUSING := preload("res://assets/topdown/tex/t23_fan_housing.png") # 64x64
+const TEX_FAN_BLADES := preload("res://assets/topdown/tex/t23_fan_blades.png")   # 64x64, spun
+const TEX_GOAL := preload("res://assets/topdown/tex/t24_goal.png")               # 64x64
 const TEX_GOAL_GLOW := preload("res://assets/env/e8b_goal_glow.png")
 const TEX_MIST := preload("res://assets/topdown/td_puff_m.png")
 const TEX_SPARKLES: Array[Texture2D] = [
@@ -49,6 +53,8 @@ const TEX_SPARKLES: Array[Texture2D] = [
 
 var _t := 0.0
 var _frost_box: StyleBoxTexture
+## Local top-left corners of the zone's floor cells (where pads are laid).
+var _pad_cells: Array[Vector2] = []
 
 
 func _ready() -> void:
@@ -71,7 +77,22 @@ func _refresh() -> void:
 		cs.position = size / 2.0
 	_frost_box = Zone._nine(TEX_FROST_EDGE, 16.0, 16.0, size)
 	z_index = 2 if kind == Kind.FAN else 1
+	_find_pad_cells()
 	queue_redraw()
+
+
+func _find_pad_cells() -> void:
+	_pad_cells.clear()
+	var lvl := get_parent().get_parent() if get_parent() else null
+	var terrain := lvl.get_node_or_null("Blocks/Terrain") as TdTerrain if lvl else null
+	for y in int(ceilf(size.y / 32.0)):
+		for x in int(ceilf(size.x / 32.0)):
+			var c := Vector2(x, y) * 32.0
+			if terrain:
+				var ch := terrain.char_at(global_position + c + Vector2(16, 16))
+				if ch == TdTerrain.WALL or terrain.is_hole(ch):
+					continue
+			_pad_cells.append(c)
 
 
 func push_vector() -> Vector2:
@@ -93,23 +114,13 @@ func _draw() -> void:
 
 func _draw_heat() -> void:
 	var pulse := 0.5 + 0.5 * sin(_t * 3.0)
-	var r := Rect2(Vector2.ZERO, size)
-	draw_rect(r, Color("2a1410"))
-	draw_rect(r.grow(-2), Color("3a1a12"))
-	# glowing slats
-	var y := 5.0
-	while y < size.y - 4.0:
-		var hot := Color("ff5a1a").lerp(Color("ffb347"), pulse * 0.6)
-		draw_rect(Rect2(4, y, size.x - 8, 3), hot)
-		draw_rect(Rect2(4, y + 3, size.x - 8, 1), Color("6b2a14"))
-		y += 7.0
-	# frame
-	draw_rect(Rect2(0, 0, size.x, 2), Color("8a5a48"))
-	draw_rect(Rect2(0, size.y - 2, size.x, 2), Color("1a0c08"))
-	draw_rect(Rect2(0, 0, 2, size.y), Color("6a4234"))
-	draw_rect(Rect2(size.x - 2, 0, 2, size.y), Color("1a0c08"))
+	# grill pads; the slats glow brighter and dimmer
+	var glow := Color(1.0, 0.9 + 0.1 * pulse, 0.85 + 0.15 * pulse).lerp(Color(1.25, 1.1, 0.9), pulse * 0.5)
+	for c in _pad_cells:
+		draw_texture(TEX_HEAT_PAD, c, glow)
 	# heat glow + rising embers (rise = toward the top of the screen, fading)
-	draw_rect(r, Color(1.0, 0.45, 0.15, 0.10 + 0.08 * pulse))
+	for c in _pad_cells:
+		draw_rect(Rect2(c, Vector2(32, 32)), Color(1.0, 0.45, 0.15, 0.05 + 0.06 * pulse))
 	for i in int(size.x * size.y / 500.0) + 3:
 		var px := fmod(i * 37.7, size.x - 4.0) + 2.0
 		var travel := fmod(_t * (22.0 + i % 5 * 7.0) + i * 53.0, 40.0)
@@ -140,11 +151,15 @@ func _draw_heat() -> void:
 
 func _draw_freeze() -> void:
 	var r := Rect2(Vector2.ZERO, size)
-	draw_rect(r, Color(0.55, 0.85, 1.0, 0.16 + sin(_t * 1.7) * 0.03))
-	# frosty floor speckle
-	for i in int(size.x * size.y / 160.0):
-		var p := Vector2(fmod(i * 53.1, size.x), fmod(i * 29.7 + i * i * 0.37, size.y)).floor()
-		draw_rect(Rect2(p, Vector2(1, 1)), Color(0.85, 0.96, 1.0, 0.35))
+	# cryo pads on the floor cells; a big cold room gets a scatter of vents instead
+	var big := _pad_cells.size() > 12
+	for c in _pad_cells:
+		var g := Vector2i((global_position + c) / 32.0)
+		var h := (g.x * 73856093) ^ (g.y * 19349663) ^ 0x5bd1e995
+		h = absi((h ^ (h >> 13)) * 1274126177)
+		if not big or (h ^ (h >> 16)) % 8 == 0:
+			draw_texture(TEX_FREEZE_PAD, c)
+	draw_rect(r, Color(0.55, 0.85, 1.0, 0.08 + sin(_t * 1.7) * 0.03))
 	if _frost_box:
 		draw_style_box(_frost_box, r)
 	# low cold mist rolling across the floor
@@ -205,21 +220,23 @@ func _draw_fan() -> void:
 				draw_rect(seg, Color(0.85, 0.95, 1.0, a * 0.6 * ka))
 	if not show_unit:
 		return
-	# fan unit at the upwind edge, centred across
+	# fan unit just inside the upwind edge, centred across; the blades spin
 	var c: Vector2
 	if absf(d.x) > absf(d.y):
-		c = Vector2(0.0 if d.x > 0.0 else size.x, size.y / 2.0)
+		c = Vector2(32.0 if d.x > 0.0 else size.x - 32.0, size.y / 2.0)
 	else:
-		c = Vector2(size.x / 2.0, 0.0 if d.y > 0.0 else size.y)
+		c = Vector2(size.x / 2.0, 32.0 if d.y > 0.0 else size.y - 32.0)
 	c = c.round()
-	draw_texture(TEX_FAN_HOUSING, c - Vector2(20, 20))
-	var frame := int(_t * 24.0) % 4
-	# motion blur: faint spinning disc + the previous frame ghosted under the current one
-	draw_circle(c, 13.0, Color(0.8, 0.9, 1.0, 0.12))
-	draw_texture_rect_region(TEX_FAN_ROTOR, Rect2(c - Vector2(16, 16), Vector2(32, 32)), Rect2(((frame + 3) % 4) * 32, 0, 32, 32), Color(1, 1, 1, 0.45))
-	draw_texture_rect_region(TEX_FAN_ROTOR, Rect2(c - Vector2(16, 16), Vector2(32, 32)), Rect2(frame * 32, 0, 32, 32), Color(1, 1, 1, 0.85))
-	draw_arc(c, 13.0, _t * 14.0, _t * 14.0 + 1.2, 6, Color(1, 1, 1, 0.35), 1.0)
-	draw_arc(c, 13.0, _t * 14.0 + PI, _t * 14.0 + PI + 1.2, 6, Color(1, 1, 1, 0.35), 1.0)
+	draw_texture(TEX_FAN_HOUSING, c - Vector2(32, 32))
+	var ang := _t * 13.0
+	# motion blur: the previous angle ghosted under the current one
+	draw_set_transform(c, ang - 0.35)
+	draw_texture(TEX_FAN_BLADES, Vector2(-32, -32), Color(1, 1, 1, 0.35))
+	draw_set_transform(c, ang)
+	draw_texture(TEX_FAN_BLADES, Vector2(-32, -32))
+	draw_set_transform(Vector2.ZERO)
+	draw_arc(c, 20.0, ang * 1.1, ang * 1.1 + 1.0, 6, Color(1, 1, 1, 0.25), 1.0)
+	draw_arc(c, 20.0, ang * 1.1 + PI, ang * 1.1 + PI + 1.0, 6, Color(1, 1, 1, 0.25), 1.0)
 
 
 func _draw_goal() -> void:
@@ -229,14 +246,12 @@ func _draw_goal() -> void:
 	# pulse rings breathing outward
 	for j in 2:
 		var u := fmod(_t * 0.8 + j * 0.5, 1.0)
-		draw_arc(c, 14.0 + u * 22.0, 0.0, TAU, 32, Color(0.6, 1.0, 0.7, 0.35 * (1.0 - u)), 1.0)
-	draw_set_transform(c, -_t * 2.5, Vector2.ONE * (1.0 + sin(_t * 2.0) * 0.04))
-	draw_texture(TEX_GOAL_SWIRL, -TEX_GOAL_SWIRL.get_size() / 2.0)
-	# counter-rotating inner swirl for depth
-	draw_set_transform(c, _t * 4.0, Vector2(0.55, 0.55))
-	draw_texture(TEX_GOAL_SWIRL, -TEX_GOAL_SWIRL.get_size() / 2.0, Color(1, 1, 1, 0.45))
+		draw_arc(c, 18.0 + u * 22.0, 0.0, TAU, 32, Color(0.6, 1.0, 0.7, 0.35 * (1.0 - u)), 1.0)
+	# the swirl turns (quarter-turn steps would stutter; it is smooth but slow)
+	draw_set_transform(c, -_t * 1.8, Vector2.ONE * (1.0 + sin(_t * 2.0) * 0.03))
+	draw_texture(TEX_GOAL, -TEX_GOAL.get_size() / 2.0)
 	draw_set_transform(Vector2.ZERO)
 	for i in 4:
 		var a := _t * 2.0 + i * TAU / 4.0
-		var p := (c + Vector2(cos(a), sin(a) * 0.8) * 30.0).round() - Vector2(3, 3)
+		var p := (c + Vector2(cos(a), sin(a) * 0.8) * 32.0).round() - Vector2(3, 3)
 		draw_texture(TEX_SPARKLES[(i + int(_t * 6.0)) % 2], p)

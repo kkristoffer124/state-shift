@@ -3,7 +3,9 @@ class_name Gate3D
 extends AnimatableBody3D
 ## Solid shutter / hatch (layer 1) opened by a channel. A box of `size` CENTRED on
 ## the origin when closed; opening slides it by `open_offset` (parent space).
-## A status lamp on top shows red (shut) / green (open). Never closes onto the player.
+## Steel shutter with a hazard-striped frame; a round warning light on each face
+## (near the top for doors, centre for hatches) is dark while shut, flashes red while
+## the gate moves and glows green once open. Never closes onto the player.
 
 @export var channel := "a"
 @export var size := Vector3(2, 3, 0.3):
@@ -29,6 +31,7 @@ var _lamp_pos := Vector3.ZERO
 var _prev_pos := Vector3.ZERO
 var _cur_pos := Vector3.ZERO
 var _jolt := 0.0
+var _moving := false
 
 
 func _ready() -> void:
@@ -63,10 +66,17 @@ func _refresh() -> void:
 	var bs := BoxShape3D.new()
 	bs.size = size
 	_shape.shape = bs
-	var lm := BoxMesh.new()
-	lm.size = Vector3(size.x + 0.04, 0.1, size.z + 0.04) if size.y > size.x * 0.5 else Vector3(0.3, size.y + 0.04, 0.3)
-	_lamp.mesh = lm
-	_lamp_pos = Vector3(0, size.y / 2.0 - 0.12, 0) if size.y > size.x * 0.5 else Vector3.ZERO
+	# Warning light: a thin box through the panel, its two big faces show the lamp.
+	var thin := 0
+	for i in 3:
+		if size[i] < size[thin]:
+			thin = i
+	var ls := Vector3(0.44, 0.44, 0.44)
+	ls[thin] = size[thin] + 0.04
+	_lamp.mesh = V3D.box_mesh(ls)
+	_lamp_pos = Vector3.ZERO
+	if thin != 1:
+		_lamp_pos.y = size.y / 2.0 - 0.38
 	_lamp.position = _lamp_pos
 	_lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_paint()
@@ -75,8 +85,12 @@ func _refresh() -> void:
 func _paint() -> void:
 	if _lamp == null:
 		return
-	var c := V3D.C_GOAL if is_open else V3D.C_HEAT
-	_lamp.material_override = V3D.flat_material(c, 0.0, 0.5, c, 2.5)
+	var w := V3D.Warn.OFF
+	if _moving:
+		w = V3D.Warn.BLINK
+	elif is_open:
+		w = V3D.Warn.OPEN
+	_lamp.material_override = V3D.warning_material(w)
 
 
 func _on_channel(source_id: int, on: bool) -> void:
@@ -98,6 +112,10 @@ func _physics_process(delta: float) -> void:
 		return
 	_prev_pos = _cur_pos
 	var goal := 1.0 if is_open else 0.0
+	var moving := goal != _open
+	if moving != _moving:
+		_moving = moving
+		_paint()
 	if goal == _open or (goal < _open and _player_in_way()):
 		_cur_pos = position
 		return

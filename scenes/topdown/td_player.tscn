@@ -3,9 +3,11 @@
 [ext_resource type="Script" path="res://scripts/topdown/td_player.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/topdown/td_player_visual.gd" id="vis"]
 [ext_resource type="Script" path="res://scripts/topdown/td_wet_trail.gd" id="trail"]
-[ext_resource type="SpriteFrames" path="res://assets/anim/ice_frames.tres" id="ice_frames"]
-[ext_resource type="SpriteFrames" path="res://assets/anim/water_frames.tres" id="water_frames"]
-[ext_resource type="Texture2D" path="res://assets/topdown/td_shadow.png" id="shadow"]
+[ext_resource type="SpriteFrames" path="res://assets/topdown/anim/td_ice_frames.tres" id="ice_frames"]
+[ext_resource type="SpriteFrames" path="res://assets/topdown/anim/td_water_frames.tres" id="water_frames"]
+[ext_resource type="SpriteFrames" path="res://assets/topdown/anim/td_steam_frames.tres" id="steam_frames"]
+[ext_resource type="SpriteFrames" path="res://assets/topdown/anim/td_shift_frames.tres" id="shift_frames"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t5_shadow_30.png" id="shadow"]
 [ext_resource type="Texture2D" path="res://assets/anim/ice_trails/v12_ice_speed_lines_4f.png" id="speed"]
 [ext_resource type="Texture2D" path="res://assets/topdown/td_puff_s.png" id="puff_s"]
 [ext_resource type="Texture2D" path="res://assets/vfx/v1_sparkle.png" id="t_spark"]
@@ -48,7 +50,7 @@ script = ExtResource("trail")
 
 [node name="Shadow" type="Sprite2D" parent="Visual"]
 z_index = -1
-position = Vector2(0, 9)
+position = Vector2(0, 8)
 texture = ExtResource("shadow")
 
 [node name="Wisps" type="CPUParticles2D" parent="Visual"]
@@ -96,18 +98,27 @@ texture = ExtResource("speed")
 hframes = 4
 
 [node name="Ice" type="AnimatedSprite2D" parent="Visual/Body"]
-position = Vector2(0, -6)
+position = Vector2(0, -4)
 sprite_frames = ExtResource("ice_frames")
 animation = &"idle"
 
 [node name="Water" type="AnimatedSprite2D" parent="Visual/Body"]
 visible = false
-position = Vector2(0, -19)
+position = Vector2(0, -4)
 sprite_frames = ExtResource("water_frames")
 animation = &"idle"
 
-[node name="Cloud" type="Node2D" parent="Visual/Body"]
+[node name="Steam" type="AnimatedSprite2D" parent="Visual/Body"]
 visible = false
+position = Vector2(0, -4)
+sprite_frames = ExtResource("steam_frames")
+animation = &"idle"
+
+[node name="Shift" type="AnimatedSprite2D" parent="Visual/Body"]
+visible = false
+position = Vector2(0, -4)
+sprite_frames = ExtResource("shift_frames")
+animation = &"melt"
 
 [node name="Face" type="Node2D" parent="Visual/Body"]
 

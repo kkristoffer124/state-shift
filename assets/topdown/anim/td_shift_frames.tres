@@ -1,0 +1,159 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t4_shift_melt_8f.png" id="t0"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t4_shift_freeze_8f.png" id="t1"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t4_shift_boil_8f.png" id="t2"]
+[ext_resource type="Texture2D" path="res://assets/topdown/anim/t4_shift_condense_8f.png" id="t3"]
+
+[sub_resource type="AtlasTexture" id="melt_0"]
+atlas = ExtResource("t0")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="melt_1"]
+atlas = ExtResource("t0")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="melt_2"]
+atlas = ExtResource("t0")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="melt_3"]
+atlas = ExtResource("t0")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="melt_4"]
+atlas = ExtResource("t0")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="melt_5"]
+atlas = ExtResource("t0")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="melt_6"]
+atlas = ExtResource("t0")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="melt_7"]
+atlas = ExtResource("t0")
+region = Rect2(336, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="freeze_0"]
+atlas = ExtResource("t1")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="freeze_1"]
+atlas = ExtResource("t1")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="freeze_2"]
+atlas = ExtResource("t1")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="freeze_3"]
+atlas = ExtResource("t1")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="freeze_4"]
+atlas = ExtResource("t1")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="freeze_5"]
+atlas = ExtResource("t1")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="freeze_6"]
+atlas = ExtResource("t1")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="freeze_7"]
+atlas = ExtResource("t1")
+region = Rect2(336, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="boil_0"]
+atlas = ExtResource("t2")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="boil_1"]
+atlas = ExtResource("t2")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="boil_2"]
+atlas = ExtResource("t2")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="boil_3"]
+atlas = ExtResource("t2")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="boil_4"]
+atlas = ExtResource("t2")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="boil_5"]
+atlas = ExtResource("t2")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="boil_6"]
+atlas = ExtResource("t2")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="boil_7"]
+atlas = ExtResource("t2")
+region = Rect2(336, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="condense_0"]
+atlas = ExtResource("t3")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="condense_1"]
+atlas = ExtResource("t3")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="condense_2"]
+atlas = ExtResource("t3")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="condense_3"]
+atlas = ExtResource("t3")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="condense_4"]
+atlas = ExtResource("t3")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="condense_5"]
+atlas = ExtResource("t3")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="condense_6"]
+atlas = ExtResource("t3")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="condense_7"]
+atlas = ExtResource("t3")
+region = Rect2(336, 0, 48, 48)
+
+[resource]
+animations = [{
+"frames": [{"duration": 1.0, "texture": SubResource("melt_0")}, {"duration": 1.0, "texture": SubResource("melt_1")}, {"duration": 1.0, "texture": SubResource("melt_2")}, {"duration": 1.0, "texture": SubResource("melt_3")}, {"duration": 1.0, "texture": SubResource("melt_4")}, {"duration": 1.0, "texture": SubResource("melt_5")}, {"duration": 1.0, "texture": SubResource("melt_6")}, {"duration": 1.0, "texture": SubResource("melt_7")}],
+"loop": false,
+"name": &"melt",
+"speed": 16.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("freeze_0")}, {"duration": 1.0, "texture": SubResource("freeze_1")}, {"duration": 1.0, "texture": SubResource("freeze_2")}, {"duration": 1.0, "texture": SubResource("freeze_3")}, {"duration": 1.0, "texture": SubResource("freeze_4")}, {"duration": 1.0, "texture": SubResource("freeze_5")}, {"duration": 1.0, "texture": SubResource("freeze_6")}, {"duration": 1.0, "texture": SubResource("freeze_7")}],
+"loop": false,
+"name": &"freeze",
+"speed": 16.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("boil_0")}, {"duration": 1.0, "texture": SubResource("boil_1")}, {"duration": 1.0, "texture": SubResource("boil_2")}, {"duration": 1.0, "texture": SubResource("boil_3")}, {"duration": 1.0, "texture": SubResource("boil_4")}, {"duration": 1.0, "texture": SubResource("boil_5")}, {"duration": 1.0, "texture": SubResource("boil_6")}, {"duration": 1.0, "texture": SubResource("boil_7")}],
+"loop": false,
+"name": &"boil",
+"speed": 16.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("condense_0")}, {"duration": 1.0, "texture": SubResource("condense_1")}, {"duration": 1.0, "texture": SubResource("condense_2")}, {"duration": 1.0, "texture": SubResource("condense_3")}, {"duration": 1.0, "texture": SubResource("condense_4")}, {"duration": 1.0, "texture": SubResource("condense_5")}, {"duration": 1.0, "texture": SubResource("condense_6")}, {"duration": 1.0, "texture": SubResource("condense_7")}],
+"loop": false,
+"name": &"condense",
+"speed": 16.0
+}]
+metadata/body = {"melt": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), "freeze": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), "boil": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0), "condense": PackedVector2Array(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)}
+metadata/eye = {"melt": PackedVector2Array(0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2), "freeze": PackedVector2Array(0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2), "boil": PackedVector2Array(0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 1, -2), "condense": PackedVector2Array(1, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2)}

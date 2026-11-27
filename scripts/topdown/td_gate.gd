@@ -2,11 +2,14 @@
 class_name TdGate
 extends StaticBody2D
 ## Top-down shutter (collision layer 1, like walls). ORIGIN = top-left; `size` in px.
-## Closed it stands up like a short wall (striped top + south face); opened by
-## `channel` it sinks into a floor slot. Never closes onto the player.
+## Closed it stands up like a short wall (t16_gate_closed, tiled per 32 px cell); opened
+## by `channel` it sinks into its floor slot (t16_gate_open). Never closes onto the player.
 
-const TEX_TILE := preload("res://assets/interactive/ix_gate_tile.png") # 24x32 shutter panel
-const RISE := 14.0
+const TEX_CLOSED := preload("res://assets/topdown/tex/t16_gate_closed.png")
+const TEX_OPEN := preload("res://assets/topdown/tex/t16_gate_open.png")
+## How far (px) the shutter drops when fully open, and the slot's lower lip in the art.
+const SINK := 22.0
+const SLOT_BOTTOM := 20.0
 
 @export var channel := "a"
 @export var size := Vector2(32, 32):
@@ -129,55 +132,30 @@ func _update_dust(delta: float) -> void:
 
 
 func _draw() -> void:
-	var r := Rect2(Vector2.ZERO, size)
-	# floor slot (always visible; the shutter sinks into it)
-	draw_rect(r, Color("0b1016"))
-	draw_rect(Rect2(0, 0, size.x, 2), Color("26323f"))
-	draw_rect(Rect2(0, size.y - 1, size.x, 1), Color("4a5a6c"))
 	var eo := _open * _open * (3.0 - 2.0 * _open) # smoothstep: eases in and out of travel
-	var h := roundf(RISE * (1.0 - eo))
+	var sink := roundf(SINK * eo)
+	var clip := roundf(lerpf(32.0, SLOT_BOTTOM, eo))
+	var nx := maxi(1, ceili(size.x / 32.0))
+	var ny := maxi(1, ceili(size.y / 32.0))
+	for ty in ny:
+		for tx in nx:
+			var p := Vector2(tx, ty) * 32.0
+			# floor slot (always there; the shutter sinks into it)
+			draw_texture(TEX_OPEN, p)
+			# shutter: slides down, cut off at the slot's lower lip as it goes in
+			var vis_h := clip - sink
+			if vis_h >= 1.0:
+				draw_texture_rect_region(TEX_CLOSED, Rect2(p.x, p.y + sink, 32, vis_h), Rect2(0, 0, 32, vis_h))
 	var lamp := Ix.C_GOAL if is_open else Color("ff4a5a")
-	if h > 0.5:
-		var top := Rect2(0, -h, size.x, size.y)
-		var face := Rect2(0, size.y - h, size.x, h)
-		# top: shutter slats (panel art rotated when wide)
-		var vertical := size.y >= size.x
-		if vertical:
-			var y := 0.0
-			while y < top.size.y:
-				var ch := minf(32.0, top.size.y - y)
-				for x0 in range(0, int(size.x), 24):
-					var cw := minf(24.0, size.x - x0)
-					draw_texture_rect_region(TEX_TILE, Rect2(x0, top.position.y + y, cw, ch), Rect2(0, 0, cw, ch))
-				y += 32.0
-		else:
-			draw_set_transform(Vector2(0, top.end.y), -PI / 2.0)
-			var x := 0.0
-			while x < size.x:
-				var cw := minf(32.0, size.x - x)
-				for y0 in range(0, int(size.y), 24):
-					var chh := minf(24.0, size.y - y0)
-					draw_texture_rect_region(TEX_TILE, Rect2(y0, x, chh, cw), Rect2(0, 0, chh, cw))
-				x += 32.0
-			draw_set_transform(Vector2.ZERO)
-		# hazard stripes along the top edge
-		for i in int(size.x / 4.0):
-			if i % 2 == 0:
-				draw_rect(Rect2(i * 4, top.position.y, 4, 3), Color("e0b43a"))
-			else:
-				draw_rect(Rect2(i * 4, top.position.y, 4, 3), Color("1a1a1a"))
-		draw_rect(Rect2(0, top.position.y, size.x, 1), Color("f4f8ff", 0.6))
-		# south face
-		draw_rect(face, Color("2c3a4a"))
-		draw_rect(Rect2(face.position.x, face.position.y, face.size.x, 1), Color("9ebcdb"))
-		draw_rect(Rect2(face.position.x, face.end.y - 1, face.size.x, 1), Color("0e151d"))
-		draw_rect(Rect2(size.x / 2.0 - 2.0, face.position.y + h * 0.4, 4, 2), lamp)
-	else:
-		# open: green guide lights in the slot
+	if sink >= SINK:
+		# open: green guide lights blinking in the slot
 		var blink := 0.6 + 0.4 * sin(_t * 5.0)
 		for i in range(4, int(maxf(size.x, size.y)), 10):
-			var p := Vector2(i, size.y / 2.0 - 1.0) if size.x >= size.y else Vector2(size.x / 2.0 - 1.0, i)
-			draw_rect(Rect2(p, Vector2(2, 2)), Color(lamp, blink))
+			var q := Vector2(i, 15) if size.x >= size.y else Vector2(15, i)
+			draw_rect(Rect2(q, Vector2(2, 2)), Color(lamp, blink))
+	else:
+		# status lamp on the shutter's face
+		draw_rect(Rect2(size.x / 2.0 - 2.0, sink + 24.0, 4, 2), Color(lamp, 0.9) if sink + 26.0 <= clip else Color(lamp, 0.0))
 	for d in _dust:
 		var k: float = d[2] / 0.5
 		var sz := 1.0 if k > 0.6 else 2.0

@@ -3,7 +3,8 @@ class_name Pipe3D
 extends MeshInstance3D
 ## Pipe run: a cylinder of `length` along `axis`, centred on the origin, with flange
 ## rings every `flange_every` metres. Solid (world layer) unless `solid` is off.
-## Colour from the theme palette unless `color` is set (alpha > 0).
+## Copper art (wrapped once around, streaks along the pipe) unless `color` is set to a
+## non-warm colour: then the steel art recoloured to it (cold / coloured pipes).
 
 enum Axis { X, Y, Z }
 
@@ -55,7 +56,8 @@ func _refresh() -> void:
 	cm.radial_segments = 8
 	cm.rings = 1
 	mesh = cm
-	material_override = V3D.metal_material(c, 0.6)
+	var copper := color.a <= 0.0 or V3D.is_warm(color)
+	material_override = V3D.copper_material(Color.WHITE, true) if copper else V3D.steel_pipe_material(c)
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	match axis:
 		Axis.X: rotation = Vector3(0, 0, PI / 2.0)
@@ -69,7 +71,7 @@ func _refresh() -> void:
 	fm.height = 0.12
 	fm.radial_segments = 8
 	fm.rings = 1
-	fm.material = V3D.metal_material(c * 0.72, 0.6)
+	fm.material = V3D.copper_material(Color(0.68, 0.68, 0.68), true) if copper else V3D.steel_pipe_material(c * 0.72)
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.mesh = fm

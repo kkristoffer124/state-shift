@@ -1,0 +1,26 @@
+t1_ice_idle_6f.png  288x48  48x48 frames, 8 fps, loop
+t1_ice_slide_n_4f.png  192x48  48x48 frames, 12 fps, loop
+t1_ice_slide_e_4f.png  192x48  48x48 frames, 12 fps, loop
+t1_ice_slide_s_4f.png  192x48  48x48 frames, 12 fps, loop
+t1_ice_slide_w_4f.png  192x48  48x48 frames, 12 fps, loop
+t1_ice_impact_n_6f.png  288x48  48x48 frames, 16 fps, once
+t1_ice_impact_e_6f.png  288x48  48x48 frames, 16 fps, once
+t1_ice_impact_s_6f.png  288x48  48x48 frames, 16 fps, once
+t1_ice_impact_w_6f.png  288x48  48x48 frames, 16 fps, once
+t2_water_idle_8f.png  384x48  48x48 frames, 8 fps, loop
+t2_water_move_n_8f.png  384x48  48x48 frames, 12 fps, loop
+t2_water_move_e_8f.png  384x48  48x48 frames, 12 fps, loop
+t2_water_move_s_8f.png  384x48  48x48 frames, 12 fps, loop
+t2_water_move_w_8f.png  384x48  48x48 frames, 12 fps, loop
+t3_steam_idle_8f.png  384x48  48x48 frames, 8 fps, loop
+t3_steam_drift_n_6f.png  288x48  48x48 frames, 10 fps, loop
+t3_steam_drift_e_6f.png  288x48  48x48 frames, 10 fps, loop
+t3_steam_drift_s_6f.png  288x48  48x48 frames, 10 fps, loop
+t3_steam_drift_w_6f.png  288x48  48x48 frames, 10 fps, loop
+t4_shift_melt_8f.png  384x48  48x48 frames, 16 fps, once
+t4_shift_freeze_8f.png  384x48  48x48 frames, 16 fps, once
+t4_shift_boil_8f.png  384x48  48x48 frames, 16 fps, once
+t4_shift_condense_8f.png  384x48  48x48 frames, 16 fps, once
+t5_shadow_40.png  40x18  static
+t5_shadow_30.png  30x14  static
+t5_shadow_20.png  20x9  static

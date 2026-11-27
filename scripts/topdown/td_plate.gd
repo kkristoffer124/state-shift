@@ -7,7 +7,8 @@ extends Area2D
 
 signal pressed_changed(pressed: bool)
 
-const TEX := preload("res://assets/topdown/td_plate.png") # 2 frames: up, down
+const TEX_UP := preload("res://assets/topdown/tex/t15_pressure_plate_up.png")
+const TEX_DOWN := preload("res://assets/topdown/tex/t15_pressure_plate_down.png")
 
 @export var channel := "a"
 ## Stay down once pressed.
@@ -58,22 +59,21 @@ func _physics_process(delta: float) -> void:
 
 func _draw() -> void:
 	var k := clampf(_press, 0.0, 1.0)
-	# cross-fade the up / down art while the plate sinks; the top dips a pixel
-	draw_texture_rect_region(TEX, Rect2(0, 0, 32, 32), Rect2(0, 0, 32, 32))
+	# cross-fade the up / down art while the plate sinks
+	draw_texture(TEX_UP, Vector2.ZERO)
 	if k > 0.02:
-		draw_texture_rect_region(TEX, Rect2(0, 0, 32, 32), Rect2(32, 0, 32, 32), Color(1, 1, 1, k))
+		draw_texture(TEX_DOWN, Vector2.ZERO, Color(1, 1, 1, k))
+	# spring overshoot: the pad's top edge catches a shadow / a glint for a moment
 	var dip := roundf(clampf(_press, -0.4, 1.3) * 1.5)
 	if absf(dip) >= 1.0:
-		draw_rect(Rect2(6, 6, 20, 20), Color(0, 0, 0, 0.12 * signf(dip)) if dip > 0.0 else Color(1, 1, 1, 0.08))
-		draw_rect(Rect2(6, 5 + dip, 20, 1), Color(0, 0, 0, 0.25))
+		draw_rect(Rect2(7, 7, 18, 1), Color(0, 0, 0, 0.3) if dip > 0.0 else Color(1, 1, 1, 0.2))
 	# press ring: a pulse that runs out to the rim
 	if _flash > 0.0 and pressed:
 		var u := 1.0 - _flash / 0.5
 		var r := 6.0 + u * 14.0
 		draw_rect(Rect2(Vector2(16, 16) - Vector2(r, r), Vector2(r, r) * 2.0), Color(Ix.C_GOAL, 0.5 * (1.0 - u)), false, 1.0)
-	# status lamps in the corners
-	var c := Ix.C_GOAL if pressed else Ix.C_FROST.darkened(0.2 + 0.2 * sin(_t * 4.0))
+	# status lamp in the middle of the pad: breathing frost-blue while waiting, green when down
+	var c := Ix.C_GOAL if pressed else Ix.C_FROST.darkened(0.25 + 0.2 * sin(_t * 4.0))
 	if _flash > 0.0 and int(_flash * 20.0) % 2 == 0:
 		c = Color.WHITE
-	for p in [Vector2(3, 3), Vector2(27, 3), Vector2(3, 27), Vector2(27, 27)]:
-		draw_rect(Rect2(p, Vector2(2, 2)), c)
+	draw_rect(Rect2(15, 15, 2, 2), Color(c, 0.85))

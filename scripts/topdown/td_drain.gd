@@ -4,10 +4,18 @@ extends Node2D
 ## Floor drain (one 32x32 cell, ORIGIN = top-left of the cell).
 ## WATER that flows onto a drain with a `target` squeezes down the pipe and pops
 ## out of the target drain. Link both ends to each other for a two-way pipe.
-## Drains of the same pipe share a `tint` ring so the player can match them.
+## Drains of the same pipe share a `tint`; the grate art with the nearest ring colour
+## (magenta / yellow / violet / white) is used, so set tint to one of RING_COLORS.
 ## ICE slides over drains, STEAM floats over them.
 
-const TEX := preload("res://assets/topdown/td_drain.png")
+const TEX_RINGS: Array[Texture2D] = [
+	preload("res://assets/topdown/tex/t19_drain_magenta.png"),
+	preload("res://assets/topdown/tex/t19_drain_yellow.png"),
+	preload("res://assets/topdown/tex/t19_drain_violet.png"),
+	preload("res://assets/topdown/tex/t19_drain_white.png"),
+]
+## Ring colours of TEX_RINGS (sampled from the art).
+const RING_COLORS: Array[Color] = [Color8(224, 107, 208), Color8(242, 194, 48), Color8(154, 123, 255), Color8(242, 247, 255)]
 ## How close (px) the blob's centre must get to the drain's centre to be sucked in.
 const RADIUS := 10.0
 
@@ -15,18 +23,33 @@ const RADIUS := 10.0
 	set(v):
 		target = v
 		queue_redraw()
-@export var tint := Color("66ccff"):
+@export var tint := Color8(242, 247, 255):
 	set(v):
 		tint = v
+		_ring = _nearest_ring(v)
 		queue_redraw()
 
 var _t := 0.0
 var _gulp := 0.0
 var _spin := 0.0
+var _ring := 3
+
+
+static func _nearest_ring(c: Color) -> int:
+	var best := 0
+	var bd := INF
+	for i in RING_COLORS.size():
+		var r := RING_COLORS[i]
+		var d := Vector3(r.r - c.r, r.g - c.g, r.b - c.b).length_squared()
+		if d < bd:
+			bd = d
+			best = i
+	return best
 
 
 func _ready() -> void:
 	z_index = 1
+	_ring = _nearest_ring(tint)
 	if not Engine.is_editor_hint():
 		add_to_group("td_drain")
 
@@ -55,27 +78,28 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var linked := not target.is_empty()
-	var ring := tint if linked else Color(0.5, 0.55, 0.6)
-	# soft glow + coloured collar marks which drains connect
+	var ring := RING_COLORS[_ring] if linked else Color(0.5, 0.55, 0.6)
+	# soft glow under the grate marks which drains connect
 	if linked:
 		var a := 0.25 + 0.15 * sin(_t * 3.0) + _gulp * 0.5
-		draw_circle(Vector2(16, 16), 17.0, Color(ring, a * 0.35))
-	draw_texture(TEX, Vector2.ZERO)
+		draw_circle(Vector2(16, 16), 16.0, Color(ring, a * 0.35))
+	draw_texture(TEX_RINGS[_ring], Vector2.ZERO, Color.WHITE if linked else Color(0.6, 0.62, 0.66))
 	if linked:
 		# whirlpool: three spiral arms turning in the grate (spin up when gulping)
 		var hi := ring.lightened(0.45)
 		for arm in 3:
-			for j in 7:
+			for j in 6:
 				var rr := 2.0 + j * 1.5
 				var ang := arm * TAU / 3.0 + _spin + j * 0.55
 				var sp := (Vector2(16, 16) + Vector2(cos(ang), sin(ang)) * rr).floor()
-				var dsz := Vector2(2, 2) if j < 3 else Vector2.ONE
-				draw_rect(Rect2(sp, dsz), Color(hi, (0.95 - j * 0.1) * (0.7 + _gulp * 0.3)))
+				var dsz := Vector2(2, 2) if j < 2 else Vector2.ONE
+				draw_rect(Rect2(sp, dsz), Color(hi, (0.8 - j * 0.11) * (0.6 + _gulp * 0.4)))
 		draw_rect(Rect2(15, 15, 2, 2), Color(0, 0, 0, 0.6))
-		for i in 12:
-			var ang := TAU * i / 12.0 + _t * 0.6
-			var p := (Vector2(16, 16) + Vector2(cos(ang), sin(ang)) * 13.5).floor()
-			draw_rect(Rect2(p, Vector2(2, 2)), Color(ring, 0.9))
+		# a glint running round the coloured collar
+		var ga := _t * 1.6
+		for i in 3:
+			var p := (Vector2(15.5, 15.5) + Vector2(cos(ga - i * 0.18), sin(ga - i * 0.18)) * 12.5).floor()
+			draw_rect(Rect2(p, Vector2.ONE), Color(1, 1, 1, 0.8 - i * 0.25))
 		# bubbles rising from the pipe now and then
 		for i in 2:
 			var ph := fmod(_t * 0.8 + i * 0.5, 1.0)

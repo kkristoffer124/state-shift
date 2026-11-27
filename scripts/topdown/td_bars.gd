@@ -4,13 +4,19 @@ extends StaticBody2D
 ## Top-down barrier that sorts the states. ORIGIN = top-left; `size` in px.
 ##  BARS  a row of iron posts: stops ICE; WATER slips between them, STEAM drifts through
 ##  MESH  a fine vent grille: stops ICE and WATER; only STEAM drifts through
-## The posts run along the longer side of `size`.
+## The posts run along the longer side of `size`; art t17_bars_h/v and t18_vent_mesh_h/v,
+## one 32x32 tile per cell along that side.
 
 enum Kind { BARS, MESH }
 
 const LAYER_BARS := 2   # in TdPlayer's ICE mask only
 const LAYER_MESH := 64  # in TdPlayer's ICE and WATER masks
-const POST_H := 16.0
+const TEX_BARS_H := preload("res://assets/topdown/tex/t17_bars_h.png")
+const TEX_BARS_V := preload("res://assets/topdown/tex/t17_bars_v.png")
+const TEX_MESH_H := preload("res://assets/topdown/tex/t18_vent_mesh_h.png")
+const TEX_MESH_V := preload("res://assets/topdown/tex/t18_vent_mesh_v.png")
+## Post knobs per 32 px tile in the bars art (centres at 4, 12, 20, 28).
+const POSTS_PER_TILE := 4
 
 @export var kind: Kind = Kind.BARS:
 	set(v):
@@ -21,7 +27,6 @@ const POST_H := 16.0
 		size = v.max(Vector2(8, 8))
 		_refresh()
 
-var _theme := "lab"
 var _t := 0.0
 ## Optional overlay child (td_bars.tscn / td_mesh.tscn -> Shimmer): a glint that sweeps
 ## along the metal now and then. Redrawn per frame; the heavy grille art is not.
@@ -48,7 +53,6 @@ func _refresh() -> void:
 	collision_layer = LAYER_BARS if kind == Kind.BARS else LAYER_MESH
 	collision_mask = 0
 	z_index = 2
-	_theme = EnvTheme.find_theme(self)
 	var cs := get_node_or_null("CollisionShape2D") as CollisionShape2D
 	if cs and cs.shape is RectangleShape2D:
 		(cs.shape as RectangleShape2D).size = size
@@ -56,76 +60,26 @@ func _refresh() -> void:
 	queue_redraw()
 
 
-func _metal() -> Array[Color]:
-	if _theme == "sewer":
-		return [Color("2b3a35"), Color("6f8f80"), Color("a9c7b6"), Color("7a4a2c")]
-	return [Color("27313d"), Color("7d93ab"), Color("c9dcef"), Color("5a6a7c")]
-
-
 func _draw() -> void:
-	var m := _metal()
 	var vertical := size.y > size.x
-	# floor track
-	var track := Rect2(size.x / 2.0 - 3.0, 0, 6, size.y) if vertical else Rect2(0, size.y / 2.0 - 3.0, size.x, 6)
-	draw_rect(track, Color(0, 0, 0, 0.35))
-	draw_rect(track.grow(-1), m[0])
+	var tex: Texture2D
 	if kind == Kind.BARS:
-		_draw_bars(m, vertical)
+		tex = TEX_BARS_V if vertical else TEX_BARS_H
 	else:
-		_draw_mesh(m, vertical)
-
-
-func _draw_bars(m: Array[Color], vertical: bool) -> void:
-	var n := maxi(2, int((size.y if vertical else size.x) / 8.0))
+		tex = TEX_MESH_V if vertical else TEX_MESH_H
 	var length := size.y if vertical else size.x
-	var step := length / n
+	var across := size.x if vertical else size.y
+	var n := maxi(1, ceili(length / 32.0))
 	for i in n:
-		var base: Vector2
-		if vertical:
-			base = Vector2(size.x / 2.0, (i + 0.5) * step)
-		else:
-			base = Vector2((i + 0.5) * step, size.y / 2.0)
-		base = base.round()
-		# post seen in 3/4: a 3 px column rising POST_H above its foot, shadow at the foot
-		draw_rect(Rect2(base + Vector2(-1, 0), Vector2(5, 2)), Color(0, 0, 0, 0.45))
-		draw_rect(Rect2(base + Vector2(-2, -POST_H), Vector2(4, POST_H)), m[0])
-		draw_rect(Rect2(base + Vector2(-1, -POST_H), Vector2(2, POST_H)), m[1])
-		draw_rect(Rect2(base + Vector2(-1, -POST_H), Vector2(1, POST_H - 2)), m[2])
-		draw_rect(Rect2(base + Vector2(-2, -POST_H - 1), Vector2(4, 2)), m[2])
-		if _theme == "sewer" and (i * 7) % 3 == 0:
-			draw_rect(Rect2(base + Vector2(0, -POST_H * 0.5), Vector2(1, 3)), m[3])
-	# top rail tying the posts together
-	if vertical:
-		draw_rect(Rect2(size.x / 2.0 - 2.0, -POST_H - 2.0, 4, 3), m[0])
-		draw_rect(Rect2(size.x / 2.0 - 2.0, size.y - POST_H - 2.0, 4, 3), m[0])
-	else:
-		draw_rect(Rect2(0, size.y / 2.0 - POST_H - 2.0, size.x, 3), m[0])
-		draw_rect(Rect2(0, size.y / 2.0 - POST_H - 2.0, size.x, 1), m[2])
+		var p := Vector2((across - 32.0) * 0.5, i * 32.0) if vertical else Vector2(i * 32.0, (across - 32.0) * 0.5)
+		draw_texture(tex, p.round())
 
 
-func _draw_mesh(m: Array[Color], vertical: bool) -> void:
-	# a thin standing grille panel: frame + diamond mesh, seen from the south
-	var panel: Rect2
-	if vertical:
-		panel = Rect2(size.x / 2.0 - 6.0, -POST_H * 0.5, 12, size.y + POST_H * 0.5)
-	else:
-		panel = Rect2(0, size.y / 2.0 - POST_H, size.x, POST_H + 2.0)
-	draw_rect(panel, Color(m[0], 0.55))
-	var p0 := panel.position
-	for y in int(panel.size.y):
-		for x in int(panel.size.x):
-			if (x + y) % 4 == 0 or (x - y + 400) % 4 == 0:
-				draw_rect(Rect2(p0 + Vector2(x, y), Vector2.ONE), Color(m[1], 0.8))
-	draw_rect(Rect2(panel.position, Vector2(panel.size.x, 2)), m[2])
-	draw_rect(Rect2(panel.position.x, panel.end.y - 1, panel.size.x, 1), m[0])
-	if not vertical:
-		draw_rect(Rect2(panel.position, Vector2(2, panel.size.y)), m[1])
-		draw_rect(Rect2(panel.end.x - 2, panel.position.y, 2, panel.size.y), m[0])
-		# little "steam only" vent arrows
-		for x in range(12, int(size.x) - 8, 32):
-			draw_rect(Rect2(x, panel.position.y + 5, 6, 1), Color("dff2ff", 0.8))
-			draw_rect(Rect2(x + 1, panel.position.y + 4, 4, 1), Color("dff2ff", 0.8))
-			draw_rect(Rect2(x + 2, panel.position.y + 3, 2, 1), Color("dff2ff", 0.8))
+## Grille panel rect of the vent mesh art (cols / rows 9..23 across the tile).
+func _panel() -> Rect2:
+	if size.y > size.x:
+		return Rect2(size.x / 2.0 - 7.0, 0, 14, size.y)
+	return Rect2(0, size.y / 2.0 - 7.0, size.x, 14)
 
 
 ## Sweep position 0..1 along the long side (or < 0 while resting between sweeps).
@@ -139,32 +93,21 @@ func _draw_shimmer() -> void:
 	var vertical := size.y > size.x
 	var length := size.y if vertical else size.x
 	var u := _sweep()
-	var m := _metal()
 	if kind == Kind.BARS:
-		var n := maxi(2, int(length / 8.0))
-		var step := length / n
+		# a glint hops along the post knobs
+		var n := maxi(1, ceili(length / 32.0)) * POSTS_PER_TILE
 		for i in n:
-			var base: Vector2
-			if vertical:
-				base = Vector2(size.x / 2.0, (i + 0.5) * step)
-			else:
-				base = Vector2((i + 0.5) * step, size.y / 2.0)
-			base = base.round()
+			var along := i * 8.0 + 4.0
 			var d := absf((i + 0.5) / n - u) * n
 			if u < 0.0 or d > 1.5:
 				continue
-			var a := 0.75 * (1.0 - d / 1.5)
-			# glint runs down the lit edge of the post
-			var y0 := -POST_H + roundf(fmod(_t * 40.0 + i * 3.0, POST_H - 3.0))
-			_shimmer.draw_rect(Rect2(base + Vector2(-1, y0), Vector2(2, 3)), Color(1, 1, 1, a))
-			_shimmer.draw_rect(Rect2(base + Vector2(-2, -POST_H - 1), Vector2(4, 1)), Color(m[2].lightened(0.5), a))
+			var a := 0.85 * (1.0 - d / 1.5)
+			var c := Vector2(size.x / 2.0, along) if vertical else Vector2(along, size.y / 2.0)
+			_shimmer.draw_rect(Rect2(c.round() + Vector2(-2, -2), Vector2(2, 1)), Color(1, 1, 1, a))
+			_shimmer.draw_rect(Rect2(c.round() + Vector2(-2, -1), Vector2(1, 1)), Color(1, 1, 1, a * 0.6))
 	else:
-		var panel: Rect2
-		if vertical:
-			panel = Rect2(size.x / 2.0 - 6.0, -POST_H * 0.5, 12, size.y + POST_H * 0.5)
-		else:
-			panel = Rect2(0, size.y / 2.0 - POST_H, size.x, POST_H + 2.0)
-		# faint heat-haze flicker of air leaking through the vent
+		var panel := _panel()
+		# faint haze of air leaking through the vent
 		for i in 3:
 			var ph := fmod(_t * 0.7 + i * 0.33, 1.0)
 			var along := ph * (panel.size.y if vertical else panel.size.x)
@@ -172,7 +115,7 @@ func _draw_shimmer() -> void:
 			if vertical:
 				_shimmer.draw_rect(Rect2(panel.position.x + 1, panel.position.y + along, panel.size.x - 2, 1), Color(0.85, 0.95, 1.0, a))
 			else:
-				_shimmer.draw_rect(Rect2(panel.position.x + along, panel.position.y + 2, 1, panel.size.y - 3), Color(0.85, 0.95, 1.0, a))
+				_shimmer.draw_rect(Rect2(panel.position.x + along, panel.position.y + 1, 1, panel.size.y - 2), Color(0.85, 0.95, 1.0, a))
 		if u < 0.0:
 			return
 		# diagonal glint band sweeping along the grille
@@ -184,4 +127,4 @@ func _draw_shimmer() -> void:
 				var q := Vector2(j, head + j * 0.6 + w) if vertical else Vector2(head + j * 0.6 + w, j)
 				if q.x < 0.0 or q.x >= panel.size.x or q.y < 0.0 or q.y >= panel.size.y:
 					continue
-				_shimmer.draw_rect(Rect2(panel.position + q.floor(), Vector2.ONE), Color(1, 1, 1, 0.35 - w * 0.1))
+				_shimmer.draw_rect(Rect2(panel.position + q.floor(), Vector2.ONE), Color(1, 1, 1, 0.3 - w * 0.09))

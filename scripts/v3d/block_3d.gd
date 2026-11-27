@@ -9,10 +9,14 @@ extends StaticBody3D
 ##  DECOR     no collision (trims, decals, background shapes). Anything that LOOKS solid
 ##            (furniture, crates, rails...) should be WALL instead; tests/v3d_test.gd
 ##            flags uncovered decor unless it has meta "passable" (liquids, hanging bits).
-## Texture art comes from the level theme (EnvTheme) and maps 32 px per metre.
+## Art: the hand-made 3D textures (assets/v3d/tex, 32 px per metre, world space) of
+## the level theme: floor tops, wall sides, ceiling undersides, base/edge trims
+## (flags set by Level3D from the neighbouring blocks), cracked/grate/glass tiles.
 
 enum Kind { WALL, GRATE, BREAKABLE, GLASS, DECOR }
-enum Look { AUTO, WALL, FILL, DARK, METAL, GLOW }
+## METAL steel tinted by `tint`, COPPER copper art, HAZARD yellow/black stripes,
+## SCREEN animated monitor (fits the face height), GLOW flat emissive `tint`.
+enum Look { AUTO, WALL, FILL, DARK, METAL, GLOW, HAZARD, COPPER, SCREEN }
 
 const SHARD_TEX: Array[Texture2D] = [
 	preload("res://assets/env/e3c_shard_1.png"),
@@ -47,6 +51,10 @@ const SHARD_TEX: Array[Texture2D] = [
 		_refresh()
 
 var broken := false
+## V3D.TRIM_BASE / TRIM_EDGE bits (Level3D.assign_trims()).
+var trim_flags := 0
+## BREAKABLE: crack frame (1 cracked, 2 about to break after a weaker ICE hit).
+var crack_stage := 1
 var _mesh: MeshInstance3D
 var _shape: CollisionShape3D
 
@@ -61,7 +69,7 @@ func _refresh() -> void:
 	if _mesh == null:
 		_mesh = V3D.add_internal(self, MeshInstance3D.new())
 		_shape = V3D.add_internal(self, CollisionShape3D.new())
-	_mesh.mesh = V3D.box_mesh(size)
+	_mesh.mesh = V3D.box_mesh(size, trim_flags)
 	_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if cast_shadow and kind != Kind.GLASS else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_mesh.material_override = _material()
 	var bs := BoxShape3D.new()
@@ -81,16 +89,43 @@ func _material() -> Material:
 	var theme := EnvTheme.find_theme(self)
 	if kind == Kind.GLASS:
 		return V3D.glass_material()
+	if kind == Kind.BREAKABLE and look == Look.AUTO:
+		return V3D.cracked_material(crack_stage, tint)
 	match look:
 		Look.FILL: return V3D.world_material(theme, "fill", tint)
 		Look.DARK: return V3D.world_material(theme, "dark", tint)
-		Look.METAL: return V3D.metal_material(tint)
+		Look.METAL: return V3D.copper_material() if V3D.is_warm(tint) else V3D.metal_material(tint)
 		Look.GLOW: return V3D.glow_material(tint, 2.0)
 		Look.WALL: return V3D.world_material(theme, "wall", tint)
+		Look.HAZARD: return V3D.hazard_material()
+		Look.COPPER: return V3D.copper_material()
+		Look.SCREEN: return V3D.screen_material()
 	match kind:
 		Kind.GRATE: return V3D.world_material(theme, "grate", tint)
-		Kind.BREAKABLE: return V3D.world_material(theme, "cracked", tint)
 	return V3D.world_material(theme, "wall", tint)
+
+
+## Sets the trim bits (base / edge band) and rebuilds the mesh if they changed.
+func set_trims(flags: int) -> void:
+	if flags == trim_flags:
+		return
+	trim_flags = flags
+	if _mesh:
+		_mesh.mesh = V3D.box_mesh(size, trim_flags)
+
+
+## True when this block's art is the theme surface (floors/walls/trims apply).
+func is_surface() -> bool:
+	return kind == Kind.WALL and look in [Look.AUTO, Look.WALL, Look.DARK]
+
+
+## BREAKABLE: an ICE hit too slow to shatter it cracks it further (crack2 frame).
+func stress() -> void:
+	if kind != Kind.BREAKABLE or broken or crack_stage >= 2:
+		return
+	crack_stage = 2
+	if _mesh:
+		_mesh.material_override = _material()
 
 
 ## World-space bounds of the box.
@@ -126,7 +161,7 @@ func shatter(impact := Vector3.ZERO) -> void:
 	p.scale_amount_max = 1.4
 	var m := BoxMesh.new()
 	m.size = Vector3(0.18, 0.12, 0.16)
-	m.material = V3D.world_material(EnvTheme.find_theme(self), "cracked", tint)
+	m.material = V3D.cracked_material(2, tint)
 	p.mesh = m
 	var dir := impact.normalized() if impact.length() > 0.1 else Vector3.DOWN
 	p.direction = (-dir * 0.4 + Vector3.UP).normalized() if dir.y > -0.5 else Vector3(0, -0.2, 0)
